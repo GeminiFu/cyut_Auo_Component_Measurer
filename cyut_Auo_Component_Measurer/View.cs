@@ -22,11 +22,21 @@ namespace cyut_Auo_Component_Measurer
             graphics = pictureBox.CreateGraphics();
         }
 
-        public void DrawEBW8Image(ref EImageBW8 img)
+        public void DrawEBW8Image(EImageBW8 img)
         {
+            pictureBox.Image = null;
+            pictureBox.Refresh();
             scalingRatio = CalcRatioWithPictureBox(pictureBox, img.Width, img.Height);
             img.Draw(graphics, scalingRatio);
         }
+
+
+        public void DrawBitmap(Bitmap bmp)
+        {
+            pictureBox.Image = bmp;
+        }
+
+
 
 
 
