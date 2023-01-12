@@ -31,6 +31,7 @@
             this.btn_Load = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btn_Camera = new System.Windows.Forms.Button();
+            this.btn_Detect = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -65,11 +66,22 @@
             this.btn_Camera.UseVisualStyleBackColor = true;
             this.btn_Camera.Click += new System.EventHandler(this.btn_Camera_Click);
             // 
+            // btn_Detect
+            // 
+            this.btn_Detect.Location = new System.Drawing.Point(431, 55);
+            this.btn_Detect.Name = "btn_Detect";
+            this.btn_Detect.Size = new System.Drawing.Size(75, 23);
+            this.btn_Detect.TabIndex = 3;
+            this.btn_Detect.Text = "Detect";
+            this.btn_Detect.UseVisualStyleBackColor = true;
+            this.btn_Detect.Click += new System.EventHandler(this.btn_Detect_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btn_Detect);
             this.Controls.Add(this.btn_Camera);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btn_Load);
@@ -87,6 +99,7 @@
         private System.Windows.Forms.Button btn_Load;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btn_Camera;
+        private System.Windows.Forms.Button btn_Detect;
     }
 }
 

@@ -21,13 +21,11 @@ namespace cyut_Auo_Component_Measurer
     public partial class Form1 : Form
     {
         EImageBW8 EBW8Image1 = new EImageBW8();
-        OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-
-
-
+        // --------------------------Instance--------------------------
         View c_view;
         Control c_control;
+        Measure c_measure;
 
         public Form1()
         {
@@ -35,6 +33,7 @@ namespace cyut_Auo_Component_Measurer
 
             c_view = new View(ref pictureBox1);
             c_control = new Control();
+            c_measure = new Measure();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -61,9 +60,7 @@ namespace cyut_Auo_Component_Measurer
             c_view.DrawEBW8Image(EBW8Image1);
         }
 
-
-
-        //--------------------------camera--------------------------
+        // --------------------------camera--------------------------
         bool isStreaming = false;
         Bitmap bmp;
         VideoCapture capture;
@@ -163,5 +160,20 @@ namespace cyut_Auo_Component_Measurer
 
             EC24ImageTemp.Dispose();
         }
+
+        // --------------------------Detect--------------------------
+        EImageEncoder codedImage1Encoder = new EImageEncoder();
+        ECodedImage2 codedImage1 = new ECodedImage2();
+        EObjectSelection codedImage1ObjectSelection = new EObjectSelection();
+
+        private void btn_Detect_Click(object sender, EventArgs e)
+        {
+            c_measure.Detect(ref EBW8Image1, ref codedImage1Encoder, ref codedImage1, ref codedImage1ObjectSelection);
+
+            c_view.DrawAllElement(ref codedImage1, ref codedImage1ObjectSelection);
+        }
+
+
+
     }
 }

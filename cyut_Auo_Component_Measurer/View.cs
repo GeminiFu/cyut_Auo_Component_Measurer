@@ -13,7 +13,7 @@ namespace cyut_Auo_Component_Measurer
     {
         PictureBox pictureBox = new PictureBox();
         Graphics graphics;
-        float scalingRatio;
+        public float scalingRatio;
 
         public View(ref PictureBox pb) 
         {
@@ -34,6 +34,11 @@ namespace cyut_Auo_Component_Measurer
         public void DrawBitmap(Bitmap bmp)
         {
             pictureBox.Image = bmp;
+        }
+
+        public void DrawAllElement(ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
+        {
+            codedImage.Draw(graphics, codedImageObjectSelection, scalingRatio);
         }
 
 
