@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -26,6 +27,7 @@ namespace cyut_Auo_Component_Measurer
         View c_view;
         Control c_control;
         Measure c_measure;
+        Shape c_shape;
 
         public Form1()
         {
@@ -34,6 +36,7 @@ namespace cyut_Auo_Component_Measurer
             c_view = new View(ref pictureBox1);
             c_control = new Control();
             c_measure = new Measure();
+            c_shape = new Shape();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -173,7 +176,31 @@ namespace cyut_Auo_Component_Measurer
             c_view.DrawAllElement(ref codedImage1, ref codedImage1ObjectSelection);
         }
 
+        // --------------------------Shape--------------------------
+        ArrayList ObjectSetG;
+        ArrayList ObjectSetU;
 
+        private void btn_Shape_Click(object sender, EventArgs e)
+        {
+            uint length = codedImage1ObjectSelection.ElementCount;
+            ECodedElement element;
 
+            string shapeName;
+
+            for (uint i = 0; i < length; i++)
+            {
+                element = codedImage1ObjectSelection.GetElement(i);
+
+                // shape determiner(element) => shapename
+                shapeName = c_shape.ShapeDeterminer(ref element);
+                Console.WriteLine(i + shapeName);
+                // shapename => shape information
+
+                element.Dispose();
+            }
+            //c_measure.SetObjectSetG(ref ObjectSetG);
+
+            
+        }
     }
 }

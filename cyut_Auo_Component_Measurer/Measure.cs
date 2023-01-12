@@ -1,6 +1,7 @@
 ﻿using Emgu.CV;
 using Euresys.Open_eVision_22_08;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,9 @@ namespace cyut_Auo_Component_Measurer
 {
     public class Measure
     {
+        public delegate void ElementsFunction(ref ECodedElement element);
+
+        public ElementsFunction elementsFunction;
 
         public Measure() { }
 
@@ -40,8 +44,25 @@ namespace cyut_Auo_Component_Measurer
             // don't care area 條件
             codedImageObjectSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
             codedImageObjectSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
-        
-            
+
+
+        }
+
+        public void SetObjectSetG(ref ArrayList ObjectSet, EObjectSelection codedSelector, ElementsFunction elementsFunction)
+        {
+            uint length = codedSelector.ElementCount;
+            ECodedElement element;
+
+            for (uint i = 0; i < length; i++)
+            {
+                element = codedSelector.GetElement(i);
+
+                // shape determiner(element) => shapename
+                elementsFunction(ref element);
+                // shapename => shape information
+
+                element.Dispose();
+            }
         }
     }
 }
