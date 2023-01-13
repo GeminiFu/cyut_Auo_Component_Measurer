@@ -3,6 +3,7 @@ using Euresys.Open_eVision_22_08;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,7 @@ namespace cyut_Auo_Component_Measurer
 {
     public class Measure
     {
-        internal delegate ObjectShape ElementsFunction(ref ECodedElement element);
-
-        internal ElementsFunction elementsFunction;
+        internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
 
         internal Measure() { }
 
@@ -57,18 +56,41 @@ namespace cyut_Auo_Component_Measurer
             {
                 element = codedSelector.GetElement(i);
 
-                ObjectSet.Add(elementsFunction(ref element));
+                ObjectSet.Add(elementsFunction(ref element, i));
 
                 element.Dispose();
             }
         }
 
-        internal void SetObjectG(ref List<ObjectShape> ObjectSet)
+        internal void SetObjectG(ref List<ObjectShape> ObjectSetG)
         {
-            foreach(ObjectShape element in ObjectSet)
+            foreach(ObjectShape shape in ObjectSetG)
             {
-                element.checkResult = 0; //OK
+                shape.checkResult = 0; //OK
+
+                Console.WriteLine(shape.index + " " + shape.shapeName);
             }
+        }
+
+        internal void SetObjectU(ref List<ObjectShape> ObjectSetG, ref List<ObjectShape> ObjectSetU)
+        {
+            // inspect
+            // setting standard
+            // setting error
+        }
+
+        internal int IsClickObject(ref List<ObjectShape> ObjectSet, float clickX, float clickY)
+        {
+            foreach(ObjectShape shape in ObjectSet)
+            {
+                if (shape.IsInShape(clickX, clickY))
+                {
+                    Console.WriteLine(shape.shapeName);
+                    return (int)shape.index;
+                }
+            }
+
+            return -1;
         }
     }
 }

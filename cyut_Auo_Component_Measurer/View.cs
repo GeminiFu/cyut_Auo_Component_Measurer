@@ -1,10 +1,6 @@
 ﻿using Euresys.Open_eVision_22_08;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace cyut_Auo_Component_Measurer
@@ -13,7 +9,9 @@ namespace cyut_Auo_Component_Measurer
     {
         PictureBox pictureBox = new PictureBox();
         Graphics graphics;
-        public float scalingRatio;
+        float scalingRatio;
+
+        internal float GetScalingRatio { get { return scalingRatio; } }
 
         public View(ref PictureBox pb) 
         {
@@ -36,9 +34,14 @@ namespace cyut_Auo_Component_Measurer
             pictureBox.Image = bmp;
         }
 
-        public void DrawAllElement(ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
+        public void DrawAllElements(ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
         {
             codedImage.Draw(graphics, codedImageObjectSelection, scalingRatio);
+        }
+
+        public void DrawElement(ref ECodedImage2 codedImage, ref ECodedElement element)
+        {
+            codedImage.Draw(graphics, element, scalingRatio);
         }
 
 
@@ -67,14 +70,10 @@ namespace cyut_Auo_Component_Measurer
 
             float imageRatio = imageWidth / imageHeight;
 
-            float ratioBetween;
-
             if (imageRatio > pbRatio)
-                ratioBetween = pbWidth / imageWidth;
+                return  pbWidth / imageWidth;
             else
-                ratioBetween = pbHeight / imageHeight;
-
-            return ratioBetween;
+                return pbHeight / imageHeight;
         }
     }
 }

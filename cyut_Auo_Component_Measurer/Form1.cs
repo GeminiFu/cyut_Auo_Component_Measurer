@@ -37,10 +37,20 @@ namespace cyut_Auo_Component_Measurer
             c_control = new Control();
             c_measure = new Measure();
             c_shape = new ShapeManager();
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+           
+        }
+
+        private void Form_Shown(object sender, EventArgs e)
+        {
+            EBW8Image1.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
+            c_view.DrawEBW8Image(EBW8Image1);
+            btn_Detect_Click(sender, e);
+            btn_Shape_Click(sender, e);
         }
 
         private void Form_Close(object sender, FormClosedEventArgs e)
@@ -54,7 +64,7 @@ namespace cyut_Auo_Component_Measurer
 
             errorMessage = c_control.LoadEImageBW8(ref EBW8Image1);
 
-            if(errorMessage != c_control.OK)
+            if (errorMessage != c_control.OK)
             {
                 MessageBox.Show(errorMessage);
                 return;
@@ -122,7 +132,7 @@ namespace cyut_Auo_Component_Measurer
                 {
                     return;
                 }
-                    
+
 
                 //btnDetectObject_Click(sender, e); //跨執行緒作業無效: 存取控制項 'listBox1' 時所使用的執行緒與建立控制項的執行緒不同。
                 //btnRecord_Click(sender, e); //跨執行緒作業無效: 存取控制項 'listBox1' 時所使用的執行緒與建立控制項的執行緒不同。
@@ -170,8 +180,6 @@ namespace cyut_Auo_Component_Measurer
         private void btn_Detect_Click(object sender, EventArgs e)
         {
             c_measure.Detect(ref EBW8Image1, ref codedImage1Encoder, ref codedImage1, ref codedImage1ObjectSelection);
-
-            c_view.DrawAllElement(ref codedImage1, ref codedImage1ObjectSelection);
         }
 
         // --------------------------Shape--------------------------
@@ -184,5 +192,42 @@ namespace cyut_Auo_Component_Measurer
 
             c_measure.SetObjectG(ref ObjectSetG);
         }
+
+        private void pictureBox_Mose_Down(object sender, MouseEventArgs e)
+        {
+            // 點擊判定
+            // 畫面有沒有圖案
+            // 有沒有 ObjectSet
+
+            int index;
+
+
+            if (ObjectSetU.Count != 0) {
+                index = c_measure.IsClickObject(ref ObjectSetU, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
+            }
+            else
+            {
+                index = c_measure.IsClickObject(ref ObjectSetG, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
+            }
+
+            Console.WriteLine("index is " + index);
+
+            if (index == -1)
+            {
+                // 沒點到圖型
+            }
+            else
+            {
+                ECodedElement element = codedImage1ObjectSelection.GetElement((uint)index);
+
+                c_view.DrawEBW8Image(EBW8Image1);
+                c_view.DrawElement(ref codedImage1, ref element);
+
+                element.Dispose();
+            }
+        }
+
+
+
     }
 }
