@@ -33,7 +33,12 @@
             this.btn_Camera = new System.Windows.Forms.Button();
             this.btn_Detect = new System.Windows.Forms.Button();
             this.btn_Shape = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.檔案ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.設定ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dotGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_Load
@@ -70,7 +75,7 @@
             // 
             // btn_Detect
             // 
-            this.btn_Detect.Location = new System.Drawing.Point(327, 54);
+            this.btn_Detect.Location = new System.Drawing.Point(500, 67);
             this.btn_Detect.Name = "btn_Detect";
             this.btn_Detect.Size = new System.Drawing.Size(75, 23);
             this.btn_Detect.TabIndex = 3;
@@ -80,13 +85,45 @@
             // 
             // btn_Shape
             // 
-            this.btn_Shape.Location = new System.Drawing.Point(443, 54);
+            this.btn_Shape.Location = new System.Drawing.Point(605, 67);
             this.btn_Shape.Name = "btn_Shape";
             this.btn_Shape.Size = new System.Drawing.Size(75, 23);
             this.btn_Shape.TabIndex = 4;
             this.btn_Shape.Text = "Shape";
             this.btn_Shape.UseVisualStyleBackColor = true;
             this.btn_Shape.Click += new System.EventHandler(this.btn_Shape_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.檔案ToolStripMenuItem,
+            this.設定ToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.TabIndex = 5;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // 檔案ToolStripMenuItem
+            // 
+            this.檔案ToolStripMenuItem.Name = "檔案ToolStripMenuItem";
+            this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.檔案ToolStripMenuItem.Text = "檔案";
+            // 
+            // 設定ToolStripMenuItem
+            // 
+            this.設定ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dotGridToolStripMenuItem});
+            this.設定ToolStripMenuItem.Name = "設定ToolStripMenuItem";
+            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.設定ToolStripMenuItem.Text = "設定";
+            // 
+            // dotGridToolStripMenuItem
+            // 
+            this.dotGridToolStripMenuItem.Name = "dotGridToolStripMenuItem";
+            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dotGridToolStripMenuItem.Text = "Dot Grid";
+            this.dotGridToolStripMenuItem.Click += new System.EventHandler(this.dotGridToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -98,13 +135,18 @@
             this.Controls.Add(this.btn_Camera);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btn_Load);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Close);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -115,6 +157,10 @@
         private System.Windows.Forms.Button btn_Camera;
         private System.Windows.Forms.Button btn_Detect;
         private System.Windows.Forms.Button btn_Shape;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 檔案ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 設定ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dotGridToolStripMenuItem;
     }
 }
 

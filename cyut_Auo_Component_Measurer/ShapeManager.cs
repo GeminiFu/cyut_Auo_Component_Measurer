@@ -13,13 +13,33 @@ namespace cyut_Auo_Component_Measurer
     internal class ShapeManager
     {
         EWorldShape EWorldShape1 = new EWorldShape();
+        int calibrationX = 5;
+        int calibrationY = 5;
 
-        public ShapeManager()
+        internal int CalibrationX { get { return calibrationX; } set { calibrationX = value; } }
+        internal int CalibrationY { get { return calibrationY; } set { calibrationY = value; } }
+
+
+        internal void AutoCalibration(ref EImageBW8 image, int x, int y)
+        {
+            EWorldShape1.AutoCalibrateDotGrid(image, x, y, false);
+
+            calibrationX = x;
+            calibrationY = y;
+
+            if (EWorldShape1.CalibrationSucceeded() == false)
+            {
+                MessageBox.Show("Calibration Failed");
+            }
+
+        }
+
+        internal ShapeManager()
         {
 
         }
 
-        public ObjectShape ShapeDeterminer(ref ECodedElement element, uint index)
+        internal ObjectShape ShapeDeterminer(ref ECodedElement element, uint index)
         {
             float threshold;
             float area = element.BoundingBoxWidth * element.BoundingBoxHeight;

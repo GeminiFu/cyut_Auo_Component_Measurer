@@ -227,7 +227,29 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
+        public int x;
+        public int y;
+        private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            // 開相機
+            if (isStreaming == false)
+            {
+                btn_Camera_Click(sender, e);
+            }
 
 
+            // 設定 x, y
+
+            x = c_shape.CalibrationX;
+            y = c_shape.CalibrationY;
+
+            Form_Dot_Grid f2 = new Form_Dot_Grid(x, y);
+            f2.ShowDialog(this);
+
+            btn_Camera_Click(sender, e);
+
+            c_shape.AutoCalibration(ref EBW8Image1, x, y);
+        }
     }
 }

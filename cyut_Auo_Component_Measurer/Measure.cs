@@ -67,8 +67,6 @@ namespace cyut_Auo_Component_Measurer
             foreach(ObjectShape shape in ObjectSetG)
             {
                 shape.checkResult = 0; //OK
-
-                Console.WriteLine(shape.index + " " + shape.shapeName);
             }
         }
 
@@ -85,7 +83,6 @@ namespace cyut_Auo_Component_Measurer
             {
                 if (shape.IsInShape(clickX, clickY))
                 {
-                    Console.WriteLine(shape.shapeName);
                     return (int)shape.index;
                 }
             }
