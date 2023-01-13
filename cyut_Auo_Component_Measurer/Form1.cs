@@ -27,7 +27,7 @@ namespace cyut_Auo_Component_Measurer
         View c_view;
         Control c_control;
         Measure c_measure;
-        Shape c_shape;
+        ShapeManager c_shape;
 
         public Form1()
         {
@@ -36,7 +36,7 @@ namespace cyut_Auo_Component_Measurer
             c_view = new View(ref pictureBox1);
             c_control = new Control();
             c_measure = new Measure();
-            c_shape = new Shape();
+            c_shape = new ShapeManager();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -177,8 +177,8 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // --------------------------Shape--------------------------
-        ArrayList ObjectSetG;
-        ArrayList ObjectSetU;
+        List<ObjectShape> ObjectSetG = new List<ObjectShape>();
+        List<ObjectShape> ObjectSetU = new List<ObjectShape>();
 
         private void btn_Shape_Click(object sender, EventArgs e)
         {
@@ -192,8 +192,9 @@ namespace cyut_Auo_Component_Measurer
                 element = codedImage1ObjectSelection.GetElement(i);
 
                 // shape determiner(element) => shapename
-                shapeName = c_shape.ShapeDeterminer(ref element);
-                Console.WriteLine(i + shapeName);
+                ObjectSetG.Add(c_shape.ShapeDeterminer(ref element));
+
+                Console.WriteLine("Shape name is " + ObjectSetG[(int)i].shapeName);
                 // shapename => shape information
 
                 element.Dispose();
