@@ -88,8 +88,6 @@ namespace cyut_Auo_Component_Measurer
 
                 Thread.Sleep(100);
 
-                Console.WriteLine("image");
-
                 // bitmap to EImageBW8
                 BitmapToEImageBW8(ref bmp, ref EBW8Image1);
 
@@ -182,26 +180,9 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Shape_Click(object sender, EventArgs e)
         {
-            uint length = codedImage1ObjectSelection.ElementCount;
-            ECodedElement element;
+            c_measure.SetObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
 
-            string shapeName;
-
-            for (uint i = 0; i < length; i++)
-            {
-                element = codedImage1ObjectSelection.GetElement(i);
-
-                // shape determiner(element) => shapename
-                ObjectSetG.Add(c_shape.ShapeDeterminer(ref element));
-
-                Console.WriteLine("Shape name is " + ObjectSetG[(int)i].shapeName);
-                // shapename => shape information
-
-                element.Dispose();
-            }
-            //c_measure.SetObjectSetG(ref ObjectSetG);
-
-            
+            c_measure.SetObjectG(ref ObjectSetG);
         }
     }
 }

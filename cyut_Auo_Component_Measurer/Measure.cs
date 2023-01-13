@@ -12,13 +12,13 @@ namespace cyut_Auo_Component_Measurer
 {
     public class Measure
     {
-        public delegate void ElementsFunction(ref ECodedElement element);
+        internal delegate ObjectShape ElementsFunction(ref ECodedElement element);
 
-        public ElementsFunction elementsFunction;
+        internal ElementsFunction elementsFunction;
 
-        public Measure() { }
+        internal Measure() { }
 
-        public void Detect(ref EImageBW8 image, ref EImageEncoder codedImageEncoder, ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
+        internal void Detect(ref EImageBW8 image, ref EImageEncoder codedImageEncoder, ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
         {
             // 如果 EBW8Image1
             if (image == null || (image.Width == 0 && image.Height == 0))
@@ -48,7 +48,7 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
-        public void SetObjectSetG(ref ArrayList ObjectSet, EObjectSelection codedSelector, ElementsFunction elementsFunction)
+        internal void SetObjectSet(ref List<ObjectShape> ObjectSet, ref EObjectSelection codedSelector, ElementsFunction elementsFunction)
         {
             uint length = codedSelector.ElementCount;
             ECodedElement element;
@@ -57,11 +57,17 @@ namespace cyut_Auo_Component_Measurer
             {
                 element = codedSelector.GetElement(i);
 
-                // shape determiner(element) => shapename
-                elementsFunction(ref element);
-                // shapename => shape information
+                ObjectSet.Add(elementsFunction(ref element));
 
                 element.Dispose();
+            }
+        }
+
+        internal void SetObjectG(ref List<ObjectShape> ObjectSet)
+        {
+            foreach(ObjectShape element in ObjectSet)
+            {
+                element.checkResult = 0; //OK
             }
         }
     }

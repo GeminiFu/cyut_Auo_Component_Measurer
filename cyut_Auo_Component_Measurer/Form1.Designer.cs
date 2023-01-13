@@ -38,7 +38,7 @@
             // 
             // btn_Load
             // 
-            this.btn_Load.Location = new System.Drawing.Point(162, 55);
+            this.btn_Load.Location = new System.Drawing.Point(42, 54);
             this.btn_Load.Name = "btn_Load";
             this.btn_Load.Size = new System.Drawing.Size(75, 23);
             this.btn_Load.TabIndex = 0;
@@ -50,7 +50,7 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(156, 120);
+            this.pictureBox1.Location = new System.Drawing.Point(72, 135);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(463, 247);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -59,7 +59,7 @@
             // 
             // btn_Camera
             // 
-            this.btn_Camera.Location = new System.Drawing.Point(303, 55);
+            this.btn_Camera.Location = new System.Drawing.Point(141, 54);
             this.btn_Camera.Name = "btn_Camera";
             this.btn_Camera.Size = new System.Drawing.Size(75, 23);
             this.btn_Camera.TabIndex = 2;
@@ -69,7 +69,7 @@
             // 
             // btn_Detect
             // 
-            this.btn_Detect.Location = new System.Drawing.Point(431, 55);
+            this.btn_Detect.Location = new System.Drawing.Point(327, 54);
             this.btn_Detect.Name = "btn_Detect";
             this.btn_Detect.Size = new System.Drawing.Size(75, 23);
             this.btn_Detect.TabIndex = 3;
@@ -79,7 +79,7 @@
             // 
             // btn_Shape
             // 
-            this.btn_Shape.Location = new System.Drawing.Point(562, 54);
+            this.btn_Shape.Location = new System.Drawing.Point(443, 54);
             this.btn_Shape.Name = "btn_Shape";
             this.btn_Shape.Size = new System.Drawing.Size(75, 23);
             this.btn_Shape.TabIndex = 4;
