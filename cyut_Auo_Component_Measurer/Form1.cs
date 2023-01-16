@@ -55,7 +55,7 @@ namespace cyut_Auo_Component_Measurer
             string errorMessage;
 
             // 初始化設定
-            errorMessage = c_control.InitializeSetting(ObjectSetG ,ref EBW8Image1, 5 , 5);
+            errorMessage = c_control.InitializeSetting(ref ObjectSetG ,ref EBW8Image1, 5 , 5);
             if (errorMessage != c_control.OK)
             {
                 MessageBox.Show(errorMessage);
@@ -270,6 +270,16 @@ namespace cyut_Auo_Component_Measurer
             btn_Camera_Click(sender, e);
 
             c_shape.AutoCalibration(ref EBW8Image1, x, y);
+        }
+
+        private void Menu_Save_Setting_Click(object sender, EventArgs e)
+        {
+            c_control.BuildNewSetting(ref EBW8Image1, ObjectSetG);
+        }
+
+        private void Menu_Load_Setting_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

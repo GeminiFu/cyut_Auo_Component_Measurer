@@ -21,6 +21,7 @@ namespace cyut_Auo_Component_Measurer
     internal class Control
     {
         OpenFileDialog openFileDialog1;
+        FolderBrowserDialog folderBrowserDialog1;
 
         string ok = "control OK";
 
@@ -32,8 +33,7 @@ namespace cyut_Auo_Component_Measurer
         public Control()
         {
             openFileDialog1 = new OpenFileDialog();
-
-
+            folderBrowserDialog1 = new FolderBrowserDialog();
 
             openFileDialog1.InitialDirectory = Application.StartupPath;
             openFileDialog1.Filter = "Jpg|*.jpg|PNG|*.png|Json|*.json|All files|*.*";
@@ -58,14 +58,31 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        internal string InitializeSetting(List<ObjectShape> ObjectSetG, ref EImageBW8 image, int x, int y)
+        internal string InitializeSetting(ref List<ObjectShape> ObjectSetG, ref EImageBW8 image, int x, int y)
         {
+            string errorMessage;
 
             // 要先 check 新還舊
-            // 載入舊的
-            // 或設定新的
 
-            string errorMessage;
+
+
+
+            // 載入舊的
+            if (CheckSetting())
+            {
+                // EImageBW8
+                image.Load(pathSetting + "\\Standard.png");
+
+                // ObjectSetG
+                string jsonString = File.ReadAllText(pathSetting + "\\ObjectSetG.json");
+                ObjectSetG = JsonConvert.DeserializeObject<List<ObjectShape>>(jsonString);
+            }
+            else
+            {
+                errorMessage = "請先初始化：校正點圖、測量標準物";
+                return errorMessage;
+            }
+
             // 再 build history folder
             errorMessage = BuildHistoryFolder(ref image, ObjectSetG);
             if (errorMessage != this.ok)
@@ -93,10 +110,36 @@ namespace cyut_Auo_Component_Measurer
             return this.ok;
         }
 
+        internal string SetNewSetting(ref EImageBW8 image, List<ObjectShape>ObjectSetG)
+        {
+            string errorMessage;
+
+            //設定新的
+
+            if (CheckSetting())
+            {
+                if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    // 設定 ObjectSetG
+                    BuildNewSetting(ref image, ObjectSetG);
+                }
+                else
+                {
+                    return "設定錯誤";
+                }
+            }
+            else
+            {
+                BuildNewSetting(ref image, ObjectSetG);
+            }
+
+            BuildHistoryFolder(ref image, ObjectSetG);
+
+            return ok;
+        }
 
 
-
-        internal string CheckInitializeSetting()
+        internal bool CheckSetting()
         {
             string pathObjectSetG = pathSetting + "\\ObjectSetG";
             string pathDotGridImage = pathSetting + "\\DotGridImage";
@@ -109,11 +152,11 @@ namespace cyut_Auo_Component_Measurer
                 File.Exists(pathCalibrationXY)
                 )
             {
-                return this.ok;
+                return true;
             }
             else
             {
-                return "請先初始化：校正點圖、測量標準物";
+                return false;
             }
         }
 
@@ -160,6 +203,9 @@ namespace cyut_Auo_Component_Measurer
                 }
             }
 
+            // !!!!!!!!!!!!!!!!!!!!!!!!!    dot grid image
+            // !!!!!!!!!!!!!!!!!!!!!!!!!    calibration x y 
+
             // 存圖檔
             if (image == null || (image.Width == 0 && image.Height == 0))
             {
@@ -179,8 +225,40 @@ namespace cyut_Auo_Component_Measurer
             return this.ok;
         }
 
-        internal void BuildNewSetting()
+        internal string BuildNewSetting(ref EImageBW8 image, List<ObjectShape> ObjectSetG)
         {
+            if (Directory.Exists(pathSetting) == false)
+            {
+                Directory.CreateDirectory(pathSetting);
+            }
+            // !!!!!!!!!!!!!!!!!!!!!!!!!    dot grid image
+            // !!!!!!!!!!!!!!!!!!!!!!!!!    calibration x y 
+
+
+            // check image, check objectSetG
+            if (image == null || (image.Width == 0 && image.Height == 0))
+            {
+                return "請先載入圖片";
+            }
+            else
+            {
+                image.SavePng(pathSetting + "\\Standard.png");
+            }
+
+            // 存ObjectGSet
+            if (ObjectSetG.Count > 0)
+            {
+                string jsonString = JsonConvert.SerializeObject(ObjectSetG);
+                File.WriteAllText(pathSetting + "\\ObjectSetG.json", jsonString);
+            }
+            else
+            {
+                return "請先量測圖片";
+            }
+
+
+
+            return ok;
 
         }
     }
