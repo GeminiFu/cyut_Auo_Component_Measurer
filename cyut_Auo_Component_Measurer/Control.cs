@@ -80,9 +80,62 @@ namespace cyut_Auo_Component_Measurer
             if (errorMessage != ok) //防呆
                 return errorMessage;
 
-
             return this.ok;
         }
+
+        internal string LoadSetting(ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
+        {
+            string errorMessage;
+            string path = selectedPath;
+
+            errorMessage = CheckSettingFile(selectedPath);
+
+
+            if (errorMessage != ok)
+                return errorMessage;
+
+            path += "\\Setting";
+
+            // ObjectSetG
+            string jsonString = File.ReadAllText(selectedPath + "\\ObjectSetG.json");
+            ObjectSetG = JsonConvert.DeserializeObject<List<ObjectShape>>(jsonString);
+
+            // dot grid image
+            dotGridImage.Load(path + "\\Dot_Grid.png");
+
+            // calibration x y 
+            x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
+            y = int.Parse(File.ReadAllText(path + "\\Calibration_Y.txt"));
+
+
+            return ok;
+        }
+
+        internal string CheckSettingFile(string selectedPath)
+        {
+            string pathObjectSetG = selectedPath + "\\ObjectSetG.json";
+            string pathDotGridImage = selectedPath + "\\Dot_Grid.png";
+            string pathCalibrationX = selectedPath + "\\Calibration_X.txt";
+            string pathCalibrationY = selectedPath + "\\Calibration_Y.txt";
+
+            if (!Directory.Exists(selectedPath))
+                return "沒有找到資料夾";
+
+            if (Directory.Exists(pathObjectSetG))
+                return "沒有找到 ObjectSetG";
+
+            if (!File.Exists(pathDotGridImage))
+                return "沒有找到點圖";
+
+            if (!File.Exists(pathCalibrationX))
+                return "沒有找到 X 文字檔";
+
+            if (!File.Exists(pathCalibrationY))
+                return "沒有找到 Y 文字檔";
+
+            return ok;
+        }
+
         internal void BuildHistoryFolder(string seletedPath)
         {
             string componentName = "1U2N2G-B550_2T-ChASSIS";
@@ -135,7 +188,10 @@ namespace cyut_Auo_Component_Measurer
             File.WriteAllText(pathSave + "\\Calibration_Y.txt", y.ToString());
 
             // save standard image
-            standard.SavePng(pathSave + "\\Standard.png");
+            if (standard.IsVoid == false)
+            {
+                standard.SavePng(pathSave + "\\Standard.png");
+            }
 
             // save ObjectGSet
             string jsonString = JsonConvert.SerializeObject(ObjectSetG);
@@ -163,31 +219,6 @@ namespace cyut_Auo_Component_Measurer
 
 
 
-
-        internal string CheckSettingFile(string selectedPath)
-        {
-            string pathObjectSetG = selectedPath + "\\ObjectSetG.json";
-            string pathDotGridImage = selectedPath + "\\Dot_Grid.png";
-            string pathCalibrationX = selectedPath + "\\Calibration_X.txt";
-            string pathCalibrationY = selectedPath + "\\Calibration_Y.txt";
-
-            if (!Directory.Exists(selectedPath))
-                return "沒有找到資料夾";
-
-            if (Directory.Exists(pathObjectSetG))
-                return "沒有找到 ObjectSetG";
-
-            if (!File.Exists(pathDotGridImage))
-                return "沒有找到點圖";
-
-            if (!File.Exists(pathCalibrationX))
-                return "沒有找到 X 文字檔";
-
-            if (!File.Exists(pathCalibrationY))
-                return "沒有找到 Y 文字檔";
-
-            return ok;
-        }
 
 
         internal string BuildNewSetting(ref EImageBW8 image, List<ObjectShape> ObjectSetG, string seletedPath)
@@ -256,64 +287,37 @@ namespace cyut_Auo_Component_Measurer
             return ok;
         }
 
-        internal string MenuLoadSetting(ref EImageBW8 image, ref List<ObjectShape> ObjectSetG)
+        internal string MenuLoadSetting(ref EImageBW8 standard, ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage;
+
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
                 string selectedPath = folderBrowserDialog1.SelectedPath;
 
-                if (CheckSettingFile(selectedPath))
-                {
-                    // !!!!!!!!!!!!!!!!!!!!!!!!!    dot grid image
-                    // !!!!!!!!!!!!!!!!!!!!!!!!!    calibration x y 
+                errorMessage = CheckSettingFile(selectedPath);
 
-                    // ObjectSetG
-                    string jsonString = File.ReadAllText(selectedPath + "\\ObjectSetG.json");
-                    ObjectSetG = JsonConvert.DeserializeObject<List<ObjectShape>>(jsonString);
-
-                }
-                else
+                if(errorMessage != ok)
                 {
-                    return "沒有設定檔";
+                    return errorMessage;
                 }
+
+                errorMessage = LoadSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, selectedPath);
+
+                if (errorMessage != ok)
+                    return errorMessage;
             }
 
-            errorMessage = BuildHistoryFolder(ref image, ObjectSetG, Environment.CurrentDirectory);
-            if (errorMessage != ok)
-            {
-                return errorMessage;
-            }
+            // build history folder
+            BuildHistoryFolder(Environment.CurrentDirectory);
+
+            // save history
+            SaveHistorySetting(ref standard, ObjectSetG,ref dotGridImage, x, y);
 
             return ok;
         }
 
-        internal string LoadSetting(ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
-        {
-            string errorMessage;
-            string path = selectedPath;
 
-            errorMessage = CheckSettingFile(selectedPath);
-
-
-            if (errorMessage != ok)
-                return errorMessage;
-
-            path += "\\Setting";
-
-            // dot grid image
-            dotGridImage.Load(path + "\\Dot_Grid.png");
-
-            // calibration x y 
-            x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
-            y = int.Parse(File.ReadAllText(path + "\\Calibration_Y.txt"));
-
-            // ObjectSetG
-            string jsonString = File.ReadAllText(selectedPath + "\\ObjectSetG.json");
-            ObjectSetG = JsonConvert.DeserializeObject<List<ObjectShape>>(jsonString);
-
-            return ok;
-        }
 
     }
 }
