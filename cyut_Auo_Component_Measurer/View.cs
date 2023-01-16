@@ -5,6 +5,8 @@ using System.Windows.Forms;
 
 namespace cyut_Auo_Component_Measurer
 {
+    // 說明
+    // 視覺層面的輸出，操作 Form Control(包括 Enable)
     internal class View
     {
         PictureBox pictureBox = new PictureBox();

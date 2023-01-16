@@ -11,13 +11,19 @@ using System.Windows.Forms;
 
 namespace cyut_Auo_Component_Measurer
 {
+    // 說明
+    // 管理三大功能的邏輯
+    // Detect => codedImageEncoder, codedImage, codedImageObjectSelection
+    // codedImageObjectSelection => ObjectSet
+    // Inspect => NG index
     public class Measure
     {
+        EImageEncoder codedImage1Encoder = new EImageEncoder();
         internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
 
         internal Measure() { }
 
-        internal void Detect(ref EImageBW8 image, ref EImageEncoder codedImageEncoder, ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
+        internal void Detect(ref EImageBW8 image, ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
         {
             // 如果 EBW8Image1
             if (image == null || (image.Width == 0 && image.Height == 0))
@@ -30,7 +36,7 @@ namespace cyut_Auo_Component_Measurer
             //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.Mode = EGrayscaleSingleThreshold.MinResidue; //為初始設定
 
             // codedImage1 圖層
-            codedImageEncoder.Encode(image, codedImage);
+            codedImage1Encoder.Encode(image, codedImage);
 
             // codedImage1ObjectSelection 設定
             codedImageObjectSelection.Clear();

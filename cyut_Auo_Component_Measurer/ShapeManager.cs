@@ -10,6 +10,9 @@ using System.Xml.Linq;
 
 namespace cyut_Auo_Component_Measurer
 {
+    // 說明
+    // 管理圖形、圖形辨識、圖形測量
+    // 
     internal class ShapeManager
     {
         EWorldShape EWorldShape1 = new EWorldShape();

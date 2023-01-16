@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emgu.CV;
+using Emgu.CV.Aruco;
 using Emgu.CV.Reg;
 using Euresys.Open_eVision_22_08;
 using static System.Net.Mime.MediaTypeNames;
@@ -21,6 +23,14 @@ namespace cyut_Auo_Component_Measurer
 {
     public partial class Form1 : Form
     {
+        // 說明
+        // 管理
+        // EImageBW8
+        // ECodedImage2
+        // EObjectSelection
+        // ObjectSet
+        // 以及簡單邏輯(error判定, if else)
+
         EImageBW8 EBW8Image1 = new EImageBW8();
 
         // --------------------------Instance--------------------------
@@ -42,7 +52,19 @@ namespace cyut_Auo_Component_Measurer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+            string errorMessage;
+
+            // 初始化設定
+            errorMessage = c_control.InitializeSetting(ObjectSetG ,ref EBW8Image1, 5 , 5);
+            if (errorMessage != c_control.OK)
+            {
+                MessageBox.Show(errorMessage);
+            }
+            else
+            {
+                // intialzeSetting
+            }
+
         }
 
         private void Form_Shown(object sender, EventArgs e)
@@ -173,13 +195,12 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // --------------------------Detect--------------------------
-        EImageEncoder codedImage1Encoder = new EImageEncoder();
         ECodedImage2 codedImage1 = new ECodedImage2();
         EObjectSelection codedImage1ObjectSelection = new EObjectSelection();
 
         private void btn_Detect_Click(object sender, EventArgs e)
         {
-            c_measure.Detect(ref EBW8Image1, ref codedImage1Encoder, ref codedImage1, ref codedImage1ObjectSelection);
+            c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
         }
 
         // --------------------------Shape--------------------------
@@ -202,7 +223,8 @@ namespace cyut_Auo_Component_Measurer
             int index;
 
 
-            if (ObjectSetU.Count != 0) {
+            if (ObjectSetU.Count != 0)
+            {
                 index = c_measure.IsClickObject(ref ObjectSetU, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
             }
             else
@@ -238,9 +260,7 @@ namespace cyut_Auo_Component_Measurer
                 btn_Camera_Click(sender, e);
             }
 
-
             // 設定 x, y
-
             x = c_shape.CalibrationX;
             y = c_shape.CalibrationY;
 
