@@ -274,12 +274,12 @@ namespace cyut_Auo_Component_Measurer
 
         private void Menu_Save_Setting_Click(object sender, EventArgs e)
         {
-            c_control.BuildNewSetting(ref EBW8Image1, ObjectSetG);
+            c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG);
         }
 
         private void Menu_Load_Setting_Click(object sender, EventArgs e)
         {
-
+            c_control.MenuLoadSetting(ref EBW8Image1, ref ObjectSetG);
         }
     }
 }

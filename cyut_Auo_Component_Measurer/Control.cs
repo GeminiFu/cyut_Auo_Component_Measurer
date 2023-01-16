@@ -26,17 +26,19 @@ namespace cyut_Auo_Component_Measurer
         string ok = "control OK";
 
         string pathSetting = Environment.CurrentDirectory + "\\Setting";
-        string savePath;
+        string pathSave;
 
         public string OK { get { return this.ok; } }
 
         public Control()
         {
             openFileDialog1 = new OpenFileDialog();
-            folderBrowserDialog1 = new FolderBrowserDialog();
 
             openFileDialog1.InitialDirectory = Application.StartupPath;
             openFileDialog1.Filter = "Jpg|*.jpg|PNG|*.png|Json|*.json|All files|*.*";
+
+            folderBrowserDialog1 = new FolderBrowserDialog();
+            folderBrowserDialog1.SelectedPath = Environment.CurrentDirectory;
 
             //saveFileDialog1.InitialDirectory = Application.StartupPath;
             //saveFileDialog1.Filter = "Json|*.json|BMP|*.bmp|All files|*.*";
@@ -62,16 +64,10 @@ namespace cyut_Auo_Component_Measurer
         {
             string errorMessage;
 
-            // 要先 check 新還舊
-
-
-
-
-            // 載入舊的
-            if (CheckSetting())
+            // 載入 Setting
+            if (CheckSetting(pathSetting))
             {
-                // EImageBW8
-                image.Load(pathSetting + "\\Standard.png");
+                
 
                 // ObjectSetG
                 string jsonString = File.ReadAllText(pathSetting + "\\ObjectSetG.json");
@@ -84,72 +80,29 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // 再 build history folder
-            errorMessage = BuildHistoryFolder(ref image, ObjectSetG);
+            errorMessage = BuildHistoryFolder(ref image, ObjectSetG, Environment.CurrentDirectory);
             if (errorMessage != this.ok)
             {
                 Console.WriteLine(errorMessage);
                 return errorMessage;
             }
 
-
-            //if (ObjectSetG.Count > 0) //檢查是否有設定檔了
-            //{
-            //    if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            //    {
-            //        // 設定 ObjectSetG
-            //    }
-            //    else
-            //    {
-            //        return "初始化錯誤";
-            //    }
-            //}
-            //else
-            //{
-            //    // 設定 ObjectSetG
-            //}
             return this.ok;
         }
 
-        internal string SetNewSetting(ref EImageBW8 image, List<ObjectShape>ObjectSetG)
+
+
+        internal bool CheckSetting(string selectedPath)
         {
-            string errorMessage;
-
-            //設定新的
-
-            if (CheckSetting())
-            {
-                if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    // 設定 ObjectSetG
-                    BuildNewSetting(ref image, ObjectSetG);
-                }
-                else
-                {
-                    return "設定錯誤";
-                }
-            }
-            else
-            {
-                BuildNewSetting(ref image, ObjectSetG);
-            }
-
-            BuildHistoryFolder(ref image, ObjectSetG);
-
-            return ok;
-        }
-
-
-        internal bool CheckSetting()
-        {
-            string pathObjectSetG = pathSetting + "\\ObjectSetG";
-            string pathDotGridImage = pathSetting + "\\DotGridImage";
-            string pathCalibrationXY = pathSetting + "\\CalibrationXY";
+            string pathObjectSetG = selectedPath + "\\ObjectSetG.json";
+            //string pathDotGridImage = seletedPath + "\\DotGridImage";
+            //string pathCalibrationXY = seletedPath + "\\CalibrationXY";
 
             if (
-                File.Exists(pathSetting) &&
-                File.Exists(pathObjectSetG) &&
-                File.Exists(pathDotGridImage) &&
-                File.Exists(pathCalibrationXY)
+                Directory.Exists(selectedPath) &&
+                //File.Exists(pathDotGridImage) &&
+                //File.Exists(pathCalibrationXY)&&
+                File.Exists(pathObjectSetG)
                 )
             {
                 return true;
@@ -160,12 +113,12 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        internal string BuildHistoryFolder(ref EImageBW8 image, List<ObjectShape> ObjectSetG)
+        internal string BuildHistoryFolder(ref EImageBW8 image, List<ObjectShape> ObjectSetG, string seletedPath)
         {
             string componentName = "1U2N2G-B550_2T-ChASSIS";
 
             // Result Folder
-            string path = Environment.CurrentDirectory + "\\result";
+            string path = seletedPath + "\\result";
             if (Directory.Exists(path) == false)
             {
                 Directory.CreateDirectory(path);
@@ -209,7 +162,7 @@ namespace cyut_Auo_Component_Measurer
             // 存圖檔
             if (image == null || (image.Width == 0 && image.Height == 0))
             {
-                return "請先載入圖片";
+                Console.WriteLine("沒有儲存 Standard image");
             }
             else
             {
@@ -220,16 +173,17 @@ namespace cyut_Auo_Component_Measurer
             string jsonString = JsonConvert.SerializeObject(ObjectSetG);
             File.WriteAllText(path + "\\ObjectSetG.json", jsonString);
 
-            savePath = path;
+            pathSave = path;
 
             return this.ok;
         }
 
-        internal string BuildNewSetting(ref EImageBW8 image, List<ObjectShape> ObjectSetG)
+        internal string BuildNewSetting(ref EImageBW8 image, List<ObjectShape> ObjectSetG, string seletedPath)
         {
-            if (Directory.Exists(pathSetting) == false)
+            string path = seletedPath + "\\Setting";
+             if (Directory.Exists(path) == false)
             {
-                Directory.CreateDirectory(pathSetting);
+                Directory.CreateDirectory(path);
             }
             // !!!!!!!!!!!!!!!!!!!!!!!!!    dot grid image
             // !!!!!!!!!!!!!!!!!!!!!!!!!    calibration x y 
@@ -238,18 +192,18 @@ namespace cyut_Auo_Component_Measurer
             // check image, check objectSetG
             if (image == null || (image.Width == 0 && image.Height == 0))
             {
-                return "請先載入圖片";
+                Console.WriteLine("沒有儲存 Standard image");
             }
             else
             {
-                image.SavePng(pathSetting + "\\Standard.png");
+                image.SavePng(path + "\\Standard.png");
             }
 
             // 存ObjectGSet
             if (ObjectSetG.Count > 0)
             {
                 string jsonString = JsonConvert.SerializeObject(ObjectSetG);
-                File.WriteAllText(pathSetting + "\\ObjectSetG.json", jsonString);
+                File.WriteAllText(path + "\\ObjectSetG.json", jsonString);
             }
             else
             {
@@ -261,5 +215,68 @@ namespace cyut_Auo_Component_Measurer
             return ok;
 
         }
+
+        internal string MenuSaveSetting(ref EImageBW8 image, List<ObjectShape> ObjectSetG)
+        {
+            if(folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string selectedPath = folderBrowserDialog1.SelectedPath;
+
+                if (Directory.Exists(folderBrowserDialog1.SelectedPath + "\\Setting"))
+                {
+                    if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        BuildNewSetting(ref image, ObjectSetG, folderBrowserDialog1.SelectedPath);
+                    }
+                    else
+                    {
+                        return "不覆蓋已存在檔案";
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(selectedPath);
+
+                    BuildNewSetting(ref image, ObjectSetG, selectedPath);
+                }
+            }
+
+            return ok;
+        }
+
+        internal string MenuLoadSetting(ref EImageBW8 image, ref List<ObjectShape> ObjectSetG)
+        {
+            string errorMessage;
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string selectedPath = folderBrowserDialog1.SelectedPath;
+
+                if (CheckSetting(selectedPath))
+                {
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!    dot grid image
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!    calibration x y 
+
+                    // ObjectSetG
+                    string jsonString = File.ReadAllText(selectedPath + "\\ObjectSetG.json");
+                    ObjectSetG = JsonConvert.DeserializeObject<List<ObjectShape>>(jsonString);
+
+                }
+                else
+                {
+                    return "沒有設定檔";
+                }
+            }
+
+            errorMessage = BuildHistoryFolder(ref image, ObjectSetG, Environment.CurrentDirectory);
+            if(errorMessage != ok)
+            {
+                return errorMessage;
+            }
+
+            return ok;
+        }
+
+
+   
     }
 }
