@@ -39,6 +39,7 @@ namespace cyut_Auo_Component_Measurer
         Measure c_measure;
         ShapeManager c_shape;
 
+        // --------------------------Form--------------------------
         public Form1()
         {
             InitializeComponent();
@@ -54,31 +55,29 @@ namespace cyut_Auo_Component_Measurer
         {
             string errorMessage;
 
-            // 初始化設定
-            errorMessage = c_control.InitializeSetting(ref ObjectSetG ,ref EBW8Image1, 5 , 5);
-            if (errorMessage != c_control.OK)
-            {
-                MessageBox.Show(errorMessage);
-            }
-            else
-            {
-                // intialzeSetting
-            }
+            //初始化設定
+           errorMessage = c_control.InitializeSetting(ref ObjectSetG, ref EBW8Image1,ref  x,ref y);
 
+            if (errorMessage != c_control.OK)
+                MessageBox.Show(errorMessage);
         }
 
         private void Form_Shown(object sender, EventArgs e)
         {
-            EBW8Image1.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
-            c_view.DrawEBW8Image(EBW8Image1);
-            btn_Detect_Click(sender, e);
-            btn_Shape_Click(sender, e);
+            //EBW8Image1.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
+            //c_view.DrawEBW8Image(EBW8Image1);
+            //btn_Detect_Click(sender, e);
+            //btn_Shape_Click(sender, e);
         }
 
         private void Form_Close(object sender, FormClosedEventArgs e)
         {
             capture?.Stop();
         }
+
+
+
+        // --------------------------Button--------------------------
 
         private void btn_Load_Click(object sender, EventArgs e)
         {
@@ -95,7 +94,18 @@ namespace cyut_Auo_Component_Measurer
             c_view.DrawEBW8Image(EBW8Image1);
         }
 
-        // --------------------------camera--------------------------
+        // --------------------------Menu--------------------------
+        private void Menu_Save_Setting_Click(object sender, EventArgs e)
+        {
+            c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG);
+        }
+
+        private void Menu_Load_Setting_Click(object sender, EventArgs e)
+        {
+            c_control.MenuLoadSetting(ref EBW8Image1, ref ObjectSetG);
+        }
+
+        // --------------------------Camera--------------------------
         bool isStreaming = false;
         Bitmap bmp;
         VideoCapture capture;
@@ -209,7 +219,7 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Shape_Click(object sender, EventArgs e)
         {
-            c_measure.SetObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
+            c_measure.BuildObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
 
             c_measure.SetObjectG(ref ObjectSetG);
         }
@@ -251,6 +261,8 @@ namespace cyut_Auo_Component_Measurer
 
         public int x;
         public int y;
+        EImageBW8 EBW8ImageDotGrid = new EImageBW8();
+
         private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -269,17 +281,11 @@ namespace cyut_Auo_Component_Measurer
 
             btn_Camera_Click(sender, e);
 
-            c_shape.AutoCalibration(ref EBW8Image1, x, y);
+            EBW8ImageDotGrid.SetSize(EBW8Image1);
+            EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
+
+            c_shape.AutoCalibration(ref EBW8ImageDotGrid, x, y);
         }
 
-        private void Menu_Save_Setting_Click(object sender, EventArgs e)
-        {
-            c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG);
-        }
-
-        private void Menu_Load_Setting_Click(object sender, EventArgs e)
-        {
-            c_control.MenuLoadSetting(ref EBW8Image1, ref ObjectSetG);
-        }
     }
 }

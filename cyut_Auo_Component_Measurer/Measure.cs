@@ -53,7 +53,7 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
-        internal void SetObjectSet(ref List<ObjectShape> ObjectSet, ref EObjectSelection codedSelector, ElementsFunction elementsFunction)
+        internal void BuildObjectSet(ref List<ObjectShape> ObjectSet, ref EObjectSelection codedSelector, ElementsFunction elementsFunction)
         {
             uint length = codedSelector.ElementCount;
             ECodedElement element;
