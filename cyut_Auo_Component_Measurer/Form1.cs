@@ -51,8 +51,8 @@ namespace cyut_Auo_Component_Measurer
         //List<ObjectShape> ObjectSetU = new List<ObjectShape>();
 
         // 要開給 FormDotGrid 讓它傳上父輩
-        public int x;
-        public int y;
+        public int x = 5;
+        public int y = 5;
 
         EImageBW8 EBW8ImageDotGrid = new EImageBW8();
 
@@ -150,7 +150,11 @@ namespace cyut_Auo_Component_Measurer
         // --------------------------Menu--------------------------
         private void Menu_Save_Setting_Click(object sender, EventArgs e)
         {
-            c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+            string errorMessage;
+            errorMessage = c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+
+            if (errorMessage != c_control.OK)
+                MessageBox.Show(errorMessage);
         }
 
         private void Menu_Load_Setting_Click(object sender, EventArgs e)

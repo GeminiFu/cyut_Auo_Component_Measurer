@@ -341,8 +341,6 @@ namespace cyut_Auo_Component_Measurer
         {
             ObjectCircle tempCircle = (ObjectCircle)objectStandard;
             diameterError = Math.Abs(diameter - tempCircle.diameter);
-
-            Console.WriteLine("diameter error is " + diameterError);
         }
         internal bool InspectCircle(decimal thresholdNG)
         {
@@ -464,8 +462,6 @@ namespace cyut_Auo_Component_Measurer
             ObjectSpecial1 tempSpecial1 = (ObjectSpecial1)objectStandard;
             widthError = Math.Abs(width - tempSpecial1.width);
             heightError = Math.Abs(height - tempSpecial1.height);
-
-            Console.WriteLine("width error is {0}, height error is {1}", widthError, heightError);
 
         }
 

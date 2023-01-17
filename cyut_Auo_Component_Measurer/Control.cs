@@ -99,7 +99,7 @@ namespace cyut_Auo_Component_Measurer
             path += "\\Setting";
 
             // ObjectSetG
-            string jsonString = File.ReadAllText(selectedPath + "\\ObjectSetG.json");
+            string jsonString = File.ReadAllText($@"{path}\ObjectSetG.json");
             ObjectSetG = JsonConvert.DeserializeObject<ArrayList>(jsonString);
 
             for (int i = 0; i < ObjectSetG.Count; i++)
@@ -107,23 +107,18 @@ namespace cyut_Auo_Component_Measurer
                 Object obj = ObjectSetG[i];
                 ObjectShape shape = JsonConvert.DeserializeObject<ObjectShape>(obj.ToString());
                 //ObjectSetG[i] = shape;
-                //Console.WriteLine("shapename is " + shape.shapeName);
+                //
+                //
+                //
+                //
+                //
+                //
+                //.WriteLine("shapename is " + shape.shapeName);
 
                 switch (shape.shapeName)
                 {
                     case "square":
                         ObjectRectangle square = JsonConvert.DeserializeObject<ObjectRectangle>(obj.ToString());
-                        Console.WriteLine("shape  " + shape.index);
-                        Console.WriteLine("shape  " + shape.shapeName);
-                        Console.WriteLine("square " + square.index);
-                        Console.WriteLine("square " + square.shapeName);
-                        Console.WriteLine("square " + square.width);
-                        Console.WriteLine("square " + square.widthError);
-                        Console.WriteLine("square " + square.height);
-                        Console.WriteLine("square " + square.heightError);
-                        
-                        Console.WriteLine();
-                        //Console.WriteLine(square.width);
                         ObjectSetG[i] = square;
                         break;
                     case "rectangle":
@@ -291,7 +286,10 @@ namespace cyut_Auo_Component_Measurer
                 {
                     if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
+                        errorMessage = BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
+
+                        if(errorMessage != ok)
+                            return errorMessage;
                     }
                     else
                     {
@@ -300,7 +298,10 @@ namespace cyut_Auo_Component_Measurer
                 }
                 else
                 {
-                    BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
+                    errorMessage = BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
+
+                    if (errorMessage != ok)
+                        return errorMessage;
                 }
             }
 
