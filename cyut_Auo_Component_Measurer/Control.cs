@@ -289,20 +289,23 @@ namespace cyut_Auo_Component_Measurer
                 Directory.CreateDirectory(path);
             }
 
-            // save dot grid image
-            dotGridImage.SavePng(path + "Dot_Grid.png");
-
-            // save calibration x y 
-            File.WriteAllText(pathSave + "\\Calibration_X.txt", x.ToString());
-            File.WriteAllText(pathSave + "\\Calibration_Y.txt", y.ToString());
-
             // save standard
-            standard.SavePng(path + "\\Standard.png");
+            if(standard.IsVoid == false)
+            {
+                standard.SavePng(path + "\\Standard.png");
+            }
 
 
             // save ObjectGSet
             string jsonString = JsonConvert.SerializeObject(ObjectSetG);
             File.WriteAllText(path + "\\ObjectSetG.json", jsonString);
+
+            // save dot grid image
+            dotGridImage.SavePng(path + "\\Dot_Grid.png");
+
+            // save calibration x y 
+            File.WriteAllText(path + "\\Calibration_X.txt", x.ToString());
+            File.WriteAllText(path + "\\Calibration_Y.txt", y.ToString());
 
             return ok;
         }
