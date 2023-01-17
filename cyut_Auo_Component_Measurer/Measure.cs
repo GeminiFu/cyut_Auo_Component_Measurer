@@ -58,6 +58,8 @@ namespace cyut_Auo_Component_Measurer
             uint length = codedSelector.ElementCount;
             ECodedElement element;
 
+            ObjectSet.Clear();
+
             for (uint i = 0; i < length; i++)
             {
                 element = codedSelector.GetElement(i);

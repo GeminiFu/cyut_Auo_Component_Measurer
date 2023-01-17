@@ -21,6 +21,8 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace cyut_Auo_Component_Measurer
 {
+    // ObjectSetG: Object Set Golden，標準
+    // ObjectSetU: Object Set Unknown，待測物
     public partial class Form1 : Form
     {
         // 說明
@@ -48,6 +50,11 @@ namespace cyut_Auo_Component_Measurer
         public int y;
 
         EImageBW8 EBW8ImageDotGrid = new EImageBW8();
+
+        // --------------------------Detect--------------------------
+        ECodedImage2 codedImage1 = new ECodedImage2();
+        EObjectSelection codedImage1ObjectSelection = new EObjectSelection();
+
 
         // --------------------------Camera--------------------------
         bool isStreaming = false;
@@ -220,22 +227,6 @@ namespace cyut_Auo_Component_Measurer
             EC24ImageTemp.Dispose();
         }
 
-        // --------------------------Detect--------------------------
-        ECodedImage2 codedImage1 = new ECodedImage2();
-        EObjectSelection codedImage1ObjectSelection = new EObjectSelection();
-
-        private void btn_Detect_Click(object sender, EventArgs e)
-        {
-            c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
-        }
-
-        // --------------------------Shape--------------------------
-        private void btn_Shape_Click(object sender, EventArgs e)
-        {
-            c_measure.BuildObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
-
-            c_measure.SetObjectG(ref ObjectSetG);
-        }
 
         private void pictureBox_Mose_Down(object sender, MouseEventArgs e)
         {
@@ -297,5 +288,28 @@ namespace cyut_Auo_Component_Measurer
             c_shape.AutoCalibration(ref EBW8ImageDotGrid, x, y);
         }
 
+        private void btn_Measure_Standard_Click(object sender, EventArgs e)
+        {
+            c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
+
+            c_measure.BuildObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
+
+            c_measure.SetObjectG(ref ObjectSetG);
+
+            Console.WriteLine("Object Set Golden number is: " + ObjectSetG.Count);
+            Console.WriteLine(ObjectSetG[0].checkResult);
+        }
+
+        private void btn_Measure_Product_Click(object sender, EventArgs e)
+        {
+            c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
+
+            c_measure.BuildObjectSet(ref ObjectSetU, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
+
+            Console.WriteLine("Object Set Unknow number is: " + ObjectSetU.Count);
+            Console.WriteLine(ObjectSetU[0].checkResult);
+
+            // Inspect
+        }
     }
 }

@@ -27,14 +27,17 @@ namespace cyut_Auo_Component_Measurer
         {
             EWorldShape1.AutoCalibrateDotGrid(image, x, y, false);
 
-            calibrationX = x;
-            calibrationY = y;
 
             if (EWorldShape1.CalibrationSucceeded() == false)
             {
                 MessageBox.Show("Calibration Failed");
+                return;
             }
-
+            else
+            {
+                calibrationX = x;
+                calibrationY = y;
+            }
         }
 
         internal ShapeManager()
