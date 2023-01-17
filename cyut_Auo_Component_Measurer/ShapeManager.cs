@@ -49,6 +49,7 @@ namespace cyut_Auo_Component_Measurer
         {
             float threshold;
             float area = element.BoundingBoxWidth * element.BoundingBoxHeight;
+
             //這裡需要先使用Raio判斷長方形或圓形(正方形)，亦或者分別量測，有結果的才算是有那個形狀
             if (element.BoundingBoxWidth / element.BoundingBoxHeight >= 0.95 && element.BoundingBoxWidth / element.BoundingBoxHeight <= 1.05) //正方形或圓形
             {
@@ -112,7 +113,8 @@ namespace cyut_Auo_Component_Measurer
 
         public ObjectShape()
         {
-
+            shapeNo = -1;
+            checkResult = -1;
         }
 
         protected void SetObjectShape(ref ECodedElement element)
@@ -122,6 +124,8 @@ namespace cyut_Auo_Component_Measurer
         }
 
 
+        // -------------------------------Is In Shape-------------------------------
+
         protected delegate bool InShapeEvent(float X, float Y);
 
         protected InShapeEvent inShapeEvent;
@@ -130,37 +134,72 @@ namespace cyut_Auo_Component_Measurer
         {
             return inShapeEvent.Invoke(X, Y);
         }
+        // -------------------------------Save Error-------------------------------
+
+        protected delegate void SaveErrorEvent(ObjectShape objectStandard);
+
+        protected SaveErrorEvent saveErrorEvent;
+
+        internal void SaveError(ObjectShape objectStandard)
+        {
+            saveErrorEvent.Invoke(objectStandard);
+        }
+        // -------------------------------Inspect-------------------------------
+        protected delegate bool InspectEvent(decimal thresholdNG);
+
+        protected InspectEvent inspectEvent;
+
+        internal bool Inspect(decimal thresholdNG)
+        {
+            return inspectEvent.Invoke(thresholdNG);
+        }
+
+        internal bool IsSameCenter(float x, float y, float threshold)
+        {
+            if ((Math.Abs(centerX - x) < threshold) && (Math.Abs(centerY - y) < threshold))
+                return true;
+            else
+                return false;
+        }
     }
 
     internal class ObjectRectangle : ObjectShape
     {
-        float width;
-        float height;
-        float widthStd;
-        float heightStd;
-        float widthError;
-        float heightError;
+        public float width;
+        public float height;
+        //float widthStd;
+        //float heightStd;
+        public float widthError;
+        public float heightError;
 
         public ObjectRectangle(ref ECodedElement element, bool isSquare)
         {
             if (isSquare)
             {
-                this.shapeNo = 1;
-                this.shapeName = "square";
+                shapeNo = 1;
+                shapeName = "square";
             }
             else
             {
-                this.shapeNo = 0;
-                this.shapeName = "rectangle";
+                shapeNo = 0;
+                shapeName = "rectangle";
             }
 
-            this.SetObjectShape(ref element);
-            width = element.BoundingBoxWidth;
-            height = element.BoundingBoxHeight;
+            if (element != null)
+            {
+                SetObjectShape(ref element);
+                width = element.BoundingBoxWidth;
+                height = element.BoundingBoxHeight;
 
-            this.inShapeEvent += IsInRectangle;
+            }
+
 
             //check is square
+
+            // -------------------delegate-------------------
+            inShapeEvent += IsInRectangle;
+            saveErrorEvent += SaveErrorRectangle;
+            inspectEvent += InspectRectangle;
         }
         //square check
 
@@ -211,6 +250,23 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
+        internal void SaveErrorRectangle(ObjectShape objectStandard)
+        {
+            ObjectRectangle tempRectangle = (ObjectRectangle)objectStandard;
+
+            widthError = Math.Abs(width - tempRectangle.width);
+            heightError = Math.Abs(height - tempRectangle.height);
+        }
+
+        internal bool InspectRectangle(decimal thresholdNG)
+        {
+            if (widthError < (float)thresholdNG && heightError < (float)thresholdNG)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     //internal class ObjectSquare : ObjectRectangle
@@ -219,19 +275,27 @@ namespace cyut_Auo_Component_Measurer
 
     internal class ObjectCircle : ObjectShape
     {
-        float diameter;
+        public float diameter;
         float diameterStd;
-        float diameterError;
+        public float diameterError;
 
         public ObjectCircle(ref ECodedElement element)
         {
-            this.shapeNo = 2;
-            this.shapeName = "circle";
+            shapeNo = 2;
+            shapeName = "circle";
 
-            this.inShapeEvent += IsInCircle;
+            if (element != null)
+            {
 
-            this.SetObjectShape(ref element);
-            diameter = element.BoundingBoxWidth;
+                SetObjectShape(ref element);
+                diameter = element.BoundingBoxWidth;
+            }
+            // -------------------delegate-------------------
+            inShapeEvent += IsInCircle;
+
+            saveErrorEvent += SaveErrorCircle;
+
+            inspectEvent += InspectCircle;
         }
 
         private ECircle MeasureCircle(ref EWorldShape EWorldShape, ref EImageBW8 image, ref ECodedElement element)
@@ -273,27 +337,50 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
+        internal void SaveErrorCircle(ObjectShape objectStandard)
+        {
+            ObjectCircle tempCircle = (ObjectCircle)objectStandard;
+            diameterError = Math.Abs(diameter - tempCircle.diameter);
+
+            Console.WriteLine("diameter error is " + diameterError);
+        }
+        internal bool InspectCircle(decimal thresholdNG)
+        {
+            if (diameterError < (float)thresholdNG)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
+
     internal class ObjectSpecial1 : ObjectShape
     {
-        float width;
-        float height;
+        public float width;
+        public float height;
         float widthStd;
         float heightStd;
-        float widthError;
-        float heightError;
+        public float widthError;
+        public float heightError;
 
         public ObjectSpecial1(ref ECodedElement element)
         {
-            this.shapeNo = 3;
-            this.shapeName = "special1";
+            shapeNo = 3;
+            shapeName = "special1";
+            if (element != null)
+            {
 
-            this.SetObjectShape(ref element);
-            width = element.BoundingBoxWidth;
-            height = element.BoundingBoxHeight;
+                SetObjectShape(ref element);
+                width = element.BoundingBoxWidth;
+                height = element.BoundingBoxHeight;
+            }
+            inShapeEvent += IsInSpecial1;
 
-            this.inShapeEvent += IsInSpecial1;
+            saveErrorEvent += SaveErrorSpecial1;
 
+            inspectEvent += InspectSpecial1;
         }
 
         //回傳量測的寬與高
@@ -372,7 +459,25 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
+        internal void SaveErrorSpecial1(ObjectShape objectStandard)
+        {
+            ObjectSpecial1 tempSpecial1 = (ObjectSpecial1)objectStandard;
+            widthError = Math.Abs(width - tempSpecial1.width);
+            heightError = Math.Abs(height - tempSpecial1.height);
 
+            Console.WriteLine("width error is {0}, height error is {1}", widthError, heightError);
+
+        }
+
+        internal bool InspectSpecial1(decimal thresholdNG)
+        {
+            if (widthError < (float)thresholdNG && heightError < (float)thresholdNG)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
     }
 

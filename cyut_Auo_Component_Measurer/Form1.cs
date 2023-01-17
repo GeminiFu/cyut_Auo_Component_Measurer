@@ -35,6 +35,8 @@ namespace cyut_Auo_Component_Measurer
 
         EImageBW8 EBW8Image1 = new EImageBW8();
 
+        bool isGolden;
+
         // --------------------------Instance--------------------------
         View c_view;
         Control c_control;
@@ -42,8 +44,11 @@ namespace cyut_Auo_Component_Measurer
         ShapeManager c_shape;
 
         // --------------------------Shape--------------------------
-        List<ObjectShape> ObjectSetG = new List<ObjectShape>();
-        List<ObjectShape> ObjectSetU = new List<ObjectShape>();
+        ArrayList ObjectSetG = new ArrayList();
+        ArrayList ObjectSetU = new ArrayList();
+        // 在讀檔時好像只會讀取 ObjectShape 的屬性(好像不叫屬性但我只記得這個)，rectangle, circle 的屬性讀不到
+        //List<ObjectShape> ObjectSetG = new List<ObjectShape>();
+        //List<ObjectShape> ObjectSetU = new List<ObjectShape>();
 
         // 要開給 FormDotGrid 讓它傳上父輩
         public int x;
@@ -82,6 +87,29 @@ namespace cyut_Auo_Component_Measurer
 
             c_shape.CalibrationX = x;
             c_shape.CalibrationY = y;
+
+            //for(int i = 0; i < ObjectSetG.Count; i++)
+            //{
+            //    ObjectShape obj = (ObjectShape)ObjectSetG[i];
+            //    switch (obj.shapeName)
+            //    {
+            //        case "square":
+            //            ObjectRectangle square = (ObjectRectangle)ObjectSetG[i];
+            //            Console.WriteLine("width is " + square.width);
+            //            Console.WriteLine("height is " + square.height);
+            //            break;
+            //        case "rectangle":
+            //            ObjectRectangle rect = (ObjectRectangle)ObjectSetG[i];
+            //            Console.WriteLine("width is " + rect.width);
+            //            Console.WriteLine("height is " + rect.height);
+            //            break;
+            //        case "circle":
+            //            ObjectCircle circle = (ObjectCircle)ObjectSetG[i];
+            //            Console.WriteLine("circle is " + circle.diameter);
+            //            break;
+            //    }
+            //}
+
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
@@ -127,9 +155,9 @@ namespace cyut_Auo_Component_Measurer
 
         private void Menu_Load_Setting_Click(object sender, EventArgs e)
         {
-            c_control.MenuLoadSetting(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid,ref x,ref y);
-            c_shape.CalibrationX= x;
-            c_shape.CalibrationY= y;
+            c_control.MenuLoadSetting(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, ref x, ref y);
+            c_shape.CalibrationX = x;
+            c_shape.CalibrationY = y;
         }
 
         // --------------------------Camera--------------------------
@@ -237,13 +265,13 @@ namespace cyut_Auo_Component_Measurer
             int index;
 
 
-            if (ObjectSetU.Count != 0)
+            if (isGolden)
             {
-                index = c_measure.IsClickObject(ref ObjectSetU, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
+                index = c_measure.IsClickObject(ref ObjectSetG, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
             }
             else
             {
-                index = c_measure.IsClickObject(ref ObjectSetG, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
+                index = c_measure.IsClickObject(ref ObjectSetU, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
             }
 
             Console.WriteLine("index is " + index);
@@ -296,8 +324,7 @@ namespace cyut_Auo_Component_Measurer
 
             c_measure.SetObjectG(ref ObjectSetG);
 
-            Console.WriteLine("Object Set Golden number is: " + ObjectSetG.Count);
-            Console.WriteLine(ObjectSetG[0].checkResult);
+            isGolden = true;
         }
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
@@ -306,10 +333,10 @@ namespace cyut_Auo_Component_Measurer
 
             c_measure.BuildObjectSet(ref ObjectSetU, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
 
-            Console.WriteLine("Object Set Unknow number is: " + ObjectSetU.Count);
-            Console.WriteLine(ObjectSetU[0].checkResult);
-
             // Inspect
+            c_measure.Inspect(ref ObjectSetG, ref ObjectSetU, num_Threshold_NG.Value);
+
+            isGolden = false;
         }
     }
 }

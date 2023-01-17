@@ -23,6 +23,7 @@ namespace cyut_Auo_Component_Measurer
 
         internal Measure() { }
 
+        // -------------------------------Detect-------------------------------
         internal void Detect(ref EImageBW8 image, ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
         {
             // 如果 EBW8Image1
@@ -49,11 +50,10 @@ namespace cyut_Auo_Component_Measurer
             // don't care area 條件
             codedImageObjectSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
             codedImageObjectSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
-
-
         }
 
-        internal void BuildObjectSet(ref List<ObjectShape> ObjectSet, ref EObjectSelection codedSelector, ElementsFunction elementsFunction)
+        // -------------------------------ObjectSet-------------------------------
+        internal void BuildObjectSet(ref ArrayList ObjectSet, ref EObjectSelection codedSelector, ElementsFunction elementsFunction)
         {
             uint length = codedSelector.ElementCount;
             ECodedElement element;
@@ -70,24 +70,24 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        internal void SetObjectG(ref List<ObjectShape> ObjectSetG)
+        internal void SetObjectG(ref ArrayList ObjectSetG)
         {
-            foreach(ObjectShape shape in ObjectSetG)
+            foreach (ObjectShape shape in ObjectSetG)
             {
                 shape.checkResult = 0; //OK
             }
         }
 
-        internal void SetObjectU(ref List<ObjectShape> ObjectSetG, ref List<ObjectShape> ObjectSetU)
+        internal void SetObjectU(ref ArrayList ObjectSetG, ref ArrayList ObjectSetU)
         {
             // inspect
             // setting standard
             // setting error
         }
 
-        internal int IsClickObject(ref List<ObjectShape> ObjectSet, float clickX, float clickY)
+        internal int IsClickObject(ref ArrayList ObjectSet, float clickX, float clickY)
         {
-            foreach(ObjectShape shape in ObjectSet)
+            foreach (ObjectShape shape in ObjectSet)
             {
                 if (shape.IsInShape(clickX, clickY))
                 {
@@ -96,6 +96,73 @@ namespace cyut_Auo_Component_Measurer
             }
 
             return -1;
+        }
+
+        // -------------------------------Inspect-------------------------------
+        internal void Inspect(ref ArrayList ObjectSetG, ref ArrayList ObjectSetU, decimal thresholdNG)
+        {
+            // !!!!!!!!!!!!!!!!!! Check ObjectSetG
+
+            ObjectShape shapeTest;
+            ObjectShape shapeStandard;
+
+            float sameShapeThreshold = 10;
+            for (int i = 0; i < ObjectSetU.Count; i++)
+            {
+                shapeTest = (ObjectShape)ObjectSetU[i];
+                int j = 0;
+                // 看兩個 shape 位置是不是差不多，確認兩個可以做比對
+                do
+                {
+                    shapeStandard = (ObjectShape)ObjectSetG[j];
+                    if ((Math.Abs(shapeTest.centerX - shapeStandard.centerX) < sameShapeThreshold) && 
+                        (Math.Abs(shapeTest.centerY - shapeStandard.centerY) < sameShapeThreshold)
+                        )
+                    {
+                        break;
+                    }
+
+                    j++;
+
+                }while(j < ObjectSetG.Count);
+
+                if (j > ObjectSetG.Count)
+                {
+                    shapeTest.checkResult = 1;
+                    continue;
+                }
+
+                // 把 standard 設置給它 (可以不用)
+                // 比對兩個是不是同樣的圖形 (暫時不用)
+                Console.WriteLine("test index is " + i);
+                Console.WriteLine("standard index is " + j);
+
+                Console.WriteLine("shape test is " + shapeTest.shapeName);
+                Console.WriteLine("shape standard is " + shapeStandard.shapeName);
+
+                if(shapeTest.shapeName != shapeStandard.shapeName)
+                {
+                    Console.WriteLine(shapeTest.GetType());
+                    Console.WriteLine(shapeStandard.GetType());
+                    Console.WriteLine("形狀不同"); // 長方形和正方形的形狀判定
+                    //shapeTest.checkResult = 1;
+                    //continue;
+                }
+
+                // 相減儲存在誤差
+                shapeTest.SaveError(shapeStandard);
+                // 比對誤差是否在 Threshold 裡面
+                if (shapeTest.Inspect(thresholdNG))
+                {
+                    shapeTest.checkResult = 0;
+                }
+                else
+                {
+                    shapeTest.checkResult = 1;
+                }
+            }
+
+            
         }
     }
 }

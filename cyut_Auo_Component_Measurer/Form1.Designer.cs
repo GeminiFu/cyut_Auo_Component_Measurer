@@ -39,8 +39,11 @@
             this.dotGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btn_Measure_Standard = new System.Windows.Forms.Button();
             this.btn_Measure_Product = new System.Windows.Forms.Button();
+            this.num_Threshold_NG = new System.Windows.Forms.NumericUpDown();
+            this.label_Threshold_NG = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Load
@@ -144,11 +147,46 @@
             this.btn_Measure_Product.UseVisualStyleBackColor = true;
             this.btn_Measure_Product.Click += new System.EventHandler(this.btn_Measure_Product_Click);
             // 
+            // num_Threshold_NG
+            // 
+            this.num_Threshold_NG.DecimalPlaces = 1;
+            this.num_Threshold_NG.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.num_Threshold_NG.Location = new System.Drawing.Point(688, 342);
+            this.num_Threshold_NG.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.num_Threshold_NG.Name = "num_Threshold_NG";
+            this.num_Threshold_NG.Size = new System.Drawing.Size(59, 22);
+            this.num_Threshold_NG.TabIndex = 22;
+            this.num_Threshold_NG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.num_Threshold_NG.Value = new decimal(new int[] {
+            15,
+            0,
+            0,
+            65536});
+            // 
+            // label_Threshold_NG
+            // 
+            this.label_Threshold_NG.AutoSize = true;
+            this.label_Threshold_NG.Location = new System.Drawing.Point(598, 344);
+            this.label_Threshold_NG.Name = "label_Threshold_NG";
+            this.label_Threshold_NG.Size = new System.Drawing.Size(84, 12);
+            this.label_Threshold_NG.TabIndex = 21;
+            this.label_Threshold_NG.Text = "尺寸NG門檻值:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.num_Threshold_NG);
+            this.Controls.Add(this.label_Threshold_NG);
             this.Controls.Add(this.btn_Measure_Product);
             this.Controls.Add(this.btn_Measure_Standard);
             this.Controls.Add(this.btn_Camera);
@@ -164,6 +202,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -182,6 +221,8 @@
         private System.Windows.Forms.ToolStripMenuItem Menu_Save_Setting;
         private System.Windows.Forms.Button btn_Measure_Standard;
         private System.Windows.Forms.Button btn_Measure_Product;
+        private System.Windows.Forms.NumericUpDown num_Threshold_NG;
+        private System.Windows.Forms.Label label_Threshold_NG;
     }
 }
 

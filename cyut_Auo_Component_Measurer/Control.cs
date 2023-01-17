@@ -59,10 +59,10 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        // ---------------------------------------------------------Setting---------------------------------------------------------
+        // -------------------------------Setting-------------------------------
         // 初始化
         // 目的：載入預設標準資料、建立新的歷史資料夾
-        internal string InitializeSetting(ref EImageBW8 standard, ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
+        internal string InitializeSetting(ref EImageBW8 standard, ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage;
 
@@ -85,7 +85,7 @@ namespace cyut_Auo_Component_Measurer
 
         // 載入本地標準資料
         // 目的：載入本地的 ObjectSetG、Dot Grid Image、Calibration XY
-        internal string LoadLocalSetting(ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
+        internal string LoadLocalSetting(ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
         {
             string errorMessage;
             string path = selectedPath;
@@ -100,7 +100,46 @@ namespace cyut_Auo_Component_Measurer
 
             // ObjectSetG
             string jsonString = File.ReadAllText(selectedPath + "\\ObjectSetG.json");
-            ObjectSetG = JsonConvert.DeserializeObject<List<ObjectShape>>(jsonString);
+            ObjectSetG = JsonConvert.DeserializeObject<ArrayList>(jsonString);
+
+            for (int i = 0; i < ObjectSetG.Count; i++)
+            {
+                Object obj = ObjectSetG[i];
+                ObjectShape shape = JsonConvert.DeserializeObject<ObjectShape>(obj.ToString());
+                //ObjectSetG[i] = shape;
+                //Console.WriteLine("shapename is " + shape.shapeName);
+
+                switch (shape.shapeName)
+                {
+                    case "square":
+                        ObjectRectangle square = JsonConvert.DeserializeObject<ObjectRectangle>(obj.ToString());
+                        Console.WriteLine("shape  " + shape.index);
+                        Console.WriteLine("shape  " + shape.shapeName);
+                        Console.WriteLine("square " + square.index);
+                        Console.WriteLine("square " + square.shapeName);
+                        Console.WriteLine("square " + square.width);
+                        Console.WriteLine("square " + square.widthError);
+                        Console.WriteLine("square " + square.height);
+                        Console.WriteLine("square " + square.heightError);
+                        
+                        Console.WriteLine();
+                        //Console.WriteLine(square.width);
+                        ObjectSetG[i] = square;
+                        break;
+                    case "rectangle":
+                        ObjectRectangle rect = JsonConvert.DeserializeObject<ObjectRectangle>(obj.ToString());
+                        ObjectSetG[i] = rect;
+                        break;
+                    case "circle":
+                        ObjectCircle circle = JsonConvert.DeserializeObject<ObjectCircle>(obj.ToString());
+                        ObjectSetG[i] = circle;
+                        break;
+                    case "special1":
+                        ObjectSpecial1 special1 = JsonConvert.DeserializeObject<ObjectSpecial1>(obj.ToString());
+                        ObjectSetG[i] = special1;
+                        break;
+                }
+            }
 
             // dot grid image
             dotGridImage.Load(path + "\\Dot_Grid.png");
@@ -187,7 +226,7 @@ namespace cyut_Auo_Component_Measurer
 
         // 儲存歷史設定
         // 目的：儲存 Standard Image、ObjectSetG、Dot Grid Image、Calibration XY 
-        internal string SaveHistorySetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
+        internal string SaveHistorySetting(ref EImageBW8 standard, ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
         {
             string errorMessage;
 
@@ -222,9 +261,7 @@ namespace cyut_Auo_Component_Measurer
             return ok;
         }
 
-        // 確認標準資料有資料
-        // 目的：確認 ObjectSetG、Dot Grid Image 有資料
-        internal string CheckSetting(List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage)
+        internal string CheckSetting(ArrayList ObjectSetG, ref EImageBW8 dotGridImage)
         {
             // check dot grid image
             if (dotGridImage.IsVoid)
@@ -240,7 +277,7 @@ namespace cyut_Auo_Component_Measurer
 
         // 手動儲存設定
         // 目的：做手動儲存設定的事前檢查
-        internal string MenuSaveSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
+        internal string MenuSaveSetting(ref EImageBW8 standard, ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
         {
             string errorMessage;
 
@@ -270,9 +307,7 @@ namespace cyut_Auo_Component_Measurer
             return ok;
         }
 
-        // 確立新的本地標準資料
-        // 目的：在本地建立 Standard Image、ObjectSetG、Dot Grid Image、Calibration XY 
-        internal string BuildNewLocalSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y, string seletedPath)
+        internal string BuildNewLocalSetting(ref EImageBW8 standard, ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y, string seletedPath)
         {
             string errorMessage;
 
@@ -290,7 +325,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // save standard
-            if(standard.IsVoid == false)
+            if (standard.IsVoid == false)
             {
                 standard.SavePng(path + "\\Standard.png");
             }
@@ -312,7 +347,7 @@ namespace cyut_Auo_Component_Measurer
 
         // 手動載入設定
         // 目的：做手動載入設定的事前檢查
-        internal string MenuLoadSetting(ref EImageBW8 standard, ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
+        internal string MenuLoadSetting(ref EImageBW8 standard, ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage;
 
@@ -332,6 +367,6 @@ namespace cyut_Auo_Component_Measurer
             return ok;
         }
 
-        // ---------------------------------------------------------Setting---------------------------------------------------------
+        // -------------------------------Setting-------------------------------
     }
 }
