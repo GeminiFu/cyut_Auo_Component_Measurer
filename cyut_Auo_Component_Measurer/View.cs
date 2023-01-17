@@ -12,6 +12,7 @@ namespace cyut_Auo_Component_Measurer
         PictureBox pictureBox = new PictureBox();
         Graphics graphics;
         float scalingRatio;
+        int pennelIndex = 0;
 
         internal float GetScalingRatio { get { return scalingRatio; } }
 
@@ -48,7 +49,24 @@ namespace cyut_Auo_Component_Measurer
 
 
 
+        internal void AddItemInPanel(Panel panel, string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, pennelIndex * 25);
 
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(100, pennelIndex * 25);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 50;
+
+            panel.Controls.Add(label_Title);
+            panel.Controls.Add(label_Value);
+            pennelIndex++;
+        }
 
         // -----------------------Method-----------------------
         public float CalcRatioWithPictureBox(PictureBox pb, float imageWidth, float imageHeight)

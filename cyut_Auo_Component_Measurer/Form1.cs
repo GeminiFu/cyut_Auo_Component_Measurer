@@ -342,5 +342,10 @@ namespace cyut_Auo_Component_Measurer
 
             isGolden = false;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            c_view.AddItemInPanel(panel_Measure_Num, "new label", 5);
+        }
     }
 }

@@ -41,6 +41,9 @@
             this.btn_Measure_Product = new System.Windows.Forms.Button();
             this.num_Threshold_NG = new System.Windows.Forms.NumericUpDown();
             this.label_Threshold_NG = new System.Windows.Forms.Label();
+            this.panel_Measure_Num = new System.Windows.Forms.Panel();
+            this.listBox_Measure = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -48,9 +51,10 @@
             // 
             // btn_Load
             // 
-            this.btn_Load.Location = new System.Drawing.Point(42, 54);
+            this.btn_Load.Location = new System.Drawing.Point(63, 72);
+            this.btn_Load.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Load.Name = "btn_Load";
-            this.btn_Load.Size = new System.Drawing.Size(75, 23);
+            this.btn_Load.Size = new System.Drawing.Size(112, 31);
             this.btn_Load.TabIndex = 0;
             this.btn_Load.Text = "載入圖片";
             this.btn_Load.UseVisualStyleBackColor = true;
@@ -60,9 +64,10 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(72, 135);
+            this.pictureBox1.Location = new System.Drawing.Point(115, 176);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(463, 247);
+            this.pictureBox1.Size = new System.Drawing.Size(648, 329);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
@@ -70,9 +75,10 @@
             // 
             // btn_Camera
             // 
-            this.btn_Camera.Location = new System.Drawing.Point(141, 54);
+            this.btn_Camera.Location = new System.Drawing.Point(212, 72);
+            this.btn_Camera.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Camera.Name = "btn_Camera";
-            this.btn_Camera.Size = new System.Drawing.Size(75, 23);
+            this.btn_Camera.Size = new System.Drawing.Size(112, 31);
             this.btn_Camera.TabIndex = 2;
             this.btn_Camera.Text = "使用相機";
             this.btn_Camera.UseVisualStyleBackColor = true;
@@ -85,7 +91,8 @@
             this.設定ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
+            this.menuStrip1.Size = new System.Drawing.Size(1100, 25);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -95,7 +102,7 @@
             this.Menu_Load_Setting,
             this.Menu_Save_Setting});
             this.檔案ToolStripMenuItem.Name = "檔案ToolStripMenuItem";
-            this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(43, 19);
             this.檔案ToolStripMenuItem.Text = "檔案";
             // 
             // Menu_Load_Setting
@@ -117,7 +124,7 @@
             this.設定ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dotGridToolStripMenuItem});
             this.設定ToolStripMenuItem.Name = "設定ToolStripMenuItem";
-            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(43, 19);
             this.設定ToolStripMenuItem.Text = "設定";
             // 
             // dotGridToolStripMenuItem
@@ -129,9 +136,10 @@
             // 
             // btn_Measure_Standard
             // 
-            this.btn_Measure_Standard.Location = new System.Drawing.Point(256, 54);
+            this.btn_Measure_Standard.Location = new System.Drawing.Point(372, 89);
+            this.btn_Measure_Standard.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Measure_Standard.Name = "btn_Measure_Standard";
-            this.btn_Measure_Standard.Size = new System.Drawing.Size(75, 23);
+            this.btn_Measure_Standard.Size = new System.Drawing.Size(112, 31);
             this.btn_Measure_Standard.TabIndex = 6;
             this.btn_Measure_Standard.Text = "測量標準物";
             this.btn_Measure_Standard.UseVisualStyleBackColor = true;
@@ -139,9 +147,10 @@
             // 
             // btn_Measure_Product
             // 
-            this.btn_Measure_Product.Location = new System.Drawing.Point(369, 67);
+            this.btn_Measure_Product.Location = new System.Drawing.Point(564, 89);
+            this.btn_Measure_Product.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Measure_Product.Name = "btn_Measure_Product";
-            this.btn_Measure_Product.Size = new System.Drawing.Size(75, 23);
+            this.btn_Measure_Product.Size = new System.Drawing.Size(112, 31);
             this.btn_Measure_Product.TabIndex = 7;
             this.btn_Measure_Product.Text = "測量待測物";
             this.btn_Measure_Product.UseVisualStyleBackColor = true;
@@ -155,14 +164,15 @@
             0,
             0,
             65536});
-            this.num_Threshold_NG.Location = new System.Drawing.Point(688, 342);
+            this.num_Threshold_NG.Location = new System.Drawing.Point(988, 517);
+            this.num_Threshold_NG.Margin = new System.Windows.Forms.Padding(4);
             this.num_Threshold_NG.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
             this.num_Threshold_NG.Name = "num_Threshold_NG";
-            this.num_Threshold_NG.Size = new System.Drawing.Size(59, 22);
+            this.num_Threshold_NG.Size = new System.Drawing.Size(88, 27);
             this.num_Threshold_NG.TabIndex = 22;
             this.num_Threshold_NG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.num_Threshold_NG.Value = new decimal(new int[] {
@@ -174,17 +184,47 @@
             // label_Threshold_NG
             // 
             this.label_Threshold_NG.AutoSize = true;
-            this.label_Threshold_NG.Location = new System.Drawing.Point(598, 344);
+            this.label_Threshold_NG.Location = new System.Drawing.Point(853, 520);
+            this.label_Threshold_NG.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_Threshold_NG.Name = "label_Threshold_NG";
-            this.label_Threshold_NG.Size = new System.Drawing.Size(84, 12);
+            this.label_Threshold_NG.Size = new System.Drawing.Size(113, 16);
             this.label_Threshold_NG.TabIndex = 21;
             this.label_Threshold_NG.Text = "尺寸NG門檻值:";
             // 
+            // panel_Measure_Num
+            // 
+            this.panel_Measure_Num.Location = new System.Drawing.Point(794, 225);
+            this.panel_Measure_Num.Name = "panel_Measure_Num";
+            this.panel_Measure_Num.Size = new System.Drawing.Size(160, 195);
+            this.panel_Measure_Num.TabIndex = 23;
+            // 
+            // listBox_Measure
+            // 
+            this.listBox_Measure.FormattingEnabled = true;
+            this.listBox_Measure.ItemHeight = 16;
+            this.listBox_Measure.Location = new System.Drawing.Point(820, 51);
+            this.listBox_Measure.Name = "listBox_Measure";
+            this.listBox_Measure.Size = new System.Drawing.Size(120, 84);
+            this.listBox_Measure.TabIndex = 25;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(295, 135);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1100, 600);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.listBox_Measure);
+            this.Controls.Add(this.panel_Measure_Num);
             this.Controls.Add(this.num_Threshold_NG);
             this.Controls.Add(this.label_Threshold_NG);
             this.Controls.Add(this.btn_Measure_Product);
@@ -193,7 +233,9 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btn_Load);
             this.Controls.Add(this.menuStrip1);
+            this.Font = new System.Drawing.Font("新細明體", 12F);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Close);
@@ -223,6 +265,9 @@
         private System.Windows.Forms.Button btn_Measure_Product;
         private System.Windows.Forms.NumericUpDown num_Threshold_NG;
         private System.Windows.Forms.Label label_Threshold_NG;
+        private System.Windows.Forms.Panel panel_Measure_Num;
+        private System.Windows.Forms.ListBox listBox_Measure;
+        private System.Windows.Forms.Button button1;
     }
 }
 
