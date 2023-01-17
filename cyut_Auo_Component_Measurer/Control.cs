@@ -59,20 +59,20 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-
-
-        internal string InitializeSetting(ref EImageBW8 standard, ref List<ObjectShape> ObjectSetG, EImageBW8 dotGridImage, ref int x, ref int y)
+        // ---------------------------------------------------------Setting---------------------------------------------------------
+        // 初始化
+        // 目的：載入預設標準資料、建立新的歷史資料夾
+        internal string InitializeSetting(ref EImageBW8 standard, ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage;
 
+            string path = Environment.CurrentDirectory;
+
             // load ObjectSetG, Dot grid
-            errorMessage = LoadSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, Environment.CurrentDirectory);
+            errorMessage = LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, path);
 
             if (errorMessage != ok) //防呆
                 return errorMessage;
-
-            // build history folder
-            BuildHistoryFolder(Environment.CurrentDirectory);
 
             // 儲存歷史設定檔
             errorMessage = SaveHistorySetting(ref standard, ObjectSetG, ref dotGridImage, x, y);
@@ -83,13 +83,15 @@ namespace cyut_Auo_Component_Measurer
             return this.ok;
         }
 
-        internal string LoadSetting(ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
+        // 載入本地標準資料
+        // 目的：載入本地的 ObjectSetG、Dot Grid Image、Calibration XY
+        internal string LoadLocalSetting(ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
         {
             string errorMessage;
             string path = selectedPath;
 
-            errorMessage = CheckSettingFile(selectedPath);
-
+            // 檢查本地標準資料是否存在
+            errorMessage = CheckLocalSetting(selectedPath);
 
             if (errorMessage != ok)
                 return errorMessage;
@@ -107,21 +109,24 @@ namespace cyut_Auo_Component_Measurer
             x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
             y = int.Parse(File.ReadAllText(path + "\\Calibration_Y.txt"));
 
-
             return ok;
         }
 
-        internal string CheckSettingFile(string selectedPath)
+        // 確認本地標準資料存在
+        // 目的：確認本地 ObjectSetG、Dot Grid Image、Calibration XY 存在
+        internal string CheckLocalSetting(string selectedPath)
         {
-            string pathObjectSetG = selectedPath + "\\ObjectSetG.json";
-            string pathDotGridImage = selectedPath + "\\Dot_Grid.png";
-            string pathCalibrationX = selectedPath + "\\Calibration_X.txt";
-            string pathCalibrationY = selectedPath + "\\Calibration_Y.txt";
+            string path = selectedPath + "\\Setting";
+            string pathObjectSetG = path + "\\ObjectSetG.json";
+            string pathDotGridImage = path + "\\Dot_Grid.png";
+            string pathCalibrationX = path + "\\Calibration_X.txt";
+            string pathCalibrationY = path + "\\Calibration_Y.txt";
 
-            if (!Directory.Exists(selectedPath))
+
+            if (!Directory.Exists(path))
                 return "沒有找到資料夾";
 
-            if (Directory.Exists(pathObjectSetG))
+            if (!File.Exists(pathObjectSetG))
                 return "沒有找到 ObjectSetG";
 
             if (!File.Exists(pathDotGridImage))
@@ -136,12 +141,14 @@ namespace cyut_Auo_Component_Measurer
             return ok;
         }
 
-        internal void BuildHistoryFolder(string seletedPath)
+        // 建立歷史資料夾
+        // 目的：建立歷史資料夾、並儲存路徑
+        internal void BuildHistoryFolder()
         {
             string componentName = "1U2N2G-B550_2T-ChASSIS";
 
             // Result Folder
-            string path = seletedPath + "\\result";
+            string path = Environment.CurrentDirectory + "\\result";
             if (Directory.Exists(path) == false)
             {
                 Directory.CreateDirectory(path);
@@ -169,46 +176,59 @@ namespace cyut_Auo_Component_Measurer
             }
 
             pathSave = path;
+
+            // Setting
+            path += "\\Setting";
+            if (Directory.Exists(path) == false)
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
+        // 儲存歷史設定
+        // 目的：儲存 Standard Image、ObjectSetG、Dot Grid Image、Calibration XY 
         internal string SaveHistorySetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
         {
             string errorMessage;
 
-            errorMessage = CheckSetting(ref standard, ObjectSetG, ref dotGridImage);
+
+            errorMessage = CheckSetting(ObjectSetG, ref dotGridImage);
 
             if (errorMessage != ok)
                 return errorMessage;
 
-            // save dot grid image
-            dotGridImage.Load(pathSave + "\\Dot_Grid.png");
+            // 建立歷史資料夾
+            BuildHistoryFolder();
 
-            // save calibration x y 
-            File.WriteAllText(pathSave + "\\Calibration_X.txt", x.ToString());
-            File.WriteAllText(pathSave + "\\Calibration_Y.txt", y.ToString());
+            string path = pathSave + "\\Setting";
 
-            // save standard image
+            // save standard image，有就存；沒有沒關係，主要是給人看的
             if (standard.IsVoid == false)
             {
-                standard.SavePng(pathSave + "\\Standard.png");
+                standard.SavePng(path + "\\Standard.png");
             }
 
             // save ObjectGSet
             string jsonString = JsonConvert.SerializeObject(ObjectSetG);
-            File.WriteAllText(pathSave + "\\ObjectSetG.json", jsonString);
+            File.WriteAllText(path + "\\ObjectSetG.json", jsonString);
+
+            // save dot grid image
+            dotGridImage.SavePng(path + "\\Dot_Grid.png");
+
+            // save calibration x y 
+            File.WriteAllText(path + "\\Calibration_X.txt", x.ToString());
+            File.WriteAllText(path + "\\Calibration_Y.txt", y.ToString());
 
             return ok;
         }
 
-        internal string CheckSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage)
+        // 確認標準資料有資料
+        // 目的：確認 ObjectSetG、Dot Grid Image 有資料
+        internal string CheckSetting(List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage)
         {
             // check dot grid image
             if (dotGridImage.IsVoid)
                 return "請先校正點圖";
-
-            // check Standard image
-            if (standard.IsVoid)
-                return "請先載入標準物";
 
             // check ObjectSetG
             if (ObjectSetG.Count <= 0)
@@ -218,19 +238,56 @@ namespace cyut_Auo_Component_Measurer
         }
 
 
-
-
-
-        internal string BuildNewSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y, string seletedPath)
+        // 手動儲存設定
+        // 目的：做手動儲存設定的事前檢查
+        internal string MenuSaveSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
         {
             string errorMessage;
 
-            errorMessage = CheckSetting(ref standard, ObjectSetG, ref dotGridImage);
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string selectedPath = folderBrowserDialog1.SelectedPath;
+
+                errorMessage = CheckLocalSetting(selectedPath);
+
+                if (errorMessage == ok)
+                {
+                    if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
+                    }
+                    else
+                    {
+                        return "不覆蓋已存在檔案";
+                    }
+                }
+                else
+                {
+                    BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
+                }
+            }
+
+            return ok;
+        }
+
+        // 確立新的本地標準資料
+        // 目的：在本地建立 Standard Image、ObjectSetG、Dot Grid Image、Calibration XY 
+        internal string BuildNewLocalSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y, string seletedPath)
+        {
+            string errorMessage;
+
+            errorMessage = CheckSetting(ObjectSetG, ref dotGridImage);
 
             if (errorMessage != ok)
                 return errorMessage;
 
             string path = seletedPath + "\\Setting";
+
+            // Setting 資料夾
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
             // save dot grid image
             dotGridImage.SavePng(path + "Dot_Grid.png");
@@ -240,43 +297,18 @@ namespace cyut_Auo_Component_Measurer
             File.WriteAllText(pathSave + "\\Calibration_Y.txt", y.ToString());
 
             // save standard
-                standard.SavePng(path + "\\Standard.png");
-            
+            standard.SavePng(path + "\\Standard.png");
+
 
             // save ObjectGSet
-                string jsonString = JsonConvert.SerializeObject(ObjectSetG);
-                File.WriteAllText(path + "\\ObjectSetG.json", jsonString);
-
-            return ok;
-
-        }
-
-        internal string MenuSaveSetting(ref EImageBW8 standard, List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
-        {
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-            {
-                string selectedPath = folderBrowserDialog1.SelectedPath;
-
-                if (Directory.Exists(folderBrowserDialog1.SelectedPath + "\\Setting"))
-                {
-                    if (MessageBox.Show("確定要覆蓋目前的工件設定內容嗎?", "開啟設定檔", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    {
-                        BuildNewSetting(ref standard, ObjectSetG,ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
-                    }
-                    else
-                    {
-                        return "不覆蓋已存在檔案";
-                    }
-                }
-                else
-                {
-                    BuildNewSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
-                }
-            }
+            string jsonString = JsonConvert.SerializeObject(ObjectSetG);
+            File.WriteAllText(path + "\\ObjectSetG.json", jsonString);
 
             return ok;
         }
 
+        // 手動載入設定
+        // 目的：做手動載入設定的事前檢查
         internal string MenuLoadSetting(ref EImageBW8 standard, ref List<ObjectShape> ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage;
@@ -285,29 +317,18 @@ namespace cyut_Auo_Component_Measurer
             {
                 string selectedPath = folderBrowserDialog1.SelectedPath;
 
-                errorMessage = CheckSettingFile(selectedPath);
-
-                if(errorMessage != ok)
-                {
-                    return errorMessage;
-                }
-
-                errorMessage = LoadSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, selectedPath);
+                errorMessage = LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, selectedPath);
 
                 if (errorMessage != ok)
                     return errorMessage;
             }
 
-            // build history folder
-            BuildHistoryFolder(Environment.CurrentDirectory);
-
             // save history
-            SaveHistorySetting(ref standard, ObjectSetG,ref dotGridImage, x, y);
+            SaveHistorySetting(ref standard, ObjectSetG, ref dotGridImage, x, y);
 
             return ok;
         }
 
-
-
+        // ---------------------------------------------------------Setting---------------------------------------------------------
     }
 }
