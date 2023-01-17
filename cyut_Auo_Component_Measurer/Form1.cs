@@ -328,14 +328,25 @@ namespace cyut_Auo_Component_Measurer
 
             c_measure.SetObjectG(ref ObjectSetG);
 
+            for(int i = 0; i < ObjectSetG.Count; i++)
+            {
+                ObjectShape shape = (ObjectShape)ObjectSetG[i];
+
+                c_view.ListBoxAddObj(listBox_Measure, shape);
+            }
+
             isGolden = true;
         }
+
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
             c_measure.BuildObjectSet(ref ObjectSetU, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
+
+            // show object set information
+
 
             // Inspect
             c_measure.Inspect(ref ObjectSetG, ref ObjectSetU, num_Threshold_NG.Value);

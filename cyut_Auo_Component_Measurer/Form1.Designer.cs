@@ -202,9 +202,9 @@
             // 
             this.listBox_Measure.FormattingEnabled = true;
             this.listBox_Measure.ItemHeight = 16;
-            this.listBox_Measure.Location = new System.Drawing.Point(820, 51);
+            this.listBox_Measure.Location = new System.Drawing.Point(794, 48);
             this.listBox_Measure.Name = "listBox_Measure";
-            this.listBox_Measure.Size = new System.Drawing.Size(120, 84);
+            this.listBox_Measure.Size = new System.Drawing.Size(160, 132);
             this.listBox_Measure.TabIndex = 25;
             // 
             // button1

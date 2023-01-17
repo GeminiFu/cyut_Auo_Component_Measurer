@@ -68,6 +68,15 @@ namespace cyut_Auo_Component_Measurer
             pennelIndex++;
         }
 
+        internal void ListBoxAddObj(ListBox listBox, ObjectShape obj)
+        {
+            string objIndex = obj.index.ToString("000");
+            string objCenterX = obj.centerX.ToString("#.#");
+            string objCenterY = obj.centerY.ToString("#.#");
+
+            listBox.Items.Add(objIndex + "(" + objCenterX + "," + objCenterY + ")");
+        }
+
         // -----------------------Method-----------------------
         public float CalcRatioWithPictureBox(PictureBox pb, float imageWidth, float imageHeight)
         {
