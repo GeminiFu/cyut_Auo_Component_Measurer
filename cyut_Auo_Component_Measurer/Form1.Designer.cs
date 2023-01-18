@@ -44,6 +44,7 @@
             this.panel_Measure_Num = new System.Windows.Forms.Panel();
             this.listBox_Measure = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.label_Measure = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -164,7 +165,7 @@
             0,
             0,
             65536});
-            this.num_Threshold_NG.Location = new System.Drawing.Point(988, 517);
+            this.num_Threshold_NG.Location = new System.Drawing.Point(932, 560);
             this.num_Threshold_NG.Margin = new System.Windows.Forms.Padding(4);
             this.num_Threshold_NG.Maximum = new decimal(new int[] {
             50,
@@ -184,7 +185,7 @@
             // label_Threshold_NG
             // 
             this.label_Threshold_NG.AutoSize = true;
-            this.label_Threshold_NG.Location = new System.Drawing.Point(853, 520);
+            this.label_Threshold_NG.Location = new System.Drawing.Point(797, 563);
             this.label_Threshold_NG.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_Threshold_NG.Name = "label_Threshold_NG";
             this.label_Threshold_NG.Size = new System.Drawing.Size(113, 16);
@@ -193,19 +194,21 @@
             // 
             // panel_Measure_Num
             // 
+            this.panel_Measure_Num.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.panel_Measure_Num.Location = new System.Drawing.Point(794, 225);
             this.panel_Measure_Num.Name = "panel_Measure_Num";
-            this.panel_Measure_Num.Size = new System.Drawing.Size(160, 195);
+            this.panel_Measure_Num.Size = new System.Drawing.Size(200, 90);
             this.panel_Measure_Num.TabIndex = 23;
             // 
             // listBox_Measure
             // 
             this.listBox_Measure.FormattingEnabled = true;
             this.listBox_Measure.ItemHeight = 16;
-            this.listBox_Measure.Location = new System.Drawing.Point(794, 48);
+            this.listBox_Measure.Location = new System.Drawing.Point(794, 72);
             this.listBox_Measure.Name = "listBox_Measure";
             this.listBox_Measure.Size = new System.Drawing.Size(160, 132);
             this.listBox_Measure.TabIndex = 25;
+            this.listBox_Measure.SelectedIndexChanged += new System.EventHandler(this.listBox_Measure_Selected_Changed);
             // 
             // button1
             // 
@@ -217,11 +220,21 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // label_Measure
+            // 
+            this.label_Measure.AutoSize = true;
+            this.label_Measure.Location = new System.Drawing.Point(797, 39);
+            this.label_Measure.Name = "label_Measure";
+            this.label_Measure.Size = new System.Drawing.Size(87, 16);
+            this.label_Measure.TabIndex = 27;
+            this.label_Measure.Text = "孔洞清單：";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1100, 600);
+            this.Controls.Add(this.label_Measure);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.listBox_Measure);
             this.Controls.Add(this.panel_Measure_Num);
@@ -268,6 +281,7 @@
         private System.Windows.Forms.Panel panel_Measure_Num;
         private System.Windows.Forms.ListBox listBox_Measure;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label_Measure;
     }
 }
 

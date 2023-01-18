@@ -1,5 +1,7 @@
 ﻿using Euresys.Open_eVision_22_08;
+using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -45,6 +47,39 @@ namespace cyut_Auo_Component_Measurer
         public void DrawElement(ref ECodedImage2 codedImage, ref ECodedElement element)
         {
             codedImage.Draw(graphics, element, scalingRatio);
+
+            pennelIndex = 0;
+        }
+
+        public void RenderShapeInfo(Panel panel, int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanel(panel, "width", square.width);
+                    AddItemInPanel(panel, "height", square.height);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanel(panel, "width", rect.width);
+                    AddItemInPanel(panel, "height", rect.height);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInPanel(panel, "diameter", circle.diameter);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInPanel(panel, "width", special1.width);
+                    AddItemInPanel(panel, "height", special1.height);
+                    break;
+            }
+
         }
 
 
@@ -54,14 +89,15 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, pennelIndex * 25);
+            label_Title.Location = new Point(0, pennelIndex * 30);
+            label_Title.Width = 70;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
             label_Value.Text = number.ToString();
-            label_Value.Location = new Point(100, pennelIndex * 25);
+            label_Value.Location = new Point(label_Title.Width + 10, pennelIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
-            label_Value.Width = 50;
+            label_Value.Width = 80;
 
             panel.Controls.Add(label_Title);
             panel.Controls.Add(label_Value);

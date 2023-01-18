@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emgu.CV;
 using Emgu.CV.Aruco;
+using Emgu.CV.Flann;
 using Emgu.CV.Reg;
 using Euresys.Open_eVision_22_08;
 using static System.Net.Mime.MediaTypeNames;
@@ -292,6 +293,15 @@ namespace cyut_Auo_Component_Measurer
                 c_view.DrawElement(ref codedImage1, ref element);
 
                 element.Dispose();
+
+                if (isGolden)
+                {
+                    c_view.RenderShapeInfo(panel_Measure_Num, index, ObjectSetG);
+                }
+                else
+                {
+                    c_view.RenderShapeInfo(panel_Measure_Num, index, ObjectSetU);
+                }
             }
         }
 
@@ -357,6 +367,27 @@ namespace cyut_Auo_Component_Measurer
         private void button1_Click(object sender, EventArgs e)
         {
             c_view.AddItemInPanel(panel_Measure_Num, "new label", 5);
+        }
+
+        private void listBox_Measure_Selected_Changed(object sender, EventArgs e)
+        {
+            int selectedIndex = int.Parse(listBox_Measure.SelectedItem.ToString().Substring(0, 3));
+
+            ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
+
+            c_view.DrawEBW8Image(EBW8Image1);
+            c_view.DrawElement(ref codedImage1, ref element);
+
+            if (isGolden)
+            {
+                c_view.RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetG);
+            }
+            else
+            {
+                c_view.RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetU);
+            }
+            element.Dispose();
+
         }
     }
 }
