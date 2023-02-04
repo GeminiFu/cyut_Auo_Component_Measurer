@@ -383,7 +383,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = codedImage1ObjectSelection.GetElement((uint)index);
 
-                c_view.DrawElement(ref codedImage1, ref element);
+                c_view.DrawNGElement(ref codedImage1, ref element);
 
                 element.Dispose();
 
@@ -441,13 +441,15 @@ namespace cyut_Auo_Component_Measurer
 
             ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
 
+            c_view.DrawEBW8Image(EBW8Image1);
+            c_view.DrawNGElement(ref codedImage1, ref element);
+
             if (!isGolden)
             {
                 c_view.RenderShapeErrorInfo(panel_NG_Num, selectedIndex, ObjectSetU);
             }
 
             element.Dispose();
-
         }
 
         List<int> batchIndexes = new List<int>();
@@ -464,15 +466,11 @@ namespace cyut_Auo_Component_Measurer
             ObjectShape shape = (ObjectShape)ObjectSetG[selectedIndex];
             string selectedShape = shape.shapeName;
 
-            Console.WriteLine("selected shape name " + selectedShape);
-
             ECodedElement element;
 
             for (int i = 0; i < ObjectSetG.Count; i++)
             {
                 shape = (ObjectShape)ObjectSetG[i];
-
-                Console.WriteLine("shape name is " + shape.shapeName);
 
                 if (shape.shapeName == selectedShape)
                 {

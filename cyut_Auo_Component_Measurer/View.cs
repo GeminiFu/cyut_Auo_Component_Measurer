@@ -47,6 +47,13 @@ namespace cyut_Auo_Component_Measurer
 
         public void DrawElement(ref ECodedImage2 codedImage, ref ECodedElement element)
         {
+            codedImage.Draw(graphics, new ERGBColor(0, 0, 255), element, scalingRatio);
+
+            pennelIndex = 0;
+            pennelNGIndex = 0;
+        }
+        public void DrawNGElement(ref ECodedImage2 codedImage, ref ECodedElement element)
+        {
             codedImage.Draw(graphics, element, scalingRatio);
 
             pennelIndex = 0;
@@ -63,22 +70,22 @@ namespace cyut_Auo_Component_Measurer
             {
                 case "square":
                     ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanel(panel, "width", square.width);
-                    AddItemInPanel(panel, "height", square.height);
+                    AddItemInPanel(panel, "寬", square.width);
+                    AddItemInPanel(panel, "高", square.height);
                     break;
                 case "rectangle":
                     ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanel(panel, "width", rect.width);
-                    AddItemInPanel(panel, "height", rect.height);
+                    AddItemInPanel(panel, "寬", rect.width);
+                    AddItemInPanel(panel, "高", rect.height);
                     break;
                 case "circle":
                     ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInPanel(panel, "diameter", circle.diameter);
+                    AddItemInPanel(panel, "半徑", circle.diameter);
                     break;
                 case "special1":
                     ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInPanel(panel, "width", special1.width);
-                    AddItemInPanel(panel, "height", special1.height);
+                    AddItemInPanel(panel, "寬", special1.width);
+                    AddItemInPanel(panel, "高", special1.height);
                     break;
             }
 
@@ -94,22 +101,53 @@ namespace cyut_Auo_Component_Measurer
             {
                 case "square":
                     ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInNGPanel(panel, "width", square.widthError);
-                    AddItemInNGPanel(panel, "height", square.heightError);
+                    AddItemInNGPanel(panel, "寬誤差", square.widthError);
+                    AddItemInNGPanel(panel, "高誤差", square.heightError);
                     break;
                 case "rectangle":
                     ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInNGPanel(panel, "width", rect.widthError);
-                    AddItemInNGPanel(panel, "height", rect.heightError);
+                    AddItemInNGPanel(panel, "寬誤差", rect.widthError);
+                    AddItemInNGPanel(panel, "高誤差", rect.heightError);
                     break;
                 case "circle":
                     ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInNGPanel(panel, "diameter", circle.diameterError);
+                    AddItemInNGPanel(panel, "半徑誤差", circle.diameterError);
                     break;
                 case "special1":
                     ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInNGPanel(panel, "width", special1.widthError);
-                    AddItemInNGPanel(panel, "height", special1.heightError);
+                    AddItemInNGPanel(panel, "寬誤差", special1.widthError);
+                    AddItemInNGPanel(panel, "高誤差", special1.heightError);
+                    break;
+            }
+
+        }
+
+        public void RenderShapeStandard(Panel panel, int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "寬誤差", square.widthError);
+                    AddItemInNGPanel(panel, "高誤差", square.heightError);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "寬誤差", rect.widthError);
+                    AddItemInNGPanel(panel, "高誤差", rect.heightError);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "半徑誤差", circle.diameterError);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInNGPanel(panel, "寬誤差", special1.widthError);
+                    AddItemInNGPanel(panel, "高誤差", special1.heightError);
                     break;
             }
 
