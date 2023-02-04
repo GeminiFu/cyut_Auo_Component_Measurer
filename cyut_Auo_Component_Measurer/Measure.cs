@@ -16,10 +16,15 @@ namespace cyut_Auo_Component_Measurer
     // Detect => codedImageEncoder, codedImage, codedImageObjectSelection
     // codedImageObjectSelection => ObjectSet
     // Inspect => NG index
+
     public class Measure
     {
         EImageEncoder codedImage1Encoder = new EImageEncoder();
         internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
+
+        List<int> NGIndex = new List<int>();
+
+        internal List<int> GetNGIndex { get { return NGIndex; } }
 
         internal Measure() { }
 
@@ -129,6 +134,7 @@ namespace cyut_Auo_Component_Measurer
                 if (j > ObjectSetG.Count)
                 {
                     shapeTest.checkResult = 1;
+                    NGIndex.Add(i);
                     continue;
                 }
 
@@ -152,6 +158,8 @@ namespace cyut_Auo_Component_Measurer
                 else
                 {
                     shapeTest.checkResult = 1;
+
+                    NGIndex.Add(i);
                 }
             }
 

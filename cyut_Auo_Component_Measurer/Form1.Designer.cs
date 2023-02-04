@@ -43,11 +43,22 @@
             this.label_Threshold_NG = new System.Windows.Forms.Label();
             this.panel_Measure_Num = new System.Windows.Forms.Panel();
             this.listBox_Measure = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.label_Measure = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.listBox_NG = new System.Windows.Forms.ListBox();
+            this.panel_NG_Num = new System.Windows.Forms.Panel();
+            this.btn_Batch_Search = new System.Windows.Forms.Button();
+            this.numHeight = new System.Windows.Forms.NumericUpDown();
+            this.numWidth = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.btn_Batch_Setting = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Load
@@ -65,10 +76,10 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(115, 176);
+            this.pictureBox1.Location = new System.Drawing.Point(191, 161);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(648, 329);
+            this.pictureBox1.Size = new System.Drawing.Size(648, 414);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
@@ -137,7 +148,7 @@
             // 
             // btn_Measure_Standard
             // 
-            this.btn_Measure_Standard.Location = new System.Drawing.Point(372, 89);
+            this.btn_Measure_Standard.Location = new System.Drawing.Point(30, 361);
             this.btn_Measure_Standard.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Measure_Standard.Name = "btn_Measure_Standard";
             this.btn_Measure_Standard.Size = new System.Drawing.Size(112, 31);
@@ -148,7 +159,7 @@
             // 
             // btn_Measure_Product
             // 
-            this.btn_Measure_Product.Location = new System.Drawing.Point(564, 89);
+            this.btn_Measure_Product.Location = new System.Drawing.Point(546, 72);
             this.btn_Measure_Product.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Measure_Product.Name = "btn_Measure_Product";
             this.btn_Measure_Product.Size = new System.Drawing.Size(112, 31);
@@ -165,7 +176,7 @@
             0,
             0,
             65536});
-            this.num_Threshold_NG.Location = new System.Drawing.Point(932, 560);
+            this.num_Threshold_NG.Location = new System.Drawing.Point(1002, 590);
             this.num_Threshold_NG.Margin = new System.Windows.Forms.Padding(4);
             this.num_Threshold_NG.Maximum = new decimal(new int[] {
             50,
@@ -185,7 +196,7 @@
             // label_Threshold_NG
             // 
             this.label_Threshold_NG.AutoSize = true;
-            this.label_Threshold_NG.Location = new System.Drawing.Point(797, 563);
+            this.label_Threshold_NG.Location = new System.Drawing.Point(867, 593);
             this.label_Threshold_NG.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_Threshold_NG.Name = "label_Threshold_NG";
             this.label_Threshold_NG.Size = new System.Drawing.Size(113, 16);
@@ -194,8 +205,8 @@
             // 
             // panel_Measure_Num
             // 
-            this.panel_Measure_Num.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.panel_Measure_Num.Location = new System.Drawing.Point(794, 225);
+            this.panel_Measure_Num.BackColor = System.Drawing.SystemColors.Control;
+            this.panel_Measure_Num.Location = new System.Drawing.Point(870, 226);
             this.panel_Measure_Num.Name = "panel_Measure_Num";
             this.panel_Measure_Num.Size = new System.Drawing.Size(200, 90);
             this.panel_Measure_Num.TabIndex = 23;
@@ -204,38 +215,151 @@
             // 
             this.listBox_Measure.FormattingEnabled = true;
             this.listBox_Measure.ItemHeight = 16;
-            this.listBox_Measure.Location = new System.Drawing.Point(794, 72);
+            this.listBox_Measure.Location = new System.Drawing.Point(870, 88);
             this.listBox_Measure.Name = "listBox_Measure";
             this.listBox_Measure.Size = new System.Drawing.Size(160, 132);
             this.listBox_Measure.TabIndex = 25;
             this.listBox_Measure.SelectedIndexChanged += new System.EventHandler(this.listBox_Measure_Selected_Changed);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(295, 135);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 26;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // label_Measure
             // 
             this.label_Measure.AutoSize = true;
-            this.label_Measure.Location = new System.Drawing.Point(797, 39);
+            this.label_Measure.Location = new System.Drawing.Point(867, 69);
             this.label_Measure.Name = "label_Measure";
             this.label_Measure.Size = new System.Drawing.Size(87, 16);
             this.label_Measure.TabIndex = 27;
             this.label_Measure.Text = "孔洞清單：";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(867, 328);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(113, 16);
+            this.label1.TabIndex = 30;
+            this.label1.Text = "NG 孔洞清單：";
+            // 
+            // listBox_NG
+            // 
+            this.listBox_NG.FormattingEnabled = true;
+            this.listBox_NG.ItemHeight = 16;
+            this.listBox_NG.Location = new System.Drawing.Point(870, 347);
+            this.listBox_NG.Name = "listBox_NG";
+            this.listBox_NG.Size = new System.Drawing.Size(160, 132);
+            this.listBox_NG.TabIndex = 29;
+            this.listBox_NG.SelectedIndexChanged += new System.EventHandler(this.listBox_NG_Selected_Changed);
+            // 
+            // panel_NG_Num
+            // 
+            this.panel_NG_Num.BackColor = System.Drawing.SystemColors.Control;
+            this.panel_NG_Num.Location = new System.Drawing.Point(870, 485);
+            this.panel_NG_Num.Name = "panel_NG_Num";
+            this.panel_NG_Num.Size = new System.Drawing.Size(200, 90);
+            this.panel_NG_Num.TabIndex = 28;
+            // 
+            // btn_Batch_Search
+            // 
+            this.btn_Batch_Search.Font = new System.Drawing.Font("新細明體", 12F);
+            this.btn_Batch_Search.Location = new System.Drawing.Point(30, 414);
+            this.btn_Batch_Search.Name = "btn_Batch_Search";
+            this.btn_Batch_Search.Size = new System.Drawing.Size(121, 30);
+            this.btn_Batch_Search.TabIndex = 44;
+            this.btn_Batch_Search.Text = "搜尋相同尺寸";
+            this.btn_Batch_Search.UseVisualStyleBackColor = true;
+            this.btn_Batch_Search.Click += new System.EventHandler(this.btn_Batch_Search_Click);
+            // 
+            // numHeight
+            // 
+            this.numHeight.DecimalPlaces = 1;
+            this.numHeight.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numHeight.Location = new System.Drawing.Point(78, 581);
+            this.numHeight.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.numHeight.Name = "numHeight";
+            this.numHeight.Size = new System.Drawing.Size(73, 27);
+            this.numHeight.TabIndex = 43;
+            this.numHeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // numWidth
+            // 
+            this.numWidth.DecimalPlaces = 1;
+            this.numWidth.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numWidth.Location = new System.Drawing.Point(78, 548);
+            this.numWidth.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.numWidth.Name = "numWidth";
+            this.numWidth.Size = new System.Drawing.Size(73, 27);
+            this.numWidth.TabIndex = 42;
+            this.numWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 581);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(59, 16);
+            this.label7.TabIndex = 41;
+            this.label7.Text = "標準高:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(13, 550);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(59, 16);
+            this.label9.TabIndex = 40;
+            this.label9.Text = "標準寬:";
+            // 
+            // btn_Batch_Setting
+            // 
+            this.btn_Batch_Setting.Font = new System.Drawing.Font("新細明體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.btn_Batch_Setting.Location = new System.Drawing.Point(30, 462);
+            this.btn_Batch_Setting.Name = "btn_Batch_Setting";
+            this.btn_Batch_Setting.Size = new System.Drawing.Size(121, 30);
+            this.btn_Batch_Setting.TabIndex = 39;
+            this.btn_Batch_Setting.Text = "批次設定尺寸";
+            this.btn_Batch_Setting.UseVisualStyleBackColor = true;
+            this.btn_Batch_Setting.Click += new System.EventHandler(this.btn_Batch_Setting_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(384, 72);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 31);
+            this.button1.TabIndex = 45;
+            this.button1.Text = "Adjust";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1100, 600);
-            this.Controls.Add(this.label_Measure);
+            this.ClientSize = new System.Drawing.Size(1100, 654);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.btn_Batch_Search);
+            this.Controls.Add(this.numHeight);
+            this.Controls.Add(this.numWidth);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.btn_Batch_Setting);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.listBox_NG);
+            this.Controls.Add(this.panel_NG_Num);
+            this.Controls.Add(this.label_Measure);
             this.Controls.Add(this.listBox_Measure);
             this.Controls.Add(this.panel_Measure_Num);
             this.Controls.Add(this.num_Threshold_NG);
@@ -258,6 +382,8 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -280,8 +406,17 @@
         private System.Windows.Forms.Label label_Threshold_NG;
         private System.Windows.Forms.Panel panel_Measure_Num;
         private System.Windows.Forms.ListBox listBox_Measure;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label_Measure;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ListBox listBox_NG;
+        private System.Windows.Forms.Panel panel_NG_Num;
+        private System.Windows.Forms.Button btn_Batch_Search;
+        private System.Windows.Forms.NumericUpDown numHeight;
+        private System.Windows.Forms.NumericUpDown numWidth;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button btn_Batch_Setting;
+        private System.Windows.Forms.Button button1;
     }
 }
 

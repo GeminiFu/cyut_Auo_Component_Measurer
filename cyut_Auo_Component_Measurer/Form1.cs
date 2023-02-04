@@ -269,7 +269,6 @@ namespace cyut_Auo_Component_Measurer
 
             int index;
 
-
             if (isGolden)
             {
                 index = c_measure.IsClickObject(ref ObjectSetG, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
@@ -278,8 +277,6 @@ namespace cyut_Auo_Component_Measurer
             {
                 index = c_measure.IsClickObject(ref ObjectSetU, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
             }
-
-            Console.WriteLine("index is " + index);
 
             if (index == -1)
             {
@@ -294,14 +291,24 @@ namespace cyut_Auo_Component_Measurer
 
                 element.Dispose();
 
-                if (isGolden)
+
+                // 如果 NG index == index
+                // NG selected
+
+                listBox_Measure.SelectedIndex = index;
+
+                listBox_NG.SelectedIndex = -1;
+
+                for (int i = 0; i < listBox_NG.Items.Count; i++)
                 {
-                    c_view.RenderShapeInfo(panel_Measure_Num, index, ObjectSetG);
+                    int NGIndex = int.Parse(listBox_NG.Items[i].ToString().Substring(0, 3));
+
+                    if(NGIndex == index)
+                    {
+                        listBox_NG.SelectedIndex = i;
+                    }
                 }
-                else
-                {
-                    c_view.RenderShapeInfo(panel_Measure_Num, index, ObjectSetU);
-                }
+
             }
         }
 
@@ -332,13 +339,15 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Measure_Standard_Click(object sender, EventArgs e)
         {
+            c_view.DrawEBW8Image(EBW8Image1);
+
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
             c_measure.BuildObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
 
             c_measure.SetObjectG(ref ObjectSetG);
 
-            for(int i = 0; i < ObjectSetG.Count; i++)
+            for (int i = 0; i < ObjectSetG.Count; i++)
             {
                 ObjectShape shape = (ObjectShape)ObjectSetG[i];
 
@@ -351,26 +360,50 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
+            c_view.DrawEBW8Image(EBW8Image1);
+
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
             c_measure.BuildObjectSet(ref ObjectSetU, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
 
             // show object set information
+            for (int i = 0; i < ObjectSetU.Count; i++)
+            {
+                ObjectShape shape = (ObjectShape)ObjectSetU[i];
 
+                c_view.ListBoxAddObj(listBox_Measure, shape);
+            }
 
             // Inspect
             c_measure.Inspect(ref ObjectSetG, ref ObjectSetU, num_Threshold_NG.Value);
 
+            listBox_NG.Items.Clear();
+
+            foreach (var index in c_measure.GetNGIndex)
+            {
+                ECodedElement element = codedImage1ObjectSelection.GetElement((uint)index);
+
+                c_view.DrawElement(ref codedImage1, ref element);
+
+                element.Dispose();
+
+
+                ObjectShape shape = (ObjectShape)ObjectSetU[index];
+
+                c_view.ListBoxAddObj(listBox_NG, shape);
+            }
+
             isGolden = false;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            c_view.AddItemInPanel(panel_Measure_Num, "new label", 5);
-        }
 
         private void listBox_Measure_Selected_Changed(object sender, EventArgs e)
         {
+            if(listBox_Measure.SelectedItem == null)
+            {
+                return;
+            }
+
             int selectedIndex = int.Parse(listBox_Measure.SelectedItem.ToString().Substring(0, 3));
 
             ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
@@ -386,7 +419,76 @@ namespace cyut_Auo_Component_Measurer
             {
                 c_view.RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetU);
             }
+
+            panel_NG_Num.Controls.Clear();
+
             element.Dispose();
+        }
+
+        private void listBox_NG_Selected_Changed(object sender, EventArgs e)
+        {
+            if(listBox_NG.SelectedItem == null)
+            {
+                return;
+            }
+
+            int selectedIndex = int.Parse(listBox_NG.SelectedItem.ToString().Substring(0, 3));
+
+            if (selectedIndex < 0)
+            {
+                return;
+            }
+
+            ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
+
+            if (!isGolden)
+            {
+                c_view.RenderShapeErrorInfo(panel_NG_Num, selectedIndex, ObjectSetU);
+            }
+
+            element.Dispose();
+
+        }
+
+        List<int> batchIndexes = new List<int>();
+
+        private void btn_Batch_Search_Click(object sender, EventArgs e)
+        {
+            int selectedIndex = listBox_Measure.SelectedIndex;
+
+            if (selectedIndex < 0)
+            {
+                return;
+            }
+
+            ObjectShape shape = (ObjectShape)ObjectSetG[selectedIndex];
+            string selectedShape = shape.shapeName;
+
+            Console.WriteLine("selected shape name " + selectedShape);
+
+            ECodedElement element;
+
+            for (int i = 0; i < ObjectSetG.Count; i++)
+            {
+                shape = (ObjectShape)ObjectSetG[i];
+
+                Console.WriteLine("shape name is " + shape.shapeName);
+
+                if (shape.shapeName == selectedShape)
+                {
+                    batchIndexes.Add(i);
+                    element = codedImage1ObjectSelection.GetElement((uint)i);
+                    c_view.DrawElement(ref codedImage1, ref element);
+
+                    element.Dispose();
+                }
+            }
+
+
+        }
+
+        private void btn_Batch_Setting_Click(object sender, EventArgs e)
+        {
 
         }
     }

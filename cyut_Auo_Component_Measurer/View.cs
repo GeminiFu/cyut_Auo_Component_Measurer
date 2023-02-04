@@ -15,6 +15,7 @@ namespace cyut_Auo_Component_Measurer
         Graphics graphics;
         float scalingRatio;
         int pennelIndex = 0;
+        int pennelNGIndex = 0;
 
         internal float GetScalingRatio { get { return scalingRatio; } }
 
@@ -49,6 +50,7 @@ namespace cyut_Auo_Component_Measurer
             codedImage.Draw(graphics, element, scalingRatio);
 
             pennelIndex = 0;
+            pennelNGIndex = 0;
         }
 
         public void RenderShapeInfo(Panel panel, int index, ArrayList ObjectSet)
@@ -82,6 +84,36 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
+        public void RenderShapeErrorInfo(Panel panel, int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "width", square.widthError);
+                    AddItemInNGPanel(panel, "height", square.heightError);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "width", rect.widthError);
+                    AddItemInNGPanel(panel, "height", rect.heightError);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "diameter", circle.diameterError);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInNGPanel(panel, "width", special1.widthError);
+                    AddItemInNGPanel(panel, "height", special1.heightError);
+                    break;
+            }
+
+        }
 
 
         internal void AddItemInPanel(Panel panel, string labelText, float value)
@@ -102,6 +134,26 @@ namespace cyut_Auo_Component_Measurer
             panel.Controls.Add(label_Title);
             panel.Controls.Add(label_Value);
             pennelIndex++;
+        }
+
+        internal void AddItemInNGPanel(Panel panel, string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, pennelNGIndex * 30);
+            label_Title.Width = 70;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, pennelNGIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel.Controls.Add(label_Title);
+            panel.Controls.Add(label_Value);
+            pennelNGIndex++;
         }
 
         internal void ListBoxAddObj(ListBox listBox, ObjectShape obj)
