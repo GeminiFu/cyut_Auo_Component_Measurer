@@ -60,6 +60,8 @@ namespace cyut_Auo_Component_Measurer
         int pennelIndex = 0;
         int pennelNGIndex = 0;
 
+        List<int> batchIndexes = new List<int>();
+
 
         EImageBW8 EBW8ImageDotGrid = new EImageBW8();
 
@@ -156,41 +158,6 @@ namespace cyut_Auo_Component_Measurer
             DrawEBW8Image();
         }
 
-        private void DrawEBW8Image()
-        {
-            pictureBox1.Image = null;
-            pictureBox1.Refresh();
-            float width = EBW8Image1.Width;
-            scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
-            EBW8Image1.Draw(graphics, scalingRatio);
-        }
-
-        public float CalcRatioWithPictureBox(PictureBox pb, float imageWidth, float imageHeight)
-        {
-            if (pb == null)
-            {
-                MessageBox.Show("No pictureBox.");
-                return 0;
-            }
-
-            if (imageWidth == 0 || imageHeight == 0)
-            {
-                MessageBox.Show("長、寬不能為 0。");
-                return 0;
-            }
-
-
-            float pbWidth = pb.Width;
-            float pbHeight = pb.Height;
-            float pbRatio = pbWidth / pbHeight;
-
-            float imageRatio = imageWidth / imageHeight;
-
-            if (imageRatio > pbRatio)
-                return pbWidth / imageWidth;
-            else
-                return pbHeight / imageHeight;
-        }
 
         // --------------------------Menu--------------------------
         private void Menu_Save_Setting_Click(object sender, EventArgs e)
@@ -209,6 +176,29 @@ namespace cyut_Auo_Component_Measurer
             c_shape.CalibrationY = y;
         }
 
+        private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            // 開相機
+            if (isStreaming == false)
+            {
+                btn_Camera_Click(sender, e);
+            }
+
+            // 設定 x, y
+            x = c_shape.CalibrationX;
+            y = c_shape.CalibrationY;
+
+            Form_Dot_Grid f2 = new Form_Dot_Grid(x, y);
+            f2.ShowDialog(this);
+
+            btn_Camera_Click(sender, e);
+
+            EBW8ImageDotGrid.SetSize(EBW8Image1);
+            EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
+
+            c_shape.AutoCalibration(ref EBW8ImageDotGrid, x, y);
+        }
         // --------------------------Camera--------------------------
         private void btn_Camera_Click(object sender, EventArgs e)
         {
@@ -304,8 +294,7 @@ namespace cyut_Auo_Component_Measurer
 
             EC24ImageTemp.Dispose();
         }
-
-
+        // --------------------------Camera end--------------------------
         private void pictureBox_Mose_Down(object sender, MouseEventArgs e)
         {
             // 點擊判定
@@ -340,45 +329,13 @@ namespace cyut_Auo_Component_Measurer
                 {
                     int NGIndex = int.Parse(listBox_NG.Items[i].ToString().Substring(0, 3));
 
-                    if(NGIndex == index)
+                    if (NGIndex == index)
                     {
                         listBox_NG.SelectedIndex = i;
                     }
                 }
 
             }
-        }
-        public void DrawElement(ref ECodedElement element)
-        {
-            codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, scalingRatio);
-
-            pennelIndex = 0;
-            pennelNGIndex = 0;
-        }
-
-
-        private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            // 開相機
-            if (isStreaming == false)
-            {
-                btn_Camera_Click(sender, e);
-            }
-
-            // 設定 x, y
-            x = c_shape.CalibrationX;
-            y = c_shape.CalibrationY;
-
-            Form_Dot_Grid f2 = new Form_Dot_Grid(x, y);
-            f2.ShowDialog(this);
-
-            btn_Camera_Click(sender, e);
-
-            EBW8ImageDotGrid.SetSize(EBW8Image1);
-            EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
-
-            c_shape.AutoCalibration(ref EBW8ImageDotGrid, x, y);
         }
 
         private void btn_Measure_Standard_Click(object sender, EventArgs e)
@@ -401,22 +358,6 @@ namespace cyut_Auo_Component_Measurer
             isGolden = true;
         }
 
-        internal void ListBoxAddObj(ListBox listBox, ObjectShape obj)
-        {
-            string objIndex = obj.index.ToString("000");
-            string objCenterX = obj.centerX.ToString("#.#");
-            string objCenterY = obj.centerY.ToString("#.#");
-
-            listBox.Items.Add(objIndex + "(" + objCenterX + "," + objCenterY + ")");
-        }
-
-        public void DrawNGElement(ref ECodedElement element)
-        {
-            codedImage1.Draw(graphics, element, scalingRatio);
-
-            pennelIndex = 0;
-            pennelNGIndex = 0;
-        }
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
@@ -456,10 +397,9 @@ namespace cyut_Auo_Component_Measurer
             isGolden = false;
         }
 
-
         private void listBox_Measure_Selected_Changed(object sender, EventArgs e)
         {
-            if(listBox_Measure.SelectedItem == null)
+            if (listBox_Measure.SelectedItem == null)
             {
                 return;
             }
@@ -473,70 +413,21 @@ namespace cyut_Auo_Component_Measurer
 
             if (isGolden)
             {
-                RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetG);
+                RenderShapeInfo(selectedIndex, ObjectSetG);
             }
             else
             {
-                RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetU);
+                RenderShapeInfo(selectedIndex, ObjectSetU);
             }
 
             panel_NG_Num.Controls.Clear();
 
             element.Dispose();
         }
-        public void RenderShapeInfo(Panel panel, int index, ArrayList ObjectSet)
-        {
-            ObjectShape shape = (ObjectShape)ObjectSet[index];
-
-            panel.Controls.Clear();
-
-            switch (shape.shapeName)
-            {
-                case "square":
-                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanel(panel, "寬", square.width);
-                    AddItemInPanel(panel, "高", square.height);
-                    break;
-                case "rectangle":
-                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanel(panel, "寬", rect.width);
-                    AddItemInPanel(panel, "高", rect.height);
-                    break;
-                case "circle":
-                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInPanel(panel, "半徑", circle.diameter);
-                    break;
-                case "special1":
-                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInPanel(panel, "寬", special1.width);
-                    AddItemInPanel(panel, "高", special1.height);
-                    break;
-            }
-
-        }
-        internal void AddItemInPanel(Panel panel, string labelText, float value)
-        {
-            Label label_Title = new Label();
-            label_Title.Text = labelText;
-            label_Title.Text += ":";
-            label_Title.Location = new Point(0, pennelIndex * 30);
-            label_Title.Width = 70;
-
-            Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 1);
-            label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, pennelIndex * 30);
-            label_Value.BackColor = Color.FromArgb(255, 224, 192);
-            label_Value.Width = 80;
-
-            panel.Controls.Add(label_Title);
-            panel.Controls.Add(label_Value);
-            pennelIndex++;
-        }
 
         private void listBox_NG_Selected_Changed(object sender, EventArgs e)
         {
-            if(listBox_NG.SelectedItem == null)
+            if (listBox_NG.SelectedItem == null)
             {
                 return;
             }
@@ -548,6 +439,8 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
+            listBox_Measure.SelectedIndex = selectedIndex;
+
             ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
 
             DrawEBW8Image();
@@ -555,62 +448,12 @@ namespace cyut_Auo_Component_Measurer
 
             if (!isGolden)
             {
-                RenderShapeErrorInfo(panel_NG_Num, selectedIndex, ObjectSetU);
+                RenderShapeErrorInfo(selectedIndex, ObjectSetU);
             }
 
             element.Dispose();
         }
-        public void RenderShapeErrorInfo(Panel panel, int index, ArrayList ObjectSet)
-        {
-            ObjectShape shape = (ObjectShape)ObjectSet[index];
 
-            panel.Controls.Clear();
-
-            switch (shape.shapeName)
-            {
-                case "square":
-                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInNGPanel(panel, "寬誤差", square.widthError);
-                    AddItemInNGPanel(panel, "高誤差", square.heightError);
-                    break;
-                case "rectangle":
-                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInNGPanel(panel, "寬誤差", rect.widthError);
-                    AddItemInNGPanel(panel, "高誤差", rect.heightError);
-                    break;
-                case "circle":
-                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInNGPanel(panel, "半徑誤差", circle.diameterError);
-                    break;
-                case "special1":
-                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInNGPanel(panel, "寬誤差", special1.widthError);
-                    AddItemInNGPanel(panel, "高誤差", special1.heightError);
-                    break;
-            }
-
-        }
-        internal void AddItemInNGPanel(Panel panel, string labelText, float value)
-        {
-            Label label_Title = new Label();
-            label_Title.Text = labelText;
-            label_Title.Text += ":";
-            label_Title.Location = new Point(0, pennelNGIndex * 30);
-            label_Title.Width = 70;
-
-            Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 1);
-            label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, pennelNGIndex * 30);
-            label_Value.BackColor = Color.FromArgb(255, 224, 192);
-            label_Value.Width = 80;
-
-            panel.Controls.Add(label_Title);
-            panel.Controls.Add(label_Value);
-            pennelNGIndex++;
-        }
-
-        List<int> batchIndexes = new List<int>();
 
         private void btn_Batch_Search_Click(object sender, EventArgs e)
         {
@@ -645,6 +488,183 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Batch_Setting_Click(object sender, EventArgs e)
         {
+
+        }
+
+
+        // -------------------------------Method-------------------------------
+
+        internal void ListBoxAddObj(ListBox listBox, ObjectShape obj)
+        {
+            string objIndex = obj.index.ToString("000");
+            string objCenterX = obj.centerX.ToString("#.#");
+            string objCenterY = obj.centerY.ToString("#.#");
+
+            listBox.Items.Add(objIndex + "(" + objCenterX + "," + objCenterY + ")");
+        }
+
+
+        // -------------------------------View-------------------------------
+        private void DrawEBW8Image()
+        {
+            pictureBox1.Image = null;
+            pictureBox1.Refresh();
+            float width = EBW8Image1.Width;
+            scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
+            EBW8Image1.Draw(graphics, scalingRatio);
+        }
+        private float CalcRatioWithPictureBox(PictureBox pb, float imageWidth, float imageHeight)
+        {
+            if (pb == null)
+            {
+                MessageBox.Show("No pictureBox.");
+                return 0;
+            }
+
+            if (imageWidth == 0 || imageHeight == 0)
+            {
+                MessageBox.Show("長、寬不能為 0。");
+                return 0;
+            }
+
+
+            float pbWidth = pb.Width;
+            float pbHeight = pb.Height;
+            float pbRatio = pbWidth / pbHeight;
+
+            float imageRatio = imageWidth / imageHeight;
+
+            if (imageRatio > pbRatio)
+                return pbWidth / imageWidth;
+            else
+                return pbHeight / imageHeight;
+        }
+
+
+
+        private void DrawElement(ref ECodedElement element)
+        {
+            codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, scalingRatio);
+
+            pennelIndex = 0;
+            pennelNGIndex = 0;
+        }
+        private void DrawNGElement(ref ECodedElement element)
+        {
+            codedImage1.Draw(graphics, element, scalingRatio);
+
+            pennelIndex = 0;
+            pennelNGIndex = 0;
+        }
+
+
+
+        private void RenderShapeInfo(int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel_Measure_Num.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanelMeasure("寬", square.width);
+                    AddItemInPanelMeasure("高", square.height);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanelMeasure("寬", rect.width);
+                    AddItemInPanelMeasure("高", rect.height);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInPanelMeasure("半徑", circle.diameter);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInPanelMeasure("寬", special1.width);
+                    AddItemInPanelMeasure("高", special1.height);
+                    break;
+            }
+
+        }
+        private void AddItemInPanelMeasure(string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, pennelIndex * 30);
+            label_Title.Width = 70;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, pennelIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel_Measure_Num.Controls.Add(label_Title);
+            panel_Measure_Num.Controls.Add(label_Value);
+            pennelIndex++;
+        }
+
+        private void RenderShapeErrorInfo(int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel_NG_Num.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanelNG("寬誤差", square.widthError);
+                    AddItemInPanelNG("高誤差", square.heightError);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanelNG("寬誤差", rect.widthError);
+                    AddItemInPanelNG("高誤差", rect.heightError);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInPanelNG("半徑誤差", circle.diameterError);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInPanelNG("寬誤差", special1.widthError);
+                    AddItemInPanelNG("高誤差", special1.heightError);
+                    break;
+            }
+
+        }
+        private void AddItemInPanelNG(string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, pennelNGIndex * 30);
+            label_Title.Width = 70;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, pennelNGIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel_NG_Num.Controls.Add(label_Title);
+            panel_NG_Num.Controls.Add(label_Value);
+            pennelNGIndex++;
+        }
+
+        private void RenderStandard()
+        {
+
+        }
+        private void AddItemInStandardPanel() 
+        { 
 
         }
     }
