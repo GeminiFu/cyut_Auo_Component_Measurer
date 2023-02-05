@@ -53,8 +53,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.btn_Batch_Setting = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel_Standard = new System.Windows.Forms.Panel();
+            this.btn_Adjust = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -336,15 +336,6 @@
             this.btn_Batch_Setting.UseVisualStyleBackColor = true;
             this.btn_Batch_Setting.Click += new System.EventHandler(this.btn_Batch_Setting_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(384, 72);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 31);
-            this.button1.TabIndex = 45;
-            this.button1.Text = "Adjust";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // panel_Standard
             // 
             this.panel_Standard.BackColor = System.Drawing.SystemColors.Control;
@@ -353,12 +344,22 @@
             this.panel_Standard.Size = new System.Drawing.Size(200, 153);
             this.panel_Standard.TabIndex = 23;
             // 
+            // btn_Adjust
+            // 
+            this.btn_Adjust.Location = new System.Drawing.Point(366, 72);
+            this.btn_Adjust.Name = "btn_Adjust";
+            this.btn_Adjust.Size = new System.Drawing.Size(108, 31);
+            this.btn_Adjust.TabIndex = 45;
+            this.btn_Adjust.Text = "校正影像";
+            this.btn_Adjust.UseVisualStyleBackColor = true;
+            this.btn_Adjust.Click += new System.EventHandler(this.btn_Adjust_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1216, 654);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btn_Adjust);
             this.Controls.Add(this.btn_Batch_Search);
             this.Controls.Add(this.numHeight);
             this.Controls.Add(this.numWidth);
@@ -426,8 +427,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btn_Batch_Setting;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel panel_Standard;
+        private System.Windows.Forms.Button btn_Adjust;
     }
 }
 

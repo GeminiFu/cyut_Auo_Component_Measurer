@@ -125,6 +125,8 @@ namespace cyut_Auo_Component_Measurer
 
 
             graphics = pictureBox1.CreateGraphics();
+
+            Learn();
         }
 
         private void Form_Shown(object sender, EventArgs e)
@@ -719,5 +721,164 @@ namespace cyut_Auo_Component_Measurer
             panelStandardIndex++;
 
         }
+
+
+        // -------------------------------Adjust-------------------------------
+        float adjustRatio;
+        Point EBW8Image1Center;
+        EImageBW8 EBW8Image2 = new EImageBW8();
+        EImageBW8 EBW8ImageStd = new EImageBW8();
+        // EFind
+        EPatternFinder EPatternFinder1; // EPatternFinder instance
+        EFoundPattern[] EPatternFinder1FoundPatterns; // EFoundPattern instances
+        EPatternFinder EPatternFinder2; // EPatternFinder instance
+        EFoundPattern[] EPatternFinder2FoundPatterns; // EFoundPattern instances
+        float finder1CenterX;
+        float finder1CenterY;
+
+        float finder2CenterY;
+
+        // ERoi
+        EROIBW8 EBW8Roi1 = new EROIBW8(); //EROIBW8 instance
+        EROIBW8 EBW8Roi2 = new EROIBW8(); //EROIBW8 instance
+        Point ERoi1Center = new Point(383, 679); //手動調整
+
+
+        private void btn_Adjust_Click(object sender, EventArgs e)
+        {
+            // 如果沒有 EBWIImage1
+            if (EBW8Image1 == null || (EBW8Image1.Width == 0 && EBW8Image1.Height == 0))
+            {
+                MessageBox.Show("請先載入圖片或相機截圖");
+                return;
+            }
+
+            Adjust_Horizontal(sender, e); //鏡像
+
+            Adjust_Vertical(sender, e); //垂直翻轉
+
+            Adjust_Fixed(sender, e); //放大 或 縮小會需要多次矯正
+
+            EBW8Image2.CopyTo(EBW8Image1); //讓 EBW8IImage1 為正確的圖像
+
+            // 畫出 EBW8Image1
+            scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image2.Width, EBW8Image2.Height);
+
+            DrawEBW8Image();
+
+            // 畫出 finder
+            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
+            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image1); //找 ERoi2 的位置
+            EPatternFinder1FoundPatterns[0].Draw(graphics, scalingRatio);
+            EPatternFinder2FoundPatterns[0].Draw(graphics, scalingRatio);
+
+        }
+
+        private void Adjust_Fixed(object sender, EventArgs e)
+        {
+            // 位置校正 & 水平校正
+            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
+
+            // 如果沒找到
+            if (EPatternFinder1FoundPatterns[0].Score < 0.8)
+            {
+                MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
+                return;
+            }
+
+            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.X;
+            finder1CenterY = EPatternFinder1FoundPatterns[0].Center.Y;
+
+            EBW8Image2 = new EImageBW8();
+            EBW8Image2.SetSize(EBW8ImageStd);
+
+            adjustRatio = 1 / EPatternFinder1FoundPatterns[0].Scale;
+
+            // ERoi1Center 需要手動調整
+            EasyImage.ScaleRotate(EBW8Image1, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8Image2, 0);
+        }
+
+        private void Adjust_Horizontal(object sender, EventArgs e)
+        {
+            // 水平校正後
+            Adjust_Fixed(sender, e); //水平旋轉 和 大小縮放
+            // 在 EBW8Image2 找 EROI2
+            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image2);
+
+            // 如果 finder2 分數太低
+            // 鏡像旋轉
+            if (EPatternFinder2FoundPatterns[0].Score < 0.8)
+            {
+                EBW8Image2 = new EImageBW8();
+                EBW8Image2.SetSize(EBW8Image1);
+
+                EBW8Image1Center = new Point(EBW8Image1.Width / 2, EBW8Image1.Height / 2);
+
+                EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, -1.00f, 1.00f, 0, EBW8Image2, 0);
+
+                EBW8Image2.CopyTo(EBW8Image1);
+            }
+            else
+            {
+                //Console.WriteLine("Don't need horizontal.");
+            }
+        }
+
+        private void Adjust_Vertical(object sender, EventArgs e)
+        {
+            // 水平校正後
+            Adjust_Fixed(sender, e); //水平旋轉 和 大小縮放
+            // 在 EBW8Image2 找 EROI2
+            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image2); //找 ERoi1 的位置
+            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image2); //找 ERoi2 的位置
+
+            // 如果 finder1Y > finder2Y 旋轉
+            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.Y;
+            finder2CenterY = EPatternFinder2FoundPatterns[0].Center.Y;
+
+            if (finder1CenterX > finder2CenterY)
+            {
+                EBW8Image2 = new EImageBW8();
+                EBW8Image2.SetSize(EBW8Image1);
+
+                EBW8Image1Center = new Point(EBW8Image1.Width / 2, EBW8Image1.Height / 2);
+
+                EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1.00f, -1.00f, 0, EBW8Image2, 0);
+
+                EBW8Image2.CopyTo(EBW8Image1);
+            }
+            else
+            {
+                //Console.WriteLine("Don't need vertical.");
+            }
+        }
+
+        private void Learn()
+        {
+            EBW8ImageStd.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
+
+            EPatternFinder1 = new EPatternFinder();
+            // 先學習不規則圖形
+            // 可用於校正水平位置
+            // Attach the roi to its parent
+            EBW8Roi1.Attach(EBW8ImageStd);
+            EBW8Roi1.SetPlacement(67, 558, 632, 242);
+            EPatternFinder1.Learn(EBW8Roi1);
+
+            EPatternFinder1.AngleTolerance = 50.00f;
+            EPatternFinder1.ScaleTolerance = 0.60f;
+
+            EPatternFinder2 = new EPatternFinder();
+            // 第二個標準點
+            // 用於 鏡像 和 垂直翻轉
+            EBW8Roi2.Attach(EBW8ImageStd);
+            EBW8Roi2.SetPlacement(714, 753, 594, 78);
+            EPatternFinder2.Learn(EBW8Roi2);
+
+            // 由於前面都會校正一次，所以容忍值不用太高，速度會更快
+            EPatternFinder2.AngleTolerance = 10.00f;
+            EPatternFinder2.ScaleTolerance = 0.10f;
+        }
+
     }
 }
