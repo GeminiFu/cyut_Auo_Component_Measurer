@@ -55,6 +55,9 @@ namespace cyut_Auo_Component_Measurer
         public int x = 5;
         public int y = 5;
 
+        float scalingRatio;
+        Graphics graphics;
+
         EImageBW8 EBW8ImageDotGrid = new EImageBW8();
 
         // --------------------------Detect--------------------------
@@ -114,6 +117,9 @@ namespace cyut_Auo_Component_Measurer
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
+
+
+            graphics = pictureBox1.CreateGraphics();
         }
 
         private void Form_Shown(object sender, EventArgs e)
@@ -145,7 +151,43 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            c_view.DrawEBW8Image(EBW8Image1);
+            DrawEBW8Image();
+        }
+
+        private void DrawEBW8Image()
+        {
+            pictureBox1.Image = null;
+            pictureBox1.Refresh();
+            float width = EBW8Image1.Width;
+            scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
+            EBW8Image1.Draw(graphics, scalingRatio);
+        }
+
+        public float CalcRatioWithPictureBox(PictureBox pb, float imageWidth, float imageHeight)
+        {
+            if (pb == null)
+            {
+                MessageBox.Show("No pictureBox.");
+                return 0;
+            }
+
+            if (imageWidth == 0 || imageHeight == 0)
+            {
+                MessageBox.Show("長、寬不能為 0。");
+                return 0;
+            }
+
+
+            float pbWidth = pb.Width;
+            float pbHeight = pb.Height;
+            float pbRatio = pbWidth / pbHeight;
+
+            float imageRatio = imageWidth / imageHeight;
+
+            if (imageRatio > pbRatio)
+                return pbWidth / imageWidth;
+            else
+                return pbHeight / imageHeight;
         }
 
         // --------------------------Menu--------------------------

@@ -297,9 +297,9 @@ namespace cyut_Auo_Component_Measurer
 
     internal class ObjectCircle : ObjectShape
     {
-        internal float diameter;
-        float diameterStd;
-        internal float diameterError;
+        public float diameter;
+        public float diameterStd;
+        public float diameterError;
 
         internal ObjectCircle()
         {
@@ -374,6 +374,7 @@ namespace cyut_Auo_Component_Measurer
 
             diameterStd = tempCircle.diameter;
         }
+
         internal bool InspectCircle(decimal thresholdNG)
         {
             if (diameterError < (float)thresholdNG)
@@ -388,12 +389,12 @@ namespace cyut_Auo_Component_Measurer
 
     internal class ObjectSpecial1 : ObjectShape
     {
-        internal float width;
-        internal float height;
-        float widthStd;
-        float heightStd;
-        internal float widthError;
-        internal float heightError;
+        public float width;
+        public float height;
+        public float widthStd;
+        public float heightStd;
+        public float widthError;
+        public float heightError;
 
         internal ObjectSpecial1()
         {
