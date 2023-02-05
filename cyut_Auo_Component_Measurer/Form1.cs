@@ -397,12 +397,28 @@ namespace cyut_Auo_Component_Measurer
             {
                 ObjectShape shape = (ObjectShape)ObjectSetG[i];
 
-                c_view.ListBoxAddObj(listBox_Measure, shape);
+                ListBoxAddObj(listBox_Measure, shape);
             }
 
             isGolden = true;
         }
 
+        internal void ListBoxAddObj(ListBox listBox, ObjectShape obj)
+        {
+            string objIndex = obj.index.ToString("000");
+            string objCenterX = obj.centerX.ToString("#.#");
+            string objCenterY = obj.centerY.ToString("#.#");
+
+            listBox.Items.Add(objIndex + "(" + objCenterX + "," + objCenterY + ")");
+        }
+
+        public void DrawNGElement(ref ECodedElement element)
+        {
+            codedImage1.Draw(graphics, element, scalingRatio);
+
+            pennelIndex = 0;
+            pennelNGIndex = 0;
+        }
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
@@ -417,7 +433,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ObjectShape shape = (ObjectShape)ObjectSetU[i];
 
-                c_view.ListBoxAddObj(listBox_Measure, shape);
+                ListBoxAddObj(listBox_Measure, shape);
             }
 
             // Inspect
@@ -429,7 +445,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = codedImage1ObjectSelection.GetElement((uint)index);
 
-                c_view.DrawNGElement(ref codedImage1, ref element);
+                DrawNGElement(ref element);
 
                 element.Dispose();
 
@@ -488,7 +504,7 @@ namespace cyut_Auo_Component_Measurer
             ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
 
             DrawEBW8Image();
-            c_view.DrawNGElement(ref codedImage1, ref element);
+            DrawNGElement(ref element);
 
             if (!isGolden)
             {
