@@ -20,6 +20,8 @@ namespace cyut_Auo_Component_Measurer
     public class Measure
     {
         EImageEncoder codedImage1Encoder = new EImageEncoder();
+        ECodedImage2 codedImage;
+
         internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
 
         List<int> NGIndex = new List<int>();
@@ -149,7 +151,7 @@ namespace cyut_Auo_Component_Measurer
                 }
 
                 // 相減儲存在誤差
-                shapeTest.SaveError(shapeStandard);
+                shapeTest.SaveInspectInfo(shapeStandard);
                 // 比對誤差是否在 Threshold 裡面
                 if (shapeTest.Inspect(thresholdNG))
                 {

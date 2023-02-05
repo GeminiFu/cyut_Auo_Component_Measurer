@@ -42,7 +42,7 @@ namespace cyut_Auo_Component_Measurer
         View c_view;
         Control c_control;
         Measure c_measure;
-        ShapeManager c_shape;
+        ShapeOperator c_shape;
 
         // --------------------------Shape--------------------------
         ArrayList ObjectSetG = new ArrayList();
@@ -75,7 +75,7 @@ namespace cyut_Auo_Component_Measurer
             c_view = new View(ref pictureBox1);
             c_control = new Control();
             c_measure = new Measure();
-            c_shape = new ShapeManager();
+            c_shape = new ShapeOperator();
 
         }
 
@@ -343,7 +343,7 @@ namespace cyut_Auo_Component_Measurer
 
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
-            c_measure.BuildObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
+            c_measure.BuildObjectSet(ref ObjectSetG, ref codedImage1ObjectSelection, c_shape.ShapeDetermine);
 
             c_measure.SetObjectG(ref ObjectSetG);
 
@@ -364,7 +364,7 @@ namespace cyut_Auo_Component_Measurer
 
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
-            c_measure.BuildObjectSet(ref ObjectSetU, ref codedImage1ObjectSelection, c_shape.ShapeDeterminer);
+            c_measure.BuildObjectSet(ref ObjectSetU, ref codedImage1ObjectSelection, c_shape.ShapeDetermine);
 
             // show object set information
             for (int i = 0; i < ObjectSetU.Count; i++)

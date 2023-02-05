@@ -15,9 +15,8 @@ using System.Windows.Forms;
 
 namespace cyut_Auo_Component_Measurer
 {
-    // 說明
-    // 人類操作的檢查
-    // 與 Local 交換資料的邏輯
+    // 說明：
+    // 做 data, file 轉換
     internal class Control
     {
         OpenFileDialog openFileDialog1;
@@ -105,7 +104,9 @@ namespace cyut_Auo_Component_Measurer
             for (int i = 0; i < ObjectSetG.Count; i++)
             {
                 Object obj = ObjectSetG[i];
-                ObjectShape shape = JsonConvert.DeserializeObject<ObjectShape>(obj.ToString());
+                ObjectShape shape;
+                Console.WriteLine(JsonConvert.DeserializeObject<ObjectShape>(obj.ToString()));
+                shape = JsonConvert.DeserializeObject<ObjectShape>(obj.ToString());
 
                 switch (shape.shapeName)
                 {
@@ -125,12 +126,15 @@ namespace cyut_Auo_Component_Measurer
                         ObjectSpecial1 special1 = JsonConvert.DeserializeObject<ObjectSpecial1>(obj.ToString());
                         ObjectSetG[i] = special1;
                         break;
+                    default:
+                        Console.WriteLine(shape.shapeName);
+                        break;
                 }
             }
 
             // dot grid image
             dotGridImage.Load(path + "\\Dot_Grid.png");
-
+            Console.WriteLine(ObjectSetG);
             // calibration x y 
             x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
             y = int.Parse(File.ReadAllText(path + "\\Calibration_Y.txt"));
@@ -280,7 +284,7 @@ namespace cyut_Auo_Component_Measurer
                     {
                         errorMessage = BuildNewLocalSetting(ref standard, ObjectSetG, ref dotGridImage, x, y, folderBrowserDialog1.SelectedPath);
 
-                        if(errorMessage != ok)
+                        if (errorMessage != ok)
                             return errorMessage;
                     }
                     else
