@@ -452,7 +452,7 @@ namespace cyut_Auo_Component_Measurer
 
                 ObjectShape shape = (ObjectShape)ObjectSetU[index];
 
-                c_view.ListBoxAddObj(listBox_NG, shape);
+                ListBoxAddObj(listBox_NG, shape);
             }
 
             isGolden = false;
@@ -538,7 +538,7 @@ namespace cyut_Auo_Component_Measurer
                 {
                     batchIndexes.Add(i);
                     element = codedImage1ObjectSelection.GetElement((uint)i);
-                    c_view.DrawElement(ref codedImage1, ref element);
+                    DrawElement(ref element);
 
                     element.Dispose();
                 }
