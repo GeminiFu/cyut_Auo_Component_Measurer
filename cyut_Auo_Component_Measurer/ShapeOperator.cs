@@ -64,7 +64,10 @@ namespace cyut_Auo_Component_Measurer
 
                 if ((area - (float)element.Area) > threshold)
                 {
-                    ObjectCircle circle = new ObjectCircle(ref element);
+                    ObjectCircle circle = new ObjectCircle();
+
+                    circle.SetCenter(ref element);
+                    circle.SetDiameter(ref element);
                     circle.index = index;
 
                     // 圓型
@@ -74,6 +77,7 @@ namespace cyut_Auo_Component_Measurer
                 {
                     ObjectRectangle square = new ObjectRectangle();
                     square.SetSquare();
+                    square.SetCenter(ref element);
                     square.SetWidthHeight(ref element);
                     square.index = index;
 
@@ -88,13 +92,16 @@ namespace cyut_Auo_Component_Measurer
                 if (element.Area > threshold)
                 {
                     ObjectRectangle rectangle = new ObjectRectangle();
+                    rectangle.SetCenter(ref element);
                     rectangle.SetWidthHeight(ref element);
                     rectangle.index = index;
                     return rectangle;
                 }
                 else
                 {
-                    ObjectSpecial1 special1 = new ObjectSpecial1(ref element);
+                    ObjectSpecial1 special1 = new ObjectSpecial1();
+                    special1.SetCenter(ref element);
+                    special1.SetWidthHeight(ref element);
                     special1.index = index;
 
                     return special1;
@@ -118,7 +125,7 @@ namespace cyut_Auo_Component_Measurer
 
         private string ok = "Shape is ok.";
 
-        internal string OK { get { return ok; } } 
+        internal string OK { get { return ok; } }
 
 
         internal ObjectShape()
@@ -127,7 +134,7 @@ namespace cyut_Auo_Component_Measurer
             checkResult = -1;
         }
 
-        protected void SetCenter(ref ECodedElement element)
+        internal void SetCenter(ref ECodedElement element)
         {
             centerX = element.BoundingBoxCenterX;
             centerY = element.BoundingBoxCenterY;
@@ -185,8 +192,9 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectRectangle()
         {
-                shapeNo = 0;
-                shapeName = "rectangle";
+            shapeNo = 0;
+            shapeName = "rectangle";
+
             // -------------------delegate-------------------
             inShapeEvent += IsInRectangle;
             saveInspectInfoEvent += SaveInspectInfoRectangle;
@@ -202,16 +210,14 @@ namespace cyut_Auo_Component_Measurer
 
         internal string SetWidthHeight(ref ECodedElement element)
         {
-            if (element != null)
+            if (element == null)
             {
-                SetCenter(ref element);
-                return "Rectangle SetWidthHeight error.";
+                return "Rectangle SetWidthHeight error, element is null.";
             }
-
             width = element.BoundingBoxWidth;
             height = element.BoundingBoxHeight;
 
-            
+
             return OK;
         }
 
@@ -295,23 +301,31 @@ namespace cyut_Auo_Component_Measurer
         float diameterStd;
         internal float diameterError;
 
-        internal ObjectCircle(ref ECodedElement element)
+        internal ObjectCircle()
         {
             shapeNo = 2;
             shapeName = "circle";
 
-            if (element != null)
-            {
 
-                SetCenter(ref element);
-                diameter = element.BoundingBoxWidth;
-            }
             // -------------------delegate-------------------
             inShapeEvent += IsInCircle;
 
             saveInspectInfoEvent += SaveInspectInfoCircle;
 
             inspectEvent += InspectCircle;
+        }
+
+        internal string SetDiameter(ref ECodedElement element)
+        {
+            if (element == null)
+            {
+
+                return "Circle SetDiameter error, element is null.";
+            }
+
+            diameter = element.BoundingBoxWidth;
+
+            return OK;
         }
 
         private ECircle MeasureCircle(ref EWorldShape EWorldShape, ref EImageBW8 image, ref ECodedElement element)
@@ -381,23 +395,32 @@ namespace cyut_Auo_Component_Measurer
         internal float widthError;
         internal float heightError;
 
-        internal ObjectSpecial1(ref ECodedElement element)
+        internal ObjectSpecial1()
         {
             shapeNo = 3;
             shapeName = "special1";
-            if (element != null)
-            {
 
-                SetCenter(ref element);
-                width = element.BoundingBoxWidth;
-                height = element.BoundingBoxHeight;
-            }
+
             inShapeEvent += IsInSpecial1;
 
             saveInspectInfoEvent += SaveInspectInfoSpecial1;
 
             inspectEvent += InspectSpecial1;
         }
+
+        internal string SetWidthHeight(ref ECodedElement element)
+        {
+            if (element == null)
+            {
+                return "Special1 SetWidthHeight error, element is null.";
+            }
+
+            width = element.BoundingBoxWidth;
+            height = element.BoundingBoxHeight;
+
+            return OK;
+        }
+
 
         //回傳量測的寬與高
         internal EPoint MeasureSpecial(ref EWorldShape EWorldShape, EImageBW8 image, ECodedElement element)

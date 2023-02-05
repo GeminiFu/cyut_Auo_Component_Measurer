@@ -105,7 +105,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 Object obj = ObjectSetG[i];
                 ObjectShape shape;
-                Console.WriteLine(JsonConvert.DeserializeObject<ObjectShape>(obj.ToString()));
+
                 shape = JsonConvert.DeserializeObject<ObjectShape>(obj.ToString());
 
                 switch (shape.shapeName)
