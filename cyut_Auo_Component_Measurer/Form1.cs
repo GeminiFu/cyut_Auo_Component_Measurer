@@ -39,7 +39,6 @@ namespace cyut_Auo_Component_Measurer
         bool isGolden;
 
         // --------------------------Instance--------------------------
-        View c_view;
         Control c_control;
         Measure c_measure;
         ShapeOperator c_shape;
@@ -79,7 +78,6 @@ namespace cyut_Auo_Component_Measurer
         {
             InitializeComponent();
 
-            c_view = new View(ref pictureBox1);
             c_control = new Control();
             c_measure = new Measure();
             c_shape = new ShapeOperator();
@@ -475,16 +473,65 @@ namespace cyut_Auo_Component_Measurer
 
             if (isGolden)
             {
-                c_view.RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetG);
+                RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetG);
             }
             else
             {
-                c_view.RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetU);
+                RenderShapeInfo(panel_Measure_Num, selectedIndex, ObjectSetU);
             }
 
             panel_NG_Num.Controls.Clear();
 
             element.Dispose();
+        }
+        public void RenderShapeInfo(Panel panel, int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanel(panel, "寬", square.width);
+                    AddItemInPanel(panel, "高", square.height);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanel(panel, "寬", rect.width);
+                    AddItemInPanel(panel, "高", rect.height);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInPanel(panel, "半徑", circle.diameter);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInPanel(panel, "寬", special1.width);
+                    AddItemInPanel(panel, "高", special1.height);
+                    break;
+            }
+
+        }
+        internal void AddItemInPanel(Panel panel, string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, pennelIndex * 30);
+            label_Title.Width = 70;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, pennelIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel.Controls.Add(label_Title);
+            panel.Controls.Add(label_Value);
+            pennelIndex++;
         }
 
         private void listBox_NG_Selected_Changed(object sender, EventArgs e)
@@ -508,10 +555,59 @@ namespace cyut_Auo_Component_Measurer
 
             if (!isGolden)
             {
-                c_view.RenderShapeErrorInfo(panel_NG_Num, selectedIndex, ObjectSetU);
+                RenderShapeErrorInfo(panel_NG_Num, selectedIndex, ObjectSetU);
             }
 
             element.Dispose();
+        }
+        public void RenderShapeErrorInfo(Panel panel, int index, ArrayList ObjectSet)
+        {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "寬誤差", square.widthError);
+                    AddItemInNGPanel(panel, "高誤差", square.heightError);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "寬誤差", rect.widthError);
+                    AddItemInNGPanel(panel, "高誤差", rect.heightError);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInNGPanel(panel, "半徑誤差", circle.diameterError);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInNGPanel(panel, "寬誤差", special1.widthError);
+                    AddItemInNGPanel(panel, "高誤差", special1.heightError);
+                    break;
+            }
+
+        }
+        internal void AddItemInNGPanel(Panel panel, string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, pennelNGIndex * 30);
+            label_Title.Width = 70;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, pennelNGIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel.Controls.Add(label_Title);
+            panel.Controls.Add(label_Value);
+            pennelNGIndex++;
         }
 
         List<int> batchIndexes = new List<int>();
