@@ -58,6 +58,10 @@ namespace cyut_Auo_Component_Measurer
         float scalingRatio;
         Graphics graphics;
 
+        int pennelIndex = 0;
+        int pennelNGIndex = 0;
+
+
         EImageBW8 EBW8ImageDotGrid = new EImageBW8();
 
         // --------------------------Detect--------------------------
@@ -125,7 +129,7 @@ namespace cyut_Auo_Component_Measurer
         private void Form_Shown(object sender, EventArgs e)
         {
             //EBW8Image1.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
-            //c_view.DrawEBW8Image(EBW8Image1);
+            //DrawEBW8Image();
             //btn_Detect_Click(sender, e);
             //btn_Shape_Click(sender, e);
         }
@@ -231,11 +235,12 @@ namespace cyut_Auo_Component_Measurer
                 // bitmap to EImageBW8
                 BitmapToEImageBW8(ref bmp, ref EBW8Image1);
 
-                c_view.DrawEBW8Image(EBW8Image1);
+                DrawEBW8Image();
             }
 
             isStreaming = !isStreaming;
         }
+
 
         private void Capture_ImageGrabbed(object sender, EventArgs e)
         {
@@ -249,7 +254,7 @@ namespace cyut_Auo_Component_Measurer
                     capture.Retrieve(m);
                     bmp = m.ToBitmap(); //不能使用 new Bitmap(m.Bitmap)
 
-                    c_view.DrawBitmap(bmp);
+                    pictureBox1.Image = bmp;
 
                     m.Dispose();
 
@@ -313,11 +318,11 @@ namespace cyut_Auo_Component_Measurer
 
             if (isGolden)
             {
-                index = c_measure.IsClickObject(ref ObjectSetG, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
+                index = c_measure.IsClickObject(ref ObjectSetG, e.X / scalingRatio, e.Y / scalingRatio);
             }
             else
             {
-                index = c_measure.IsClickObject(ref ObjectSetU, e.X / c_view.GetScalingRatio, e.Y / c_view.GetScalingRatio);
+                index = c_measure.IsClickObject(ref ObjectSetU, e.X / scalingRatio, e.Y / scalingRatio);
             }
 
             if (index == -1)
@@ -326,14 +331,6 @@ namespace cyut_Auo_Component_Measurer
             }
             else
             {
-                ECodedElement element = codedImage1ObjectSelection.GetElement((uint)index);
-
-                c_view.DrawEBW8Image(EBW8Image1);
-                c_view.DrawElement(ref codedImage1, ref element);
-
-                element.Dispose();
-
-
                 // 如果 NG index == index
                 // NG selected
 
@@ -352,6 +349,13 @@ namespace cyut_Auo_Component_Measurer
                 }
 
             }
+        }
+        public void DrawElement(ref ECodedElement element)
+        {
+            codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, scalingRatio);
+
+            pennelIndex = 0;
+            pennelNGIndex = 0;
         }
 
 
@@ -381,7 +385,7 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Measure_Standard_Click(object sender, EventArgs e)
         {
-            c_view.DrawEBW8Image(EBW8Image1);
+            DrawEBW8Image();
 
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
@@ -402,7 +406,7 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
-            c_view.DrawEBW8Image(EBW8Image1);
+            DrawEBW8Image();
 
             c_measure.Detect(ref EBW8Image1, ref codedImage1, ref codedImage1ObjectSelection);
 
@@ -450,8 +454,8 @@ namespace cyut_Auo_Component_Measurer
 
             ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
 
-            c_view.DrawEBW8Image(EBW8Image1);
-            c_view.DrawElement(ref codedImage1, ref element);
+            DrawEBW8Image();
+            DrawElement(ref element);
 
             if (isGolden)
             {
@@ -483,7 +487,7 @@ namespace cyut_Auo_Component_Measurer
 
             ECodedElement element = codedImage1ObjectSelection.GetElement((uint)selectedIndex);
 
-            c_view.DrawEBW8Image(EBW8Image1);
+            DrawEBW8Image();
             c_view.DrawNGElement(ref codedImage1, ref element);
 
             if (!isGolden)
