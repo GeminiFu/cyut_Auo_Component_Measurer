@@ -41,12 +41,12 @@
             this.btn_Measure_Product = new System.Windows.Forms.Button();
             this.num_Threshold_NG = new System.Windows.Forms.NumericUpDown();
             this.label_Threshold_NG = new System.Windows.Forms.Label();
-            this.panel_Measure_Num = new System.Windows.Forms.Panel();
+            this.panel_Measure = new System.Windows.Forms.Panel();
             this.listBox_Measure = new System.Windows.Forms.ListBox();
             this.label_Measure = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.listBox_NG = new System.Windows.Forms.ListBox();
-            this.panel_NG_Num = new System.Windows.Forms.Panel();
+            this.panel_NG = new System.Windows.Forms.Panel();
             this.btn_Batch_Search = new System.Windows.Forms.Button();
             this.numHeight = new System.Windows.Forms.NumericUpDown();
             this.numWidth = new System.Windows.Forms.NumericUpDown();
@@ -54,6 +54,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.btn_Batch_Setting = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.panel_Standard = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -76,7 +77,7 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(191, 161);
+            this.pictureBox1.Location = new System.Drawing.Point(219, 135);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(648, 414);
@@ -104,7 +105,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
-            this.menuStrip1.Size = new System.Drawing.Size(1100, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(1216, 25);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -203,13 +204,13 @@
             this.label_Threshold_NG.TabIndex = 21;
             this.label_Threshold_NG.Text = "尺寸NG門檻值:";
             // 
-            // panel_Measure_Num
+            // panel_Measure
             // 
-            this.panel_Measure_Num.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_Measure_Num.Location = new System.Drawing.Point(870, 226);
-            this.panel_Measure_Num.Name = "panel_Measure_Num";
-            this.panel_Measure_Num.Size = new System.Drawing.Size(200, 90);
-            this.panel_Measure_Num.TabIndex = 23;
+            this.panel_Measure.BackColor = System.Drawing.SystemColors.Control;
+            this.panel_Measure.Location = new System.Drawing.Point(870, 226);
+            this.panel_Measure.Name = "panel_Measure";
+            this.panel_Measure.Size = new System.Drawing.Size(200, 90);
+            this.panel_Measure.TabIndex = 23;
             // 
             // listBox_Measure
             // 
@@ -249,13 +250,13 @@
             this.listBox_NG.TabIndex = 29;
             this.listBox_NG.SelectedIndexChanged += new System.EventHandler(this.listBox_NG_Selected_Changed);
             // 
-            // panel_NG_Num
+            // panel_NG
             // 
-            this.panel_NG_Num.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_NG_Num.Location = new System.Drawing.Point(870, 485);
-            this.panel_NG_Num.Name = "panel_NG_Num";
-            this.panel_NG_Num.Size = new System.Drawing.Size(200, 90);
-            this.panel_NG_Num.TabIndex = 28;
+            this.panel_NG.BackColor = System.Drawing.SystemColors.Control;
+            this.panel_NG.Location = new System.Drawing.Point(870, 485);
+            this.panel_NG.Name = "panel_NG";
+            this.panel_NG.Size = new System.Drawing.Size(200, 90);
+            this.panel_NG.TabIndex = 28;
             // 
             // btn_Batch_Search
             // 
@@ -276,7 +277,7 @@
             0,
             0,
             65536});
-            this.numHeight.Location = new System.Drawing.Point(78, 581);
+            this.numHeight.Location = new System.Drawing.Point(401, 624);
             this.numHeight.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -295,7 +296,7 @@
             0,
             0,
             65536});
-            this.numWidth.Location = new System.Drawing.Point(78, 548);
+            this.numWidth.Location = new System.Drawing.Point(401, 591);
             this.numWidth.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -309,7 +310,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 581);
+            this.label7.Location = new System.Drawing.Point(336, 624);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(59, 16);
             this.label7.TabIndex = 41;
@@ -318,7 +319,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(13, 550);
+            this.label9.Location = new System.Drawing.Point(336, 593);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(59, 16);
             this.label9.TabIndex = 40;
@@ -344,11 +345,19 @@
             this.button1.Text = "Adjust";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // panel_Standard
+            // 
+            this.panel_Standard.BackColor = System.Drawing.SystemColors.Control;
+            this.panel_Standard.Location = new System.Drawing.Point(12, 498);
+            this.panel_Standard.Name = "panel_Standard";
+            this.panel_Standard.Size = new System.Drawing.Size(200, 153);
+            this.panel_Standard.TabIndex = 23;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1100, 654);
+            this.ClientSize = new System.Drawing.Size(1216, 654);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btn_Batch_Search);
             this.Controls.Add(this.numHeight);
@@ -358,10 +367,11 @@
             this.Controls.Add(this.btn_Batch_Setting);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox_NG);
-            this.Controls.Add(this.panel_NG_Num);
+            this.Controls.Add(this.panel_NG);
             this.Controls.Add(this.label_Measure);
             this.Controls.Add(this.listBox_Measure);
-            this.Controls.Add(this.panel_Measure_Num);
+            this.Controls.Add(this.panel_Standard);
+            this.Controls.Add(this.panel_Measure);
             this.Controls.Add(this.num_Threshold_NG);
             this.Controls.Add(this.label_Threshold_NG);
             this.Controls.Add(this.btn_Measure_Product);
@@ -404,12 +414,12 @@
         private System.Windows.Forms.Button btn_Measure_Product;
         private System.Windows.Forms.NumericUpDown num_Threshold_NG;
         private System.Windows.Forms.Label label_Threshold_NG;
-        private System.Windows.Forms.Panel panel_Measure_Num;
+        private System.Windows.Forms.Panel panel_Measure;
         private System.Windows.Forms.ListBox listBox_Measure;
         private System.Windows.Forms.Label label_Measure;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListBox listBox_NG;
-        private System.Windows.Forms.Panel panel_NG_Num;
+        private System.Windows.Forms.Panel panel_NG;
         private System.Windows.Forms.Button btn_Batch_Search;
         private System.Windows.Forms.NumericUpDown numHeight;
         private System.Windows.Forms.NumericUpDown numWidth;
@@ -417,6 +427,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btn_Batch_Setting;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel panel_Standard;
     }
 }
 

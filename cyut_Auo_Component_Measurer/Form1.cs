@@ -57,8 +57,9 @@ namespace cyut_Auo_Component_Measurer
         float scalingRatio;
         Graphics graphics;
 
-        int pennelIndex = 0;
-        int pennelNGIndex = 0;
+        int panelIndex = 0;
+        int panelNGIndex = 0;
+        int panelStandardIndex = 0;
 
         List<int> batchIndexes = new List<int>();
 
@@ -414,13 +415,17 @@ namespace cyut_Auo_Component_Measurer
             if (isGolden)
             {
                 RenderShapeInfo(selectedIndex, ObjectSetG);
+                RenderStandard(selectedIndex, ObjectSetG);
+
             }
             else
             {
                 RenderShapeInfo(selectedIndex, ObjectSetU);
+                RenderStandard(selectedIndex, ObjectSetU);
+
             }
 
-            panel_NG_Num.Controls.Clear();
+            panel_NG.Controls.Clear();
 
             element.Dispose();
         }
@@ -546,15 +551,17 @@ namespace cyut_Auo_Component_Measurer
         {
             codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, scalingRatio);
 
-            pennelIndex = 0;
-            pennelNGIndex = 0;
+            panelIndex = 0;
+            panelNGIndex = 0;
+            panelStandardIndex = 0;
         }
         private void DrawNGElement(ref ECodedElement element)
         {
             codedImage1.Draw(graphics, element, scalingRatio);
 
-            pennelIndex = 0;
-            pennelNGIndex = 0;
+            panelIndex = 0;
+            panelNGIndex = 0;
+            panelStandardIndex = 0;
         }
 
 
@@ -563,7 +570,7 @@ namespace cyut_Auo_Component_Measurer
         {
             ObjectShape shape = (ObjectShape)ObjectSet[index];
 
-            panel_Measure_Num.Controls.Clear();
+            panel_Measure.Controls.Clear();
 
             switch (shape.shapeName)
             {
@@ -594,26 +601,26 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, pennelIndex * 30);
+            label_Title.Location = new Point(0, panelIndex * 30);
             label_Title.Width = 70;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
             label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, pennelIndex * 30);
+            label_Value.Location = new Point(label_Title.Width + 10, panelIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
-            panel_Measure_Num.Controls.Add(label_Title);
-            panel_Measure_Num.Controls.Add(label_Value);
-            pennelIndex++;
+            panel_Measure.Controls.Add(label_Title);
+            panel_Measure.Controls.Add(label_Value);
+            panelIndex++;
         }
 
         private void RenderShapeErrorInfo(int index, ArrayList ObjectSet)
         {
             ObjectShape shape = (ObjectShape)ObjectSet[index];
 
-            panel_NG_Num.Controls.Clear();
+            panel_NG.Controls.Clear();
 
             switch (shape.shapeName)
             {
@@ -644,27 +651,72 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, pennelNGIndex * 30);
+            label_Title.Location = new Point(0, panelNGIndex * 30);
             label_Title.Width = 70;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
             label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, pennelNGIndex * 30);
+            label_Value.Location = new Point(label_Title.Width + 10, panelNGIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
-            panel_NG_Num.Controls.Add(label_Title);
-            panel_NG_Num.Controls.Add(label_Value);
-            pennelNGIndex++;
+            panel_NG.Controls.Add(label_Title);
+            panel_NG.Controls.Add(label_Value);
+            panelNGIndex++;
         }
 
-        private void RenderStandard()
+        private void RenderStandard(int index, ArrayList ObjectSet)
         {
+            ObjectShape shape = (ObjectShape)ObjectSet[index];
+
+            panel_Standard.Controls.Clear();
+
+            switch (shape.shapeName)
+            {
+                case "square":
+                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanelStandard("標準寬", square.widthStd);
+                    AddItemInPanelStandard("標準高", square.heightStd);
+                    break;
+                case "rectangle":
+                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
+                    AddItemInPanelStandard("標準寬", rect.widthStd);
+                    AddItemInPanelStandard("標準高", rect.heightStd);
+                    break;
+                case "circle":
+                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
+                    AddItemInPanelStandard("標準半徑", circle.diameterStd);
+                    break;
+                case "special1":
+                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
+                    AddItemInPanelStandard("標準寬", special1.widthStd);
+                    AddItemInPanelStandard("標準高", special1.heightStd);
+                    break;
+            }
+
 
         }
-        private void AddItemInStandardPanel() 
-        { 
+        private void AddItemInPanelStandard(string labelText, float value) 
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, panelStandardIndex * 30);
+            label_Title.Width = 70;
+
+            NumericUpDown num_Standard = new NumericUpDown();
+            decimal number = decimal.Round((decimal)value, 1);
+            num_Standard.Increment = 2;
+            num_Standard.Maximum = 5000;
+            num_Standard.Value = number;
+
+            num_Standard.Location = new Point(label_Title.Width + 10, panelStandardIndex * 30);
+            num_Standard.Width = 80;
+
+            panel_Standard.Controls.Add(label_Title);
+            panel_Standard.Controls.Add(num_Standard);
+            panelStandardIndex++;
 
         }
     }
