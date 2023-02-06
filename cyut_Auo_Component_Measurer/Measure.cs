@@ -25,6 +25,9 @@ namespace cyut_Auo_Component_Measurer
 
         internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
 
+        internal ArrayList ObjectSetG = new ArrayList();
+        internal ArrayList ObjectSetU = new ArrayList();
+
         List<int> NGIndex = new List<int>();
 
         internal List<int> GetNGIndex { get { return NGIndex; } }
@@ -61,7 +64,7 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------ObjectSet-------------------------------
-        internal void BuildObjectSet(ref ArrayList ObjectSet, ElementsFunction elementsFunction)
+        internal void BuildObjectSet(ArrayList ObjectSet, ElementsFunction elementsFunction)
         {
             uint length = codedSelection.ElementCount;
             ECodedElement element;
@@ -78,7 +81,7 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        internal void SetObjectG(ref ArrayList ObjectSetG)
+        internal void SetObjectG(ArrayList ObjectSetG)
         {
             foreach (ObjectShape shape in ObjectSetG)
             {
