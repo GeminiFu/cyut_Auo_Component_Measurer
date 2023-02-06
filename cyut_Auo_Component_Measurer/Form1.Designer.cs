@@ -48,18 +48,12 @@
             this.listBox_NG = new System.Windows.Forms.ListBox();
             this.panel_NG = new System.Windows.Forms.Panel();
             this.btn_Batch_Search = new System.Windows.Forms.Button();
-            this.numHeight = new System.Windows.Forms.NumericUpDown();
-            this.numWidth = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this.btn_Batch_Setting = new System.Windows.Forms.Button();
             this.panel_Standard = new System.Windows.Forms.Panel();
             this.btn_Adjust = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Load
@@ -269,62 +263,6 @@
             this.btn_Batch_Search.UseVisualStyleBackColor = true;
             this.btn_Batch_Search.Click += new System.EventHandler(this.btn_Batch_Search_Click);
             // 
-            // numHeight
-            // 
-            this.numHeight.DecimalPlaces = 1;
-            this.numHeight.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.numHeight.Location = new System.Drawing.Point(401, 624);
-            this.numHeight.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.numHeight.Name = "numHeight";
-            this.numHeight.Size = new System.Drawing.Size(73, 27);
-            this.numHeight.TabIndex = 43;
-            this.numHeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // numWidth
-            // 
-            this.numWidth.DecimalPlaces = 1;
-            this.numWidth.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.numWidth.Location = new System.Drawing.Point(401, 591);
-            this.numWidth.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.numWidth.Name = "numWidth";
-            this.numWidth.Size = new System.Drawing.Size(73, 27);
-            this.numWidth.TabIndex = 42;
-            this.numWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(336, 624);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(59, 16);
-            this.label7.TabIndex = 41;
-            this.label7.Text = "標準高:";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(336, 593);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(59, 16);
-            this.label9.TabIndex = 40;
-            this.label9.Text = "標準寬:";
-            // 
             // btn_Batch_Setting
             // 
             this.btn_Batch_Setting.Font = new System.Drawing.Font("新細明體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -361,10 +299,6 @@
             this.ClientSize = new System.Drawing.Size(1216, 654);
             this.Controls.Add(this.btn_Adjust);
             this.Controls.Add(this.btn_Batch_Search);
-            this.Controls.Add(this.numHeight);
-            this.Controls.Add(this.numWidth);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label9);
             this.Controls.Add(this.btn_Batch_Setting);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox_NG);
@@ -393,8 +327,6 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -422,10 +354,6 @@
         private System.Windows.Forms.ListBox listBox_NG;
         private System.Windows.Forms.Panel panel_NG;
         private System.Windows.Forms.Button btn_Batch_Search;
-        private System.Windows.Forms.NumericUpDown numHeight;
-        private System.Windows.Forms.NumericUpDown numWidth;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btn_Batch_Setting;
         private System.Windows.Forms.Panel panel_Standard;
         private System.Windows.Forms.Button btn_Adjust;

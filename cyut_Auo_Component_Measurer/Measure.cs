@@ -20,7 +20,8 @@ namespace cyut_Auo_Component_Measurer
     public class Measure
     {
         EImageEncoder codedImage1Encoder = new EImageEncoder();
-        ECodedImage2 codedImage;
+        internal ECodedImage2 codedImage1 = new ECodedImage2();
+        internal EObjectSelection codedSelection = new EObjectSelection();
 
         internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
 
@@ -31,7 +32,7 @@ namespace cyut_Auo_Component_Measurer
         internal Measure() { }
 
         // -------------------------------Detect-------------------------------
-        internal void Detect(ref EImageBW8 image, ref ECodedImage2 codedImage, ref EObjectSelection codedImageObjectSelection)
+        internal void Detect(ref EImageBW8 image)
         {
             // 如果 EBW8Image1
             if (image == null || (image.Width == 0 && image.Height == 0))
@@ -44,32 +45,32 @@ namespace cyut_Auo_Component_Measurer
             //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.Mode = EGrayscaleSingleThreshold.MinResidue; //為初始設定
 
             // codedImage1 圖層
-            codedImage1Encoder.Encode(image, codedImage);
+            codedImage1Encoder.Encode(image, codedImage1);
 
             // codedImage1ObjectSelection 設定
-            codedImageObjectSelection.Clear();
-            codedImageObjectSelection.FeretAngle = 0.00f;
+            codedSelection.Clear();
+            codedSelection.FeretAngle = 0.00f;
 
             // codedImage1ObjectSelection 圖層
-            codedImageObjectSelection.AddObjects(codedImage);
-            codedImageObjectSelection.AttachedImage = image;
+            codedSelection.AddObjects(codedImage1);
+            codedSelection.AttachedImage = image;
 
             // don't care area 條件
-            codedImageObjectSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
-            codedImageObjectSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
+            codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
+            codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
         }
 
         // -------------------------------ObjectSet-------------------------------
-        internal void BuildObjectSet(ref ArrayList ObjectSet, ref EObjectSelection codedSelector, ElementsFunction elementsFunction)
+        internal void BuildObjectSet(ref ArrayList ObjectSet, ElementsFunction elementsFunction)
         {
-            uint length = codedSelector.ElementCount;
+            uint length = codedSelection.ElementCount;
             ECodedElement element;
 
             ObjectSet.Clear();
 
             for (uint i = 0; i < length; i++)
             {
-                element = codedSelector.GetElement(i);
+                element = codedSelection.GetElement(i);
 
                 ObjectSet.Add(elementsFunction(ref element, i));
 
