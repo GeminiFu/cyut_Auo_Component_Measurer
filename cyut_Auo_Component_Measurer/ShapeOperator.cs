@@ -116,7 +116,6 @@ namespace cyut_Auo_Component_Measurer
     internal class ObjectShape
     {
         // 用 internal，deserielize 會無法賦予值
-        public int shapeNo; //-1: unknown, 0: rectangle, 1: circle, 2: special
         public string shapeName;
         //internal EPoint center; //注意:原本使用這個物件，Serialize的時候會導致StackOverflow的例外
         public float centerX, centerY;
@@ -130,7 +129,6 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectShape()
         {
-            shapeNo = -1;
             checkResult = -1;
         }
 
@@ -166,7 +164,6 @@ namespace cyut_Auo_Component_Measurer
 
         internal bool Inspect(decimal thresholdNG)
         {
-            Console.WriteLine("thresholdNG is: " + thresholdNG);
             return inspectEvent.Invoke(thresholdNG);
         }
 
@@ -203,7 +200,6 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectRectangle()
         {
-            shapeNo = 0;
             shapeName = "rectangle";
 
             // -------------------delegate-------------------
@@ -216,7 +212,6 @@ namespace cyut_Auo_Component_Measurer
 
         internal void SetSquare()
         {
-            shapeNo = 1;
             shapeName = "square";
         }
 
@@ -320,7 +315,6 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectCircle()
         {
-            shapeNo = 2;
             shapeName = "circle";
 
 
@@ -415,7 +409,6 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectSpecial1()
         {
-            shapeNo = 3;
             shapeName = "special1";
 
 

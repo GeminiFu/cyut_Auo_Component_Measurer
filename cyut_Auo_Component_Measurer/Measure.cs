@@ -95,13 +95,6 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        internal void SetObjectU(ref ArrayList ObjectSetG, ref ArrayList ObjectSetU)
-        {
-            // inspect
-            // setting standard
-            // setting error
-        }
-
         internal int IsClickObject(ref ArrayList ObjectSet, float clickX, float clickY)
         {
             foreach (ObjectShape shape in ObjectSet)
