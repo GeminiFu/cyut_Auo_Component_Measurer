@@ -66,7 +66,6 @@ namespace cyut_Auo_Component_Measurer
             string errorMessage;
 
             string path = Environment.CurrentDirectory;
-
             // load ObjectSetG, Dot grid
             errorMessage = LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, path);
 
@@ -134,7 +133,6 @@ namespace cyut_Auo_Component_Measurer
 
             // dot grid image
             dotGridImage.Load(path + "\\Dot_Grid.png");
-            Console.WriteLine(ObjectSetG);
             // calibration x y 
             x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
             y = int.Parse(File.ReadAllText(path + "\\Calibration_Y.txt"));

@@ -248,11 +248,11 @@ namespace cyut_Auo_Component_Measurer
         {
             ObjectRectangle tempRectangle = (ObjectRectangle)objectStandard;
 
-            widthError = Math.Abs(width - tempRectangle.width);
-            heightError = Math.Abs(height - tempRectangle.height);
+            widthError = Math.Abs(width - tempRectangle.widthStd);
+            heightError = Math.Abs(height - tempRectangle.heightStd);
 
-            widthStd = tempRectangle.width;
-            heightStd = tempRectangle.height;
+            widthStd = tempRectangle.widthStd;
+            heightStd = tempRectangle.heightStd;
         }
 
         internal bool InspectRectangle(decimal thresholdNG)
@@ -381,9 +381,9 @@ namespace cyut_Auo_Component_Measurer
         internal void SaveInspectInfoCircle(ObjectShape objectStandard)
         {
             ObjectCircle tempCircle = (ObjectCircle)objectStandard;
-            diameterError = Math.Abs(diameter - tempCircle.diameter);
+            diameterError = Math.Abs(diameter - tempCircle.diameterStd);
 
-            diameterStd = tempCircle.diameter;
+            diameterStd = tempCircle.diameterStd;
         }
 
         internal bool InspectCircle(decimal thresholdNG)
@@ -512,11 +512,11 @@ namespace cyut_Auo_Component_Measurer
         internal void SaveInspectInfoSpecial1(ObjectShape objectStandard)
         {
             ObjectSpecial1 tempSpecial1 = (ObjectSpecial1)objectStandard;
-            widthError = Math.Abs(width - tempSpecial1.width);
-            heightError = Math.Abs(height - tempSpecial1.height);
+            widthError = Math.Abs(width - tempSpecial1.widthStd);
+            heightError = Math.Abs(height - tempSpecial1.heightStd);
 
-            widthStd = tempSpecial1.width;
-            heightStd = tempSpecial1.height;
+            widthStd = tempSpecial1.widthStd;
+            heightStd = tempSpecial1.heightStd;
         }
 
         internal bool InspectSpecial1(decimal thresholdNG)

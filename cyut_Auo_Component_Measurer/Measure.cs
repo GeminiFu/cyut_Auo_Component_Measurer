@@ -149,7 +149,6 @@ namespace cyut_Auo_Component_Measurer
 
                 // 把 standard 設置給它 (可以不用)
                 // 比對兩個是不是同樣的圖形 (暫時不用)
-
                 if (shapeTest.GetType() != shapeStandard.GetType())
                 {
                     Console.WriteLine("形狀不同"); // 長方形和正方形的形狀判定

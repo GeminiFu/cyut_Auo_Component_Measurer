@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btn_Load = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btn_Camera = new System.Windows.Forms.Button();
@@ -58,12 +59,14 @@
             // 
             // btn_Load
             // 
-            this.btn_Load.Location = new System.Drawing.Point(63, 72);
+            this.btn_Load.Image = ((System.Drawing.Image)(resources.GetObject("btn_Load.Image")));
+            this.btn_Load.Location = new System.Drawing.Point(54, 39);
             this.btn_Load.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Load.Name = "btn_Load";
-            this.btn_Load.Size = new System.Drawing.Size(112, 31);
+            this.btn_Load.Size = new System.Drawing.Size(100, 100);
             this.btn_Load.TabIndex = 0;
             this.btn_Load.Text = "載入圖片";
+            this.btn_Load.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Load.UseVisualStyleBackColor = true;
             this.btn_Load.Click += new System.EventHandler(this.btn_Load_Click);
             // 
@@ -71,7 +74,7 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(219, 135);
+            this.pictureBox1.Location = new System.Drawing.Point(242, 201);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(648, 414);
@@ -82,12 +85,14 @@
             // 
             // btn_Camera
             // 
-            this.btn_Camera.Location = new System.Drawing.Point(212, 72);
+            this.btn_Camera.Image = global::cyut_Auo_Component_Measurer.Properties.Resources.video_camera;
+            this.btn_Camera.Location = new System.Drawing.Point(207, 39);
             this.btn_Camera.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Camera.Name = "btn_Camera";
-            this.btn_Camera.Size = new System.Drawing.Size(112, 31);
+            this.btn_Camera.Size = new System.Drawing.Size(100, 100);
             this.btn_Camera.TabIndex = 2;
             this.btn_Camera.Text = "使用相機";
+            this.btn_Camera.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Camera.UseVisualStyleBackColor = true;
             this.btn_Camera.Click += new System.EventHandler(this.btn_Camera_Click);
             // 
@@ -143,23 +148,27 @@
             // 
             // btn_Measure_Standard
             // 
-            this.btn_Measure_Standard.Location = new System.Drawing.Point(30, 361);
+            this.btn_Measure_Standard.Image = global::cyut_Auo_Component_Measurer.Properties.Resources.graphic_design;
+            this.btn_Measure_Standard.Location = new System.Drawing.Point(54, 256);
             this.btn_Measure_Standard.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Measure_Standard.Name = "btn_Measure_Standard";
-            this.btn_Measure_Standard.Size = new System.Drawing.Size(112, 31);
+            this.btn_Measure_Standard.Size = new System.Drawing.Size(100, 100);
             this.btn_Measure_Standard.TabIndex = 6;
             this.btn_Measure_Standard.Text = "測量標準物";
+            this.btn_Measure_Standard.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Measure_Standard.UseVisualStyleBackColor = true;
             this.btn_Measure_Standard.Click += new System.EventHandler(this.btn_Measure_Standard_Click);
             // 
             // btn_Measure_Product
             // 
-            this.btn_Measure_Product.Location = new System.Drawing.Point(546, 72);
+            this.btn_Measure_Product.Image = global::cyut_Auo_Component_Measurer.Properties.Resources.measure;
+            this.btn_Measure_Product.Location = new System.Drawing.Point(504, 39);
             this.btn_Measure_Product.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Measure_Product.Name = "btn_Measure_Product";
-            this.btn_Measure_Product.Size = new System.Drawing.Size(112, 31);
+            this.btn_Measure_Product.Size = new System.Drawing.Size(100, 100);
             this.btn_Measure_Product.TabIndex = 7;
             this.btn_Measure_Product.Text = "測量待測物";
+            this.btn_Measure_Product.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Measure_Product.UseVisualStyleBackColor = true;
             this.btn_Measure_Product.Click += new System.EventHandler(this.btn_Measure_Product_Click);
             // 
@@ -171,7 +180,7 @@
             0,
             0,
             65536});
-            this.num_Threshold_NG.Location = new System.Drawing.Point(1002, 590);
+            this.num_Threshold_NG.Location = new System.Drawing.Point(1074, 588);
             this.num_Threshold_NG.Margin = new System.Windows.Forms.Padding(4);
             this.num_Threshold_NG.Maximum = new decimal(new int[] {
             50,
@@ -191,7 +200,7 @@
             // label_Threshold_NG
             // 
             this.label_Threshold_NG.AutoSize = true;
-            this.label_Threshold_NG.Location = new System.Drawing.Point(867, 593);
+            this.label_Threshold_NG.Location = new System.Drawing.Point(939, 591);
             this.label_Threshold_NG.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_Threshold_NG.Name = "label_Threshold_NG";
             this.label_Threshold_NG.Size = new System.Drawing.Size(113, 16);
@@ -201,7 +210,7 @@
             // panel_Measure
             // 
             this.panel_Measure.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_Measure.Location = new System.Drawing.Point(870, 226);
+            this.panel_Measure.Location = new System.Drawing.Point(942, 223);
             this.panel_Measure.Name = "panel_Measure";
             this.panel_Measure.Size = new System.Drawing.Size(200, 90);
             this.panel_Measure.TabIndex = 23;
@@ -210,7 +219,7 @@
             // 
             this.listBox_Measure.FormattingEnabled = true;
             this.listBox_Measure.ItemHeight = 16;
-            this.listBox_Measure.Location = new System.Drawing.Point(870, 88);
+            this.listBox_Measure.Location = new System.Drawing.Point(942, 85);
             this.listBox_Measure.Name = "listBox_Measure";
             this.listBox_Measure.Size = new System.Drawing.Size(160, 132);
             this.listBox_Measure.TabIndex = 25;
@@ -219,7 +228,7 @@
             // label_Measure
             // 
             this.label_Measure.AutoSize = true;
-            this.label_Measure.Location = new System.Drawing.Point(867, 69);
+            this.label_Measure.Location = new System.Drawing.Point(939, 66);
             this.label_Measure.Name = "label_Measure";
             this.label_Measure.Size = new System.Drawing.Size(87, 16);
             this.label_Measure.TabIndex = 27;
@@ -228,7 +237,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(867, 328);
+            this.label1.Location = new System.Drawing.Point(939, 325);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(113, 16);
             this.label1.TabIndex = 30;
@@ -238,7 +247,7 @@
             // 
             this.listBox_NG.FormattingEnabled = true;
             this.listBox_NG.ItemHeight = 16;
-            this.listBox_NG.Location = new System.Drawing.Point(870, 347);
+            this.listBox_NG.Location = new System.Drawing.Point(942, 344);
             this.listBox_NG.Name = "listBox_NG";
             this.listBox_NG.Size = new System.Drawing.Size(160, 132);
             this.listBox_NG.TabIndex = 29;
@@ -247,7 +256,7 @@
             // panel_NG
             // 
             this.panel_NG.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_NG.Location = new System.Drawing.Point(870, 485);
+            this.panel_NG.Location = new System.Drawing.Point(942, 482);
             this.panel_NG.Name = "panel_NG";
             this.panel_NG.Size = new System.Drawing.Size(200, 90);
             this.panel_NG.TabIndex = 28;
@@ -255,7 +264,7 @@
             // btn_Batch_Search
             // 
             this.btn_Batch_Search.Font = new System.Drawing.Font("新細明體", 12F);
-            this.btn_Batch_Search.Location = new System.Drawing.Point(30, 414);
+            this.btn_Batch_Search.Location = new System.Drawing.Point(45, 363);
             this.btn_Batch_Search.Name = "btn_Batch_Search";
             this.btn_Batch_Search.Size = new System.Drawing.Size(121, 30);
             this.btn_Batch_Search.TabIndex = 44;
@@ -266,7 +275,7 @@
             // btn_Batch_Setting
             // 
             this.btn_Batch_Setting.Font = new System.Drawing.Font("新細明體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btn_Batch_Setting.Location = new System.Drawing.Point(30, 462);
+            this.btn_Batch_Setting.Location = new System.Drawing.Point(45, 411);
             this.btn_Batch_Setting.Name = "btn_Batch_Setting";
             this.btn_Batch_Setting.Size = new System.Drawing.Size(121, 30);
             this.btn_Batch_Setting.TabIndex = 39;
@@ -277,18 +286,20 @@
             // panel_Standard
             // 
             this.panel_Standard.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_Standard.Location = new System.Drawing.Point(12, 498);
+            this.panel_Standard.Location = new System.Drawing.Point(14, 462);
             this.panel_Standard.Name = "panel_Standard";
             this.panel_Standard.Size = new System.Drawing.Size(200, 153);
             this.panel_Standard.TabIndex = 23;
             // 
             // btn_Adjust
             // 
-            this.btn_Adjust.Location = new System.Drawing.Point(366, 72);
+            this.btn_Adjust.Image = global::cyut_Auo_Component_Measurer.Properties.Resources.maintenance;
+            this.btn_Adjust.Location = new System.Drawing.Point(349, 39);
             this.btn_Adjust.Name = "btn_Adjust";
-            this.btn_Adjust.Size = new System.Drawing.Size(108, 31);
+            this.btn_Adjust.Size = new System.Drawing.Size(100, 100);
             this.btn_Adjust.TabIndex = 45;
             this.btn_Adjust.Text = "校正影像";
+            this.btn_Adjust.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Adjust.UseVisualStyleBackColor = true;
             this.btn_Adjust.Click += new System.EventHandler(this.btn_Adjust_Click);
             // 
@@ -296,7 +307,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1216, 654);
+            this.ClientSize = new System.Drawing.Size(1216, 638);
             this.Controls.Add(this.btn_Adjust);
             this.Controls.Add(this.btn_Batch_Search);
             this.Controls.Add(this.btn_Batch_Setting);

@@ -807,7 +807,8 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Adjust-------------------------------
         private void Learn()
         {
-            EBW8ImageStd.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
+            string RunningPath = Environment.CurrentDirectory;
+            EBW8ImageStd.Load(string.Format("{0}Resources\\PressItem.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\"))));
 
             EPatternFinder1 = new EPatternFinder();
             // 先學習不規則圖形
