@@ -166,6 +166,7 @@ namespace cyut_Auo_Component_Measurer
 
         internal bool Inspect(decimal thresholdNG)
         {
+            Console.WriteLine("thresholdNG is: " + thresholdNG);
             return inspectEvent.Invoke(thresholdNG);
         }
 
@@ -178,6 +179,16 @@ namespace cyut_Auo_Component_Measurer
         internal void SaveInspectInfo(ObjectShape objectStandard)
         {
             saveInspectInfoEvent.Invoke(objectStandard);
+        }
+
+        // -------------------------------SetShapeStd-------------------------------
+        protected delegate void SetShapeStdEvent(Panel panel);
+
+        protected SetShapeStdEvent setShapeStd;
+
+        internal void SetShapeStd(Panel panel)
+        {
+            setShapeStd.Invoke(panel);
         }
     }
 
@@ -199,6 +210,7 @@ namespace cyut_Auo_Component_Measurer
             inShapeEvent += IsInRectangle;
             saveInspectInfoEvent += SaveInspectInfoRectangle;
             inspectEvent += InspectRectangle;
+            setShapeStd += SetRectangleStd;
         }
         //square check
 
@@ -256,6 +268,11 @@ namespace cyut_Auo_Component_Measurer
             }
 
             return false;
+        }
+
+        internal void SetRectangleStd(Panel panel)
+        {
+            Console.WriteLine("test");
         }
 
         private ERectangle MeasureRect(ref EWorldShape EWorldShape, ref EImageBW8 image, ref ECodedElement element)

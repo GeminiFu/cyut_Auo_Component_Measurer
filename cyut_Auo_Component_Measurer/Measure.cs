@@ -1,4 +1,5 @@
 ﻿using Emgu.CV;
+using Emgu.CV.Flann;
 using Euresys.Open_eVision_22_08;
 using System;
 using System.Collections;
@@ -12,7 +13,7 @@ using System.Windows.Forms;
 namespace cyut_Auo_Component_Measurer
 {
     // 說明
-    // 管理三大功能的邏輯
+    // 管理三大功能
     // Detect => codedImageEncoder, codedImage, codedImageObjectSelection
     // codedImageObjectSelection => ObjectSet
     // Inspect => NG index
@@ -22,8 +23,6 @@ namespace cyut_Auo_Component_Measurer
         EImageEncoder codedImage1Encoder = new EImageEncoder();
         internal ECodedImage2 codedImage1 = new ECodedImage2();
         internal EObjectSelection codedSelection = new EObjectSelection();
-
-        internal delegate ObjectShape ElementsFunction(ref ECodedElement element, uint index);
 
         internal ArrayList ObjectSetG = new ArrayList();
         internal ArrayList ObjectSetU = new ArrayList();
@@ -64,28 +63,35 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------ObjectSet-------------------------------
-        internal void BuildObjectSet(ArrayList ObjectSet, ElementsFunction elementsFunction)
-        {
-            uint length = codedSelection.ElementCount;
-            ECodedElement element;
-
-            ObjectSet.Clear();
-
-            for (uint i = 0; i < length; i++)
-            {
-                element = codedSelection.GetElement(i);
-
-                ObjectSet.Add(elementsFunction(ref element, i));
-
-                element.Dispose();
-            }
-        }
-
-        internal void SetObjectG(ArrayList ObjectSetG)
+        internal void SetObjectG()
         {
             foreach (ObjectShape shape in ObjectSetG)
             {
                 shape.checkResult = 0; //OK
+
+                switch (shape.shapeName)
+                {
+                    case "square":
+                        ObjectRectangle square = (ObjectRectangle)shape;
+
+                        square.widthStd = square.width;
+                        square.heightStd = square.height;
+                        break;
+                    case "rectangle":
+                        ObjectRectangle rect = (ObjectRectangle)shape;
+                        rect.widthStd = rect.width;
+                        rect.heightStd = rect.height;
+                        break;
+                    case "circle":
+                        ObjectCircle circle = (ObjectCircle)shape;
+                        circle.diameterStd = circle.diameter;
+                        break;
+                    case "special1":
+                        ObjectSpecial1 special1 = (ObjectSpecial1)shape;
+                        special1.widthStd= special1.width;
+                        special1.heightStd= special1.height;
+                        break;
+                }
             }
         }
 
@@ -110,14 +116,18 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------Inspect-------------------------------
-        internal void Inspect(ref ArrayList ObjectSetG, ref ArrayList ObjectSetU, decimal thresholdNG)
+        internal void Inspect(decimal thresholdNG)
         {
-            // !!!!!!!!!!!!!!!!!! Check ObjectSetG
 
+            // !!!!!!!!!!!!!!!!!! Check ObjectSetG
             ObjectShape shapeTest;
             ObjectShape shapeStandard;
 
             float sameShapeThreshold = 10;
+
+
+            NGIndex.Clear();
+
             for (int i = 0; i < ObjectSetU.Count; i++)
             {
                 shapeTest = (ObjectShape)ObjectSetU[i];
@@ -126,7 +136,7 @@ namespace cyut_Auo_Component_Measurer
                 do
                 {
                     shapeStandard = (ObjectShape)ObjectSetG[j];
-                    if ((Math.Abs(shapeTest.centerX - shapeStandard.centerX) < sameShapeThreshold) && 
+                    if ((Math.Abs(shapeTest.centerX - shapeStandard.centerX) < sameShapeThreshold) &&
                         (Math.Abs(shapeTest.centerY - shapeStandard.centerY) < sameShapeThreshold)
                         )
                     {
@@ -135,7 +145,7 @@ namespace cyut_Auo_Component_Measurer
 
                     j++;
 
-                }while(j < ObjectSetG.Count);
+                } while (j < ObjectSetG.Count);
 
                 if (j > ObjectSetG.Count)
                 {
@@ -147,7 +157,7 @@ namespace cyut_Auo_Component_Measurer
                 // 把 standard 設置給它 (可以不用)
                 // 比對兩個是不是同樣的圖形 (暫時不用)
 
-                if(shapeTest.GetType() != shapeStandard.GetType())
+                if (shapeTest.GetType() != shapeStandard.GetType())
                 {
                     Console.WriteLine("形狀不同"); // 長方形和正方形的形狀判定
                     //shapeTest.checkResult = 1;
@@ -169,7 +179,7 @@ namespace cyut_Auo_Component_Measurer
                 }
             }
 
-            
+
         }
     }
 }

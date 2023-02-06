@@ -182,7 +182,7 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            DrawEBW8Image();
+            DrawEBW8Image1();
         }
 
         private void btn_Camera_Click(object sender, EventArgs e)
@@ -208,7 +208,7 @@ namespace cyut_Auo_Component_Measurer
                 // bitmap to EImageBW8
                 BitmapToEImageBW8(ref bmp, ref EBW8Image1);
 
-                DrawEBW8Image();
+                DrawEBW8Image1();
             }
 
             isStreaming = !isStreaming;
@@ -234,7 +234,7 @@ namespace cyut_Auo_Component_Measurer
             // 畫出 EBW8Image1
             scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image2.Width, EBW8Image2.Height);
 
-            DrawEBW8Image();
+            DrawEBW8Image1();
 
             // 畫出 finder
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
@@ -246,43 +246,60 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Measure-------------------------------
         private void btn_Measure_Standard_Click(object sender, EventArgs e)
         {
-            DrawEBW8Image();
+            DrawEBW8Image1();
 
             c_measure.Detect(ref EBW8Image1);
 
-            c_measure.BuildObjectSet(c_measure.ObjectSetG, c_shape.ShapeDetermine);
-
-            c_measure.SetObjectG(c_measure.ObjectSetG);
-
-            for (int i = 0; i < c_measure.ObjectSetG.Count; i++)
+            // Build ObjectSet
+            c_measure.ObjectSetG.Clear();
+            
+            for (uint i = 0; i < c_measure.codedSelection.ElementCount; i++)
             {
-                ObjectShape shape = (ObjectShape)c_measure.ObjectSetG[i];
+                ECodedElement element = c_measure.codedSelection.GetElement(i); //get element
 
-                ListBoxAddObj(listBox_Measure, shape);
+                ObjectShape shape = c_shape.ShapeDetermine(ref element, i); //element to shape
+
+                c_measure.ObjectSetG.Add(shape); //Add into ObjectSet
+
+                ListBoxAddObj(listBox_Measure, shape); //Add in ListBox
+
+                element.Dispose();
             }
+
+            c_measure.SetObjectG();
 
             isGolden = true;
         }
 
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
-            DrawEBW8Image();
+            DrawEBW8Image1();
 
             c_measure.Detect(ref EBW8Image1);
 
-            c_measure.BuildObjectSet(c_measure.ObjectSetU, c_shape.ShapeDetermine);
+            listBox_Measure.Items.Clear();
 
-            // show object set information
-            for (int i = 0; i < c_measure.ObjectSetU.Count; i++)
+            // Build ObjectSet
+            c_measure.ObjectSetU.Clear();
+
+            for (uint i = 0; i < c_measure.codedSelection.ElementCount; i++)
             {
-                ObjectShape shape = (ObjectShape)c_measure.ObjectSetU[i];
+                ECodedElement element = c_measure.codedSelection.GetElement(i); //get element
 
-                ListBoxAddObj(listBox_Measure, shape);
+                ObjectShape shape = c_shape.ShapeDetermine(ref element, i); //element to shape
+
+                c_measure.ObjectSetU.Add(shape); //Add into ObjectSet
+
+
+                ListBoxAddObj(listBox_Measure, shape); //Add in ListBox
+
+                element.Dispose();
             }
 
             // Inspect
-            c_measure.Inspect(ref c_measure.ObjectSetG, ref c_measure.ObjectSetU, num_Threshold_NG.Value);
+            c_measure.Inspect(num_Threshold_NG.Value);
 
+            // View
             listBox_NG.Items.Clear();
 
             foreach (var index in c_measure.GetNGIndex)
@@ -316,7 +333,7 @@ namespace cyut_Auo_Component_Measurer
             ObjectShape shape = (ObjectShape)c_measure.ObjectSetG[selectedIndex];
             string selectedShape = shape.shapeName;
 
-            ECodedElement element;
+            batchIndexes.Clear();
 
             for (int i = 0; i < c_measure.ObjectSetG.Count; i++)
             {
@@ -325,9 +342,11 @@ namespace cyut_Auo_Component_Measurer
                 if (shape.shapeName == selectedShape)
                 {
                     batchIndexes.Add(i);
+
+                    // View
+                    ECodedElement element;
                     element = c_measure.codedSelection.GetElement((uint)i);
                     DrawElement(ref element);
-
                     element.Dispose();
                 }
             }
@@ -337,7 +356,59 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Batch_Setting_Click(object sender, EventArgs e)
         {
+            float widthStd = 0;
+            float heightStd = 0;
+            float diameterStd = 0;
 
+            if(panel_Standard.Controls.Count == 2)
+            {
+
+                NumericUpDown controlDiameter = (NumericUpDown)panel_Standard.Controls[1];
+
+                diameterStd = (float)controlDiameter.Value;
+            }
+            else
+            {
+                NumericUpDown controlWidth = (NumericUpDown)panel_Standard.Controls[1];
+                NumericUpDown controlHeight = (NumericUpDown)panel_Standard.Controls[3];
+
+                widthStd = (float)controlWidth.Value;
+                heightStd = (float)controlHeight.Value;
+            }
+
+
+            foreach (var index in batchIndexes)
+            {
+                // 傳入 panel
+                // shape.SetShapeStd(panel)
+                ObjectShape shape = (ObjectShape)c_measure.ObjectSetG[index];
+
+                switch (shape.shapeName)
+                {
+                    case "square":
+                        ObjectRectangle square = (ObjectRectangle)shape;
+
+                        square.widthStd = widthStd;
+                        square.heightStd = heightStd;
+                        break;
+                    case "rectangle":
+                        ObjectRectangle rect = (ObjectRectangle)shape;
+                        rect.widthStd = widthStd;
+                        rect.heightStd = heightStd;
+                        break;
+                    case "circle":
+                        ObjectCircle circle = (ObjectCircle)shape;
+                        circle.diameterStd = diameterStd;
+                        break;
+                    case "special1":
+                        ObjectSpecial1 special1 = (ObjectSpecial1)shape;
+                        special1.widthStd = widthStd;
+                        special1.heightStd = heightStd;
+                        break;
+
+                }
+
+            }
         }
 
         // --------------------------Picturebox--------------------------
@@ -396,7 +467,7 @@ namespace cyut_Auo_Component_Measurer
 
             ECodedElement element = c_measure.codedSelection.GetElement((uint)selectedIndex);
 
-            DrawEBW8Image();
+            DrawEBW8Image1();
             DrawElement(ref element);
 
             if (isGolden)
@@ -435,7 +506,7 @@ namespace cyut_Auo_Component_Measurer
 
             ECodedElement element = c_measure.codedSelection.GetElement((uint)selectedIndex);
 
-            DrawEBW8Image();
+            DrawEBW8Image1();
             DrawNGElement(ref element);
 
             if (!isGolden)
@@ -550,7 +621,7 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------View-------------------------------
-        private void DrawEBW8Image()
+        private void DrawEBW8Image1()
         {
             pictureBox1.Image = null;
             pictureBox1.Refresh();
@@ -721,7 +792,8 @@ namespace cyut_Auo_Component_Measurer
 
             NumericUpDown num_Standard = new NumericUpDown();
             decimal number = decimal.Round((decimal)value, 1);
-            num_Standard.Increment = 2;
+            num_Standard.DecimalPlaces = 1;
+            num_Standard.Increment = 0.1M;
             num_Standard.Maximum = 5000;
             num_Standard.Value = number;
 
