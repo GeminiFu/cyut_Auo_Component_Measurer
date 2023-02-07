@@ -26,9 +26,20 @@ namespace cyut_Auo_Component_Measurer
         internal int CalibrationY { get { return calibrationY; } set { calibrationY = value; } }
 
 
-        internal void AutoCalibration(ref EImageBW8 image, int x, int y)
+        internal void AutoCalibration(int x, int y)
         {
-            EWorldShape1.AutoCalibrateDotGrid(image, x, y, false);
+            if (EBW8ImageDotGrid.IsVoid)
+            {
+                MessageBox.Show("EBW8ImageDotGrid is void.");
+                return;
+            }
+            try
+            {
+                EWorldShape1.AutoCalibrateDotGrid(EBW8ImageDotGrid, x, y);
+            }
+            catch (Exception)
+            {
+            }
 
 
             if (EWorldShape1.CalibrationSucceeded() == false)
@@ -38,8 +49,8 @@ namespace cyut_Auo_Component_Measurer
             }
             else
             {
-                calibrationX = x;
-                calibrationY = y;
+                this.calibrationX = x;
+                this.calibrationY = y;
             }
         }
 
@@ -111,6 +122,178 @@ namespace cyut_Auo_Component_Measurer
             }
 
         }
+
+        internal ObjectShape ShapeDetermine(ref EImageBW8 image, ref ECodedElement element, uint index)
+        {
+            ERectangle rect = MeasureRect(ref image, ref element);
+
+            if (rect != null)
+            {
+
+                ObjectRectangle rectangle = new ObjectRectangle();
+                rectangle.SetCenter(ref element);
+                rectangle.SetWidthHeight(ref element);
+                rectangle.index = index;
+
+
+                if (element.BoundingBoxWidth / element.BoundingBoxHeight >= 0.95 && element.BoundingBoxWidth / element.BoundingBoxHeight <= 1.05) //正方形
+                {
+                    Console.WriteLine(index + " squre");
+                    rectangle.SetSquare();
+                }else
+                {
+
+                    Console.WriteLine(index + " rect");
+                }
+                return rectangle;
+            }
+
+            ECircle circle = MeasureCircle(ref image, ref element);
+
+            if (circle != null)
+            {
+                Console.WriteLine(index + " circle");
+
+                ObjectCircle circleShape = new ObjectCircle();
+
+                circleShape.SetCenter(ref element);
+                circleShape.SetDiameter(ref element);
+                circleShape.index = index;
+
+                // 圓型
+                return circleShape;
+            }
+
+            EPoint point = MeasureSpecial(ref image, ref element);
+
+            if (point != null)
+            {
+                Console.WriteLine(index + " special");
+
+                ObjectSpecial1 special1 = new ObjectSpecial1();
+                special1.SetCenter(ref element);
+                special1.SetWidthHeight(ref element);
+                special1.index = index;
+
+                return special1;
+            }
+            else
+            {
+                Console.WriteLine(index + " no such shape");
+                return null;
+            }
+        }
+
+        private ERectangle MeasureRect(ref EImageBW8 image, ref ECodedElement element)
+        {
+            ERectangleGauge ERectangleGauge1 = new ERectangleGauge();
+
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            ERectangleGauge1.Attach(EWorldShape1);
+            ERectangleGauge1.Center = element.BoundingBoxCenter;
+            if (element.BoundingBoxWidth > element.BoundingBoxHeight) //容忍值必須以寬高數值小的為基準，不然涵蓋兩個邊
+            {
+                ERectangleGauge1.Tolerance = element.BoundingBoxHeight / 4;
+            }
+            else
+            {
+                ERectangleGauge1.Tolerance = element.BoundingBoxWidth / 4;
+            }
+            ERectangleGauge1.TransitionType = ETransitionType.Bw; //由外往裡面看
+            ERectangleGauge1.SamplingStep = 1;
+            ERectangleGauge1.SetSize(element.BoundingBoxWidth, element.BoundingBoxHeight);
+            ERectangleGauge1.Measure(image);
+
+            if (ERectangleGauge1.NumValidSamples < ERectangleGauge1.NumSamples * 0.9) //防呆機制，萬一給的不是長方形
+            {
+                return null;
+            }
+            else
+            {
+                return ERectangleGauge1.MeasuredRectangle;
+            }
+        }
+        private ECircle MeasureCircle(ref EImageBW8 image, ref ECodedElement element)
+        {
+            ECircleGauge ECircleGauge = new ECircleGauge();
+            //先用圓形量測
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            ECircleGauge.Attach(EWorldShape1);
+            ECircleGauge.Center = element.BoundingBoxCenter;
+            ECircleGauge.Diameter = element.BoundingBoxWidth;
+            ECircleGauge.TransitionType = ETransitionType.Wb; //是由圓心往外看，跟Rectangle不同
+            ECircleGauge.Tolerance = element.BoundingBoxWidth / 5;
+            ECircleGauge.SamplingStep = 1; //每個點都要檢查
+            ECircleGauge.Measure(image);
+            if (ECircleGauge.NumValidSamples < ECircleGauge.NumSamples * 0.9) //防呆機制，萬一給的不是長方形
+            {
+                return null;
+            }
+            else
+            {
+                return ECircleGauge.MeasuredCircle;
+            }
+
+        }
+        internal EPoint MeasureSpecial(ref EImageBW8 image, ref ECodedElement element)
+        {
+            EPointGauge EPointGauge = new EPointGauge();
+
+            //特殊形狀，只有量測精準寬與高
+            //假設條件，圖案必須是上下左右對稱，有角度偏差會進行修正
+            //量測方式: 以BoundingCenter為中心，修正角度後進行十字線，兩條PointGauge進行量測
+            double tmpW = 0, tmpH = 0;
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            EPointGauge.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
+            EPointGauge.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
+            EPointGauge.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
+            EPointGauge.Tolerance = element.BoundingBoxWidth / 2 + 10;
+            EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle;
+            EPointGauge.Angle = element.MinimumEnclosingRectangleAngle;//要看那一個角度量出來比較準
+            EPointGauge.Thickness = 3; //增加厚度，避免小雜訊
+                                       //EPointGauge1.Angle = element.EllipseAngle;
+            EPointGauge.Measure(image);
+            //EPointGauge.SetZoom(scalingRatio);
+            //EPointGauge.Draw(g, EDrawingMode.Actual, true);
+            //檢查有沒有取到兩個點
+            if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
+            {
+                return null;
+            }
+            else
+            {
+                EPoint tmpP1, tmpP2;
+                tmpP1 = EPointGauge.GetMeasuredPoint(0);
+                tmpP2 = EPointGauge.GetMeasuredPoint(1);
+                tmpW = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
+                //量測另外一個垂直方向
+                //EWorldShape1.SetSensorSize(EBW8Image1.Width, EBW8Image1.Height);
+                //EPointGauge1.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
+                //EPointGauge1.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
+                //EPointGauge1.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
+                EPointGauge.Tolerance = element.BoundingBoxHeight / 2 + 10;
+                EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle + 270;
+                EPointGauge.Angle = element.MinimumEnclosingRectangleAngle + 270;//要看那一個角度量出來比較準，PS: 加90度居然無法量測，好怪
+                                                                                 //EPointGauge1.Angle = element.EllipseAngle;
+                EPointGauge.Measure(image);
+
+                //EPointGauge.SetZoom(scalingRatio);
+                //EPointGauge.Draw(g, EDrawingMode.Actual, true);
+                //檢查有沒有取到兩個點
+                if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
+                {
+                    return null;
+                }
+                else
+                {
+                    tmpP1 = EPointGauge.GetMeasuredPoint(0);
+                    tmpP2 = EPointGauge.GetMeasuredPoint(1);
+                    tmpH = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
+                    return new EPoint((float)tmpW, (float)tmpH);
+                }
+            }
+        }
+
     }
 
 
@@ -271,36 +454,6 @@ namespace cyut_Auo_Component_Measurer
             Console.WriteLine("test");
         }
 
-        private ERectangle MeasureRect(ref EWorldShape EWorldShape, ref EImageBW8 image, ref ECodedElement element)
-        {
-            ERectangleGauge ERectangleGauge1 = new ERectangleGauge();
-
-            EWorldShape.SetSensorSize(image.Width, image.Height);
-            ERectangleGauge1.Attach(EWorldShape);
-            ERectangleGauge1.Center = element.BoundingBoxCenter;
-            if (element.BoundingBoxWidth > element.BoundingBoxHeight) //容忍值必須以寬高數值小的為基準，不然涵蓋兩個邊
-            {
-                ERectangleGauge1.Tolerance = element.BoundingBoxHeight / 4;
-            }
-            else
-            {
-                ERectangleGauge1.Tolerance = element.BoundingBoxWidth / 4;
-            }
-            ERectangleGauge1.TransitionType = ETransitionType.Bw; //由外往裡面看
-            ERectangleGauge1.SamplingStep = 1;
-            ERectangleGauge1.SetSize(element.BoundingBoxWidth, element.BoundingBoxHeight);
-            ERectangleGauge1.Measure(image);
-
-            if (ERectangleGauge1.NumValidSamples < ERectangleGauge1.NumSamples * 0.9) //防呆機制，萬一給的不是長方形
-            {
-                return null;
-            }
-            else
-            {
-                ERectangle rect = new ERectangle();
-                return ERectangleGauge1.MeasuredRectangle;
-            }
-        }
 
     }
 
@@ -340,28 +493,6 @@ namespace cyut_Auo_Component_Measurer
             return OK;
         }
 
-        private ECircle MeasureCircle(ref EWorldShape EWorldShape, ref EImageBW8 image, ref ECodedElement element)
-        {
-            ECircleGauge ECircleGauge = new ECircleGauge();
-            //先用圓形量測
-            EWorldShape.SetSensorSize(image.Width, image.Height);
-            ECircleGauge.Attach(EWorldShape);
-            ECircleGauge.Center = element.BoundingBoxCenter;
-            ECircleGauge.Diameter = element.BoundingBoxWidth;
-            ECircleGauge.TransitionType = ETransitionType.Wb; //是由圓心往外看，跟Rectangle不同
-            ECircleGauge.Tolerance = element.BoundingBoxWidth / 5;
-            ECircleGauge.SamplingStep = 1; //每個點都要檢查
-            ECircleGauge.Measure(image);
-            if (ECircleGauge.NumValidSamples < ECircleGauge.NumSamples * 0.9) //防呆機制，萬一給的不是長方形
-            {
-                return null;
-            }
-            else
-            {
-                return ECircleGauge.MeasuredCircle;
-            }
-
-        }
 
         internal bool IsInCircle(float X, float Y)
         {
@@ -435,64 +566,6 @@ namespace cyut_Auo_Component_Measurer
 
 
         //回傳量測的寬與高
-        internal EPoint MeasureSpecial(ref EWorldShape EWorldShape, EImageBW8 image, ECodedElement element)
-        {
-            EPointGauge EPointGauge = new EPointGauge();
-
-            //特殊形狀，只有量測精準寬與高
-            //假設條件，圖案必須是上下左右對稱，有角度偏差會進行修正
-            //量測方式: 以BoundingCenter為中心，修正角度後進行十字線，兩條PointGauge進行量測
-            double tmpW = 0, tmpH = 0;
-            EWorldShape.SetSensorSize(image.Width, image.Height);
-            EPointGauge.Attach(EWorldShape); //將LineGauge繫結到世界座標系統
-            EPointGauge.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
-            EPointGauge.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
-            EPointGauge.Tolerance = element.BoundingBoxWidth / 2 + 10;
-            EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle;
-            EPointGauge.Angle = element.MinimumEnclosingRectangleAngle;//要看那一個角度量出來比較準
-            EPointGauge.Thickness = 3; //增加厚度，避免小雜訊
-                                       //EPointGauge1.Angle = element.EllipseAngle;
-            EPointGauge.Measure(image);
-            //EPointGauge.SetZoom(scalingRatio);
-            //EPointGauge.Draw(g, EDrawingMode.Actual, true);
-            //檢查有沒有取到兩個點
-            if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
-            {
-                return null;
-            }
-            else
-            {
-                EPoint tmpP1, tmpP2;
-                tmpP1 = EPointGauge.GetMeasuredPoint(0);
-                tmpP2 = EPointGauge.GetMeasuredPoint(1);
-                tmpW = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
-                //量測另外一個垂直方向
-                //EWorldShape1.SetSensorSize(EBW8Image1.Width, EBW8Image1.Height);
-                //EPointGauge1.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
-                //EPointGauge1.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
-                //EPointGauge1.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
-                EPointGauge.Tolerance = element.BoundingBoxHeight / 2 + 10;
-                EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle + 270;
-                EPointGauge.Angle = element.MinimumEnclosingRectangleAngle + 270;//要看那一個角度量出來比較準，PS: 加90度居然無法量測，好怪
-                                                                                 //EPointGauge1.Angle = element.EllipseAngle;
-                EPointGauge.Measure(image);
-
-                //EPointGauge.SetZoom(scalingRatio);
-                //EPointGauge.Draw(g, EDrawingMode.Actual, true);
-                //檢查有沒有取到兩個點
-                if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
-                {
-                    return null;
-                }
-                else
-                {
-                    tmpP1 = EPointGauge.GetMeasuredPoint(0);
-                    tmpP2 = EPointGauge.GetMeasuredPoint(1);
-                    tmpH = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
-                    return new EPoint((float)tmpW, (float)tmpH);
-                }
-            }
-        }
 
         internal bool IsInSpecial1(float X, float Y)
         {

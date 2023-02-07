@@ -118,7 +118,7 @@ namespace cyut_Auo_Component_Measurer
             string errorMessage;
 
             //初始化設定
-            errorMessage = c_control.InitializeSetting(ref EBW8Image1, c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+            errorMessage = c_control.InitializeSetting(ref EBW8Image1,ref  c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
 
             c_shape.CalibrationX = x;
             c_shape.CalibrationY = y;
@@ -143,6 +143,15 @@ namespace cyut_Auo_Component_Measurer
         private void Form_Close(object sender, FormClosedEventArgs e)
         {
             capture?.Stop();
+
+            if (m_pMyCamera != null)
+            {
+                if (m_pMyCamera.MV_CC_IsDeviceConnected_NET())
+                {
+                    m_pMyCamera.MV_CC_CloseDevice_NET();
+                    m_pMyCamera.MV_CC_DestroyDevice_NET();
+                }
+            }
         }
 
         // --------------------------Menu--------------------------
@@ -183,7 +192,7 @@ namespace cyut_Auo_Component_Measurer
             c_shape.EBW8ImageDotGrid.SetSize(EBW8Image1);
             EasyImage.Copy(EBW8Image1, c_shape.EBW8ImageDotGrid);
 
-            c_shape.AutoCalibration(ref c_shape.EBW8ImageDotGrid, x, y);
+            c_shape.AutoCalibration(x, y);
         }
 
         // --------------------------Button--------------------------
@@ -245,12 +254,21 @@ namespace cyut_Auo_Component_Measurer
 
             // Build ObjectSet
             c_measure.ObjectSetG.Clear();
-            
+
+            listBox_Measure.Items.Clear();
+
             for (uint i = 0; i < c_measure.codedSelection.ElementCount; i++)
             {
                 ECodedElement element = c_measure.codedSelection.GetElement(i); //get element
 
-                ObjectShape shape = c_shape.ShapeDetermine(ref element, i); //element to shape
+                //c_shape.ShapeDetermine(ref element, i); //element to shape
+
+                ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i);
+
+                if(shape == null)
+                {
+                    continue;
+                }
 
                 c_measure.ObjectSetG.Add(shape); //Add into ObjectSet
 
@@ -279,7 +297,14 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = c_measure.codedSelection.GetElement(i); //get element
 
-                ObjectShape shape = c_shape.ShapeDetermine(ref element, i); //element to shape
+                ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
+
+                if(shape == null)
+                {
+                    Console.WriteLine(i + " no shape");
+
+                    continue;
+                }
 
                 c_measure.ObjectSetU.Add(shape); //Add into ObjectSet
 
@@ -353,7 +378,7 @@ namespace cyut_Auo_Component_Measurer
             float heightStd = 0;
             float diameterStd = 0;
 
-            if(panel_Standard.Controls.Count == 2)
+            if (panel_Standard.Controls.Count == 2)
             {
 
                 NumericUpDown controlDiameter = (NumericUpDown)panel_Standard.Controls[1];
@@ -409,18 +434,18 @@ namespace cyut_Auo_Component_Measurer
             // 畫面有沒有圖案
             // 有沒有 ObjectSet
 
-            int index;
+            int elementIndex;
 
             if (isGolden)
             {
-                index = c_measure.IsClickObject(ref c_measure.ObjectSetG, e.X / scalingRatio, e.Y / scalingRatio);
+                elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetG, e.X / scalingRatio, e.Y / scalingRatio);
             }
             else
             {
-                index = c_measure.IsClickObject(ref c_measure.ObjectSetU, e.X / scalingRatio, e.Y / scalingRatio);
+                elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetU, e.X / scalingRatio, e.Y / scalingRatio);
             }
 
-            if (index == -1)
+            if (elementIndex == -1)
             {
                 // 沒點到圖型
             }
@@ -429,7 +454,13 @@ namespace cyut_Auo_Component_Measurer
                 // 如果 NG index == index
                 // NG selected
 
-                listBox_Measure.SelectedIndex = index;
+                for (int i = 0; i < listBox_Measure.Items.Count; i++)
+                {
+                    if (int.Parse(listBox_Measure.Items[i].ToString().Substring(0, 3)) == elementIndex)
+                    {
+                        listBox_Measure.SelectedIndex = i;
+                    }
+                }
 
                 listBox_NG.SelectedIndex = -1;
 
@@ -437,7 +468,7 @@ namespace cyut_Auo_Component_Measurer
                 {
                     int NGIndex = int.Parse(listBox_NG.Items[i].ToString().Substring(0, 3));
 
-                    if (NGIndex == index)
+                    if (NGIndex == elementIndex)
                     {
                         listBox_NG.SelectedIndex = i;
                     }
@@ -454,23 +485,23 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            int selectedIndex = int.Parse(listBox_Measure.SelectedItem.ToString().Substring(0, 3));
+            int elementIndex = int.Parse(listBox_Measure.SelectedItem.ToString().Substring(0, 3));
 
-            ECodedElement element = c_measure.codedSelection.GetElement((uint)selectedIndex);
+            ECodedElement element = c_measure.codedSelection.GetElement((uint)elementIndex);
 
             DrawEBW8Image1();
             DrawElement(ref element);
 
             if (isGolden)
             {
-                RenderShapeInfo(selectedIndex, c_measure.ObjectSetG);
-                RenderStandard(selectedIndex, c_measure.ObjectSetG);
+                RenderShapeInfo(listBox_Measure.SelectedIndex, c_measure.ObjectSetG);
+                RenderStandard(listBox_Measure.SelectedIndex, c_measure.ObjectSetG);
 
             }
             else
             {
-                RenderShapeInfo(selectedIndex, c_measure.ObjectSetU);
-                RenderStandard(selectedIndex, c_measure.ObjectSetU);
+                RenderShapeInfo(listBox_Measure.SelectedIndex, c_measure.ObjectSetU);
+                RenderStandard(listBox_Measure.SelectedIndex, c_measure.ObjectSetU);
 
             }
 
@@ -486,23 +517,30 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            int selectedIndex = int.Parse(listBox_NG.SelectedItem.ToString().Substring(0, 3));
+            int elementIndex = int.Parse(listBox_NG.SelectedItem.ToString().Substring(0, 3));
 
-            if (selectedIndex < 0)
+            if (elementIndex < 0)
             {
                 return;
             }
 
-            listBox_Measure.SelectedIndex = selectedIndex;
+            for(int i = 0; i < listBox_Measure.Items.Count; i++)
+            {
+                if (int.Parse(listBox_Measure.Items[i].ToString().Substring(0, 3)) == elementIndex)
+                {
+                    listBox_Measure.SelectedIndex = i;
+                }
+            }
 
-            ECodedElement element = c_measure.codedSelection.GetElement((uint)selectedIndex);
+
+            ECodedElement element = c_measure.codedSelection.GetElement((uint)elementIndex);
 
             DrawEBW8Image1();
             DrawNGElement(ref element);
 
             if (!isGolden)
             {
-                RenderShapeErrorInfo(selectedIndex, c_measure.ObjectSetU);
+                RenderShapeErrorInfo(listBox_Measure.SelectedIndex, c_measure.ObjectSetU);
             }
 
             element.Dispose();
@@ -607,10 +645,19 @@ namespace cyut_Auo_Component_Measurer
         private void btn_MVSCamera_Click(object sender, EventArgs e)
         {
             // 如果設備還沒載入
-            if (m_pMyCamera == null)
+            if (m_pMyCamera == null || !m_pMyCamera.MV_CC_IsDeviceConnected_NET())
             {
-                Search_Device(sender, e);
-                Open_Camera(sender, e);
+                try
+                {
+
+                    Search_Device(sender, e);
+                    Open_Camera(sender, e);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    throw;
+                }
             }
 
             // 如果沒有開始攝影
@@ -1227,9 +1274,6 @@ namespace cyut_Auo_Component_Measurer
         {
             string RunningPath = Environment.CurrentDirectory;
             string StdImagePath = string.Format("{0}Resources\\PressItem.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
-            Console.WriteLine(RunningPath);
-            Console.WriteLine(StdImagePath);
-            Console.WriteLine(File.Exists(StdImagePath));
             EBW8ImageStd.Load(StdImagePath);
 
             EPatternFinder1 = new EPatternFinder();

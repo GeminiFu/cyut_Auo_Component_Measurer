@@ -61,7 +61,7 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Setting-------------------------------
         // 初始化
         // 目的：載入預設標準資料、建立新的歷史資料夾
-        internal string InitializeSetting(ref EImageBW8 standard, ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
+        internal string InitializeSetting(ref EImageBW8 standard,ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
         {
             string errorMessage;
 
@@ -132,8 +132,6 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // dot grid image
-            Console.WriteLine(File.Exists(path + "\\Dot_Grid.png"));
-            Console.WriteLine(dotGridImage);
             dotGridImage.Load(path + "\\Dot_Grid.png");
             // calibration x y 
             x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
@@ -152,8 +150,6 @@ namespace cyut_Auo_Component_Measurer
             string pathCalibrationX = path + "\\Calibration_X.txt";
             string pathCalibrationY = path + "\\Calibration_Y.txt";
 
-
-            Console.WriteLine("path is " + path);
 
             if (!Directory.Exists(path))
                 return "沒有找到資料夾";
