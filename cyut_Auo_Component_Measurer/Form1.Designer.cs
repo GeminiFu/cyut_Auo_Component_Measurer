@@ -52,6 +52,7 @@
             this.btn_Batch_Setting = new System.Windows.Forms.Button();
             this.panel_Standard = new System.Windows.Forms.Panel();
             this.btn_Adjust = new System.Windows.Forms.Button();
+            this.list_Of_Camera_Devices = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -94,7 +95,7 @@
             this.btn_Camera.Text = "使用相機";
             this.btn_Camera.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Camera.UseVisualStyleBackColor = true;
-            this.btn_Camera.Click += new System.EventHandler(this.btn_Camera_Click);
+            this.btn_Camera.Click += new System.EventHandler(this.btn_MVSCamera_Click);
             // 
             // menuStrip1
             // 
@@ -303,11 +304,21 @@
             this.btn_Adjust.UseVisualStyleBackColor = true;
             this.btn_Adjust.Click += new System.EventHandler(this.btn_Adjust_Click);
             // 
+            // list_Of_Camera_Devices
+            // 
+            this.list_Of_Camera_Devices.FormattingEnabled = true;
+            this.list_Of_Camera_Devices.Location = new System.Drawing.Point(677, 78);
+            this.list_Of_Camera_Devices.Name = "list_Of_Camera_Devices";
+            this.list_Of_Camera_Devices.Size = new System.Drawing.Size(121, 24);
+            this.list_Of_Camera_Devices.TabIndex = 46;
+            this.list_Of_Camera_Devices.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1216, 638);
+            this.Controls.Add(this.list_Of_Camera_Devices);
             this.Controls.Add(this.btn_Adjust);
             this.Controls.Add(this.btn_Batch_Search);
             this.Controls.Add(this.btn_Batch_Setting);
@@ -368,6 +379,7 @@
         private System.Windows.Forms.Button btn_Batch_Setting;
         private System.Windows.Forms.Panel panel_Standard;
         private System.Windows.Forms.Button btn_Adjust;
+        private System.Windows.Forms.ComboBox list_Of_Camera_Devices;
     }
 }
 

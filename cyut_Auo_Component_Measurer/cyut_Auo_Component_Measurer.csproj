@@ -56,8 +56,12 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Open_eVision_NetApi_22_08">
-      <HintPath>.\Open_eVision_NetApi_22_08.dll</HintPath>
+    <Reference Include="MvCameraControl.Net">
+      <HintPath>..\..\..\..\..\..\..\..\..\Program Files (x86)\MVS\Development\DotNet\win64\MvCameraControl.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Open_eVision_NetApi_22_08, Version=22.8.3.14567, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Euresys\Open eVision 22.08\Bin64\Open_eVision_NetApi_22_08.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

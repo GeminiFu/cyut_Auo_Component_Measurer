@@ -17,6 +17,7 @@ namespace cyut_Auo_Component_Measurer
     internal class ShapeOperator
     {
         EWorldShape EWorldShape1 = new EWorldShape();
+        internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
         int calibrationX = 5;
         int calibrationY = 5;
 
