@@ -65,6 +65,8 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------ObjectSet-------------------------------
         internal void SetObjectG()
         {
+            // checkResult = 0;
+            // lengthStd = length
             foreach (ObjectShape shape in ObjectSetG)
             {
                 shape.checkResult = 0; //OK
@@ -116,7 +118,7 @@ namespace cyut_Auo_Component_Measurer
             ObjectShape shapeTest;
             ObjectShape shapeStandard;
 
-            float sameShapeThreshold = 10;
+            float sameShapeThreshold = 11;
 
 
             NGIndex.Clear();
@@ -140,7 +142,7 @@ namespace cyut_Auo_Component_Measurer
 
                 } while (j < ObjectSetG.Count);
 
-                if (j > ObjectSetG.Count)
+                if (j >= ObjectSetG.Count)
                 {
                     shapeTest.checkResult = 1;
                     NGIndex.Add(i);
@@ -156,6 +158,10 @@ namespace cyut_Auo_Component_Measurer
                     //continue;
                 }
 
+                //Console.WriteLine("shapeStandard's index is:" + shapeStandard.index);
+                //Console.WriteLine("shapeStandard's name is:" + shapeStandard.shapeName);
+                //Console.WriteLine("shapeTest's index is:" + shapeTest.index);
+                //Console.WriteLine("shapeTest's name is:" + shapeTest.shapeName);
                 // 相減儲存在誤差
                 shapeTest.SaveInspectInfo(shapeStandard);
                 // 比對誤差是否在 Threshold 裡面

@@ -197,7 +197,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // Time Folder
-            path += "\\" + componentName + DateTime.Now.ToString("HHmmss");
+            path += "\\" + componentName + "_" + DateTime.Now.ToString("HHmmss");
             if (Directory.Exists(path) == false)
             {
                 Directory.CreateDirectory(path);
@@ -263,7 +263,6 @@ namespace cyut_Auo_Component_Measurer
             return ok;
         }
 
-
         // 手動儲存設定
         // 目的：做手動儲存設定的事前檢查
         internal string MenuSaveSetting(ref EImageBW8 standard, ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
@@ -297,6 +296,10 @@ namespace cyut_Auo_Component_Measurer
                     if (errorMessage != ok)
                         return errorMessage;
                 }
+            }
+            else
+            {
+                return "檔案存取錯誤";
             }
 
             return ok;
@@ -360,6 +363,26 @@ namespace cyut_Auo_Component_Measurer
             SaveHistorySetting(ref standard, ObjectSetG, ref dotGridImage, x, y);
 
             return ok;
+        }
+
+        internal string SaveInspectResult(ref EImageBW8 testImage, bool isOK)
+        {
+            string errorMessage = "";
+            string fileName = DateTime.Now.ToString("yyyyMMdd") + "_" + DateTime.Now.ToString("HHmmss"); ;
+
+            if (isOK)
+            {
+                fileName = "OK_" + fileName;
+            }
+            else
+            {
+                fileName = "NG_" + fileName;
+            }
+            string savePath = pathSave + "\\" + fileName + ".png";
+
+            testImage.Save(savePath);
+
+            return errorMessage;
         }
 
         // -------------------------------Setting-------------------------------

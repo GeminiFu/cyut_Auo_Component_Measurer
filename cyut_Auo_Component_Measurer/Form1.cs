@@ -111,37 +111,22 @@ namespace cyut_Auo_Component_Measurer
             c_measure = new Measure();
             c_shape = new ShapeOperator();
 
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
             string errorMessage;
 
             //初始化設定
-            errorMessage = c_control.InitializeSetting(ref EBW8Image1,ref  c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
-
-            c_shape.CalibrationX = x;
-            c_shape.CalibrationY = y;
+            errorMessage = c_control.InitializeSetting(ref EBW8Image1, ref c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
-
 
             graphics = pictureBox1.CreateGraphics();
 
             Learn();
         }
 
-        private void Form_Shown(object sender, EventArgs e)
-        {
-            //EBW8Image1.Load(Environment.CurrentDirectory + "\\BinImage\\PressItem.png");
-            //DrawEBW8Image();
-            //btn_Detect_Click(sender, e);
-            //btn_Shape_Click(sender, e);
-        }
-
         private void Form_Close(object sender, FormClosedEventArgs e)
         {
+            // 關閉攝影機
             capture?.Stop();
 
             if (m_pMyCamera != null)
@@ -166,17 +151,20 @@ namespace cyut_Auo_Component_Measurer
 
         private void Menu_Load_Setting_Click(object sender, EventArgs e)
         {
-            c_control.MenuLoadSetting(ref EBW8Image1, c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
-            c_shape.CalibrationX = x;
-            c_shape.CalibrationY = y;
+            string errorMessage;
+
+            errorMessage = c_control.MenuLoadSetting(ref EBW8Image1, c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+
+            if (errorMessage != c_control.OK)
+                MessageBox.Show(errorMessage);
         }
 
         private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             // 開相機
             if (isStreaming == false)
             {
+                //btn_Camera_Click(sender, e);
                 btn_MVSCamera_Click(sender, e);
             }
 
@@ -186,7 +174,6 @@ namespace cyut_Auo_Component_Measurer
 
             Form_Dot_Grid f2 = new Form_Dot_Grid(x, y);
             f2.ShowDialog(this);
-
             btn_MVSCamera_Click(sender, e);
 
             c_shape.EBW8ImageDotGrid.SetSize(EBW8Image1);
@@ -213,7 +200,31 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Camera_Click(object sender, EventArgs e)
         {
+            // 判斷停止還是開始
+            if (isStreaming == false)
+            {
+                if (capture == null)
+                {
+                    capture = new VideoCapture(0);
+                }
 
+                capture.ImageGrabbed += Capture_ImageGrabbed;
+
+                capture.Start(); //開始攝影
+            }
+            else
+            {
+                capture.Pause();
+
+                Thread.Sleep(100);
+
+                // bitmap to EImageBW8
+                BitmapToEImageBW8(ref bmp, ref EBW8Image1);
+
+                DrawEBW8Image1();
+            }
+
+            isStreaming = !isStreaming;
         }
 
         private void btn_Adjust_Click(object sender, EventArgs e)
@@ -261,11 +272,9 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = c_measure.codedSelection.GetElement(i); //get element
 
-                //c_shape.ShapeDetermine(ref element, i); //element to shape
-
                 ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i);
 
-                if(shape == null)
+                if (shape == null)
                 {
                     continue;
                 }
@@ -278,6 +287,8 @@ namespace cyut_Auo_Component_Measurer
             }
 
             c_measure.SetObjectG();
+
+            c_control.SaveHistorySetting(ref EBW8Image1, c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
 
             isGolden = true;
         }
@@ -299,10 +310,8 @@ namespace cyut_Auo_Component_Measurer
 
                 ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
 
-                if(shape == null)
+                if (shape == null)
                 {
-                    Console.WriteLine(i + " no shape");
-
                     continue;
                 }
 
@@ -332,6 +341,15 @@ namespace cyut_Auo_Component_Measurer
                 ObjectShape shape = (ObjectShape)c_measure.ObjectSetU[index];
 
                 ListBoxAddObj(listBox_NG, shape);
+            }
+
+            if (c_measure.GetNGIndex.Count == 0)
+            {
+                c_control.SaveInspectResult(ref EBW8Image1, true);
+            }
+            else
+            {
+                c_control.SaveInspectResult(ref EBW8Image1, false);
             }
 
             isGolden = false;
@@ -368,8 +386,6 @@ namespace cyut_Auo_Component_Measurer
                     element.Dispose();
                 }
             }
-
-
         }
 
         private void btn_Batch_Setting_Click(object sender, EventArgs e)
@@ -393,7 +409,6 @@ namespace cyut_Auo_Component_Measurer
                 widthStd = (float)controlWidth.Value;
                 heightStd = (float)controlHeight.Value;
             }
-
 
             foreach (var index in batchIndexes)
             {
@@ -421,7 +436,6 @@ namespace cyut_Auo_Component_Measurer
                         special1.widthStd = widthStd;
                         special1.heightStd = heightStd;
                         break;
-
                 }
 
             }
@@ -439,6 +453,12 @@ namespace cyut_Auo_Component_Measurer
             if (isGolden)
             {
                 elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetG, e.X / scalingRatio, e.Y / scalingRatio);
+
+                if (elementIndex != -1)
+                {
+                    ObjectShape shape = (ObjectShape)c_measure.ObjectSetG[elementIndex];
+                    Console.WriteLine(shape.shapeName);
+                }
             }
             else
             {
@@ -524,7 +544,7 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            for(int i = 0; i < listBox_Measure.Items.Count; i++)
+            for (int i = 0; i < listBox_Measure.Items.Count; i++)
             {
                 if (int.Parse(listBox_Measure.Items[i].ToString().Substring(0, 3)) == elementIndex)
                 {
@@ -696,6 +716,8 @@ namespace cyut_Auo_Component_Measurer
                 MVS_Image_To_Bmp(sender, e);
                 Stop_Streaming(sender, e);
 
+                m_pMyCamera.MV_CC_CloseDevice_NET();
+                m_pMyCamera.MV_CC_DestroyDevice_NET();
 
                 scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
 
@@ -1210,13 +1232,13 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelNGIndex * 30);
-            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 1.5) + 3;
+            label_Title.Location = new Point(0, panelIndex * 30);
+            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
             label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, panelNGIndex * 30);
+            label_Value.Location = new Point(label_Title.Width + 10, panelIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
@@ -1231,7 +1253,7 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Text = labelText;
             label_Title.Text += ":";
             label_Title.Location = new Point(0, panelNGIndex * 30);
-            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 1.5) + 3;
+            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
@@ -1251,7 +1273,7 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Text = labelText;
             label_Title.Text += ":";
             label_Title.Location = new Point(0, panelStandardIndex * 30);
-            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 1.5) + 3;
+            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             NumericUpDown num_Standard = new NumericUpDown();
             decimal number = decimal.Round((decimal)value, 1);

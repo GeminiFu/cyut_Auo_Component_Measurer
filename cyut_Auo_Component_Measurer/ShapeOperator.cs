@@ -125,35 +125,37 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectShape ShapeDetermine(ref EImageBW8 image, ref ECodedElement element, uint index)
         {
-            ERectangle rect = MeasureRect(ref image, ref element);
+            // 矩形判定
+            ERectangle rectangle = MeasureRect(ref image, ref element);
 
-            if (rect != null)
+            if (rectangle != null)
             {
-
-                ObjectRectangle rectangle = new ObjectRectangle();
-                rectangle.SetCenter(ref element);
-                rectangle.SetWidthHeight(ref element);
-                rectangle.index = index;
+                ObjectRectangle shapeRectangle = new ObjectRectangle();
+                shapeRectangle.SetCenter(ref element);
+                shapeRectangle.index = index;
 
 
+                //shapeRectangle.SetWidthHeight(ref element);
+                 shapeRectangle.width = rectangle.SizeX;
+                shapeRectangle.height = rectangle.SizeY;
+
+                // 方形判定
                 if (element.BoundingBoxWidth / element.BoundingBoxHeight >= 0.95 && element.BoundingBoxWidth / element.BoundingBoxHeight <= 1.05) //正方形
                 {
-                    Console.WriteLine(index + " squre");
-                    rectangle.SetSquare();
+                    shapeRectangle.SetSquare();
                 }else
                 {
-
-                    Console.WriteLine(index + " rect");
+                    //Console.WriteLine(index + "is rectangle");
                 }
-                return rectangle;
+
+                return shapeRectangle;
             }
 
+            // 圓形判定
             ECircle circle = MeasureCircle(ref image, ref element);
 
             if (circle != null)
             {
-                Console.WriteLine(index + " circle");
-
                 ObjectCircle circleShape = new ObjectCircle();
 
                 circleShape.SetCenter(ref element);
@@ -164,25 +166,33 @@ namespace cyut_Auo_Component_Measurer
                 return circleShape;
             }
 
-            EPoint point = MeasureSpecial(ref image, ref element);
+            //EPoint point = MeasureSpecial(ref image, ref element);
 
-            if (point != null)
-            {
-                Console.WriteLine(index + " special");
+            //if (point != null)
+            //{
+            //    Console.WriteLine(index + " special");
 
-                ObjectSpecial1 special1 = new ObjectSpecial1();
-                special1.SetCenter(ref element);
-                special1.SetWidthHeight(ref element);
-                special1.index = index;
+            //    ObjectSpecial1 special1 = new ObjectSpecial1();
+            //    special1.SetCenter(ref element);
+            //    special1.SetWidthHeight(ref element);
+            //    special1.index = index;
 
-                return special1;
-            }
-            else
-            {
-                Console.WriteLine(index + " no such shape");
-                return null;
-            }
+            //    return special1;
+            //}
+            //else
+            //{
+            //    Console.WriteLine(index + " no such shape");
+            //    return null;
+            //}
+
+            ObjectSpecial1 special1 = new ObjectSpecial1();
+            special1.SetCenter(ref element);
+            special1.SetWidthHeight(ref element);
+            special1.index = index;
+
+            return special1;
         }
+
 
         private ERectangle MeasureRect(ref EImageBW8 image, ref ECodedElement element)
         {
@@ -225,7 +235,7 @@ namespace cyut_Auo_Component_Measurer
             ECircleGauge.Tolerance = element.BoundingBoxWidth / 5;
             ECircleGauge.SamplingStep = 1; //每個點都要檢查
             ECircleGauge.Measure(image);
-            if (ECircleGauge.NumValidSamples < ECircleGauge.NumSamples * 0.9) //防呆機制，萬一給的不是長方形
+            if (ECircleGauge.NumValidSamples < ECircleGauge.NumSamples * 0.9) //防呆機制，萬一給的不是圓形
             {
                 return null;
             }
@@ -303,7 +313,7 @@ namespace cyut_Auo_Component_Measurer
         public string shapeName;
         //internal EPoint center; //注意:原本使用這個物件，Serialize的時候會導致StackOverflow的例外
         public float centerX, centerY;
-        public int checkResult; //紀錄該物件是否被檢查過，以及結果 -1: 還沒有檢查 0:OK  1:NG
+        public int checkResult = -1; //紀錄該物件是否被檢查過，以及結果 -1: 還沒有檢查 0:OK  1:NG
         public uint index; //紀錄codedImage中的索引
 
         private string ok = "Shape is ok.";
@@ -313,7 +323,7 @@ namespace cyut_Auo_Component_Measurer
 
         internal ObjectShape()
         {
-            checkResult = -1;
+
         }
 
         internal void SetCenter(ref ECodedElement element)

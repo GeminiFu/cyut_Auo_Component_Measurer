@@ -12,17 +12,11 @@ namespace cyut_Auo_Component_Measurer
 {
     public partial class Form_Dot_Grid : Form
     {
-        public Form_Dot_Grid(float x, float y)
+        public Form_Dot_Grid(int x,int y)
         {
             InitializeComponent();
-            numX.Value = (int)x;
-            numY.Value = (int)y;
-
-        }
-
-        private void Form_Closed(object sender, FormClosedEventArgs e)
-        {
-
+            numX.Value = x;
+            numY.Value = y;
         }
 
         private void btn_Apply_Click(object sender, EventArgs e)
