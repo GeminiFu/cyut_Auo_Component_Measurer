@@ -21,6 +21,7 @@ namespace cyut_Auo_Component_Measurer
     {
         OpenFileDialog openFileDialog1;
         FolderBrowserDialog folderBrowserDialog1;
+        SaveFileDialog saveFileDialog1;
 
         string ok = "control OK";
 
@@ -40,6 +41,10 @@ namespace cyut_Auo_Component_Measurer
 
             //saveFileDialog1.InitialDirectory = Application.StartupPath;
             //saveFileDialog1.Filter = "Json|*.json|BMP|*.bmp|All files|*.*";
+
+            saveFileDialog1 = new SaveFileDialog();
+
+            folderBrowserDialog1.SelectedPath = Environment.CurrentDirectory;
 
         }
 
@@ -380,9 +385,38 @@ namespace cyut_Auo_Component_Measurer
             }
             string savePath = pathSave + "\\" + fileName + ".png";
 
+            Console.WriteLine(savePath);
+
             testImage.Save(savePath);
 
-            return errorMessage;
+            return OK;
+        }
+
+        internal string LoadOldImage(ref EImageBW8 image, ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
+        {
+            string errorMessage = "";
+
+            openFileDialog1.FilterIndex = 2;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string imagePath = openFileDialog1.FileName;
+                string folderPath = imagePath + @"\..";
+
+
+                image.Load(imagePath);
+
+
+
+                errorMessage = CheckLocalSetting(folderPath);
+
+                if (errorMessage != ok)
+                    return errorMessage;
+
+                LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, folderPath);
+            }
+
+            return OK;
         }
 
         // -------------------------------Setting-------------------------------

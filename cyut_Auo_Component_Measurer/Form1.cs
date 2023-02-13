@@ -51,7 +51,7 @@ namespace cyut_Auo_Component_Measurer
         public int y = 5;
 
         // --------------------------View--------------------------
-        float scalingRatio;
+        float viewRatio;
         Graphics graphics;
 
         int panelIndex = 0;
@@ -119,6 +119,8 @@ namespace cyut_Auo_Component_Measurer
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
 
+            c_shape.AutoCalibration(c_shape.CalibrationX, c_shape.CalibrationY);
+
             graphics = pictureBox1.CreateGraphics();
 
             Learn();
@@ -179,8 +181,77 @@ namespace cyut_Auo_Component_Measurer
             c_shape.EBW8ImageDotGrid.SetSize(EBW8Image1);
             EasyImage.Copy(EBW8Image1, c_shape.EBW8ImageDotGrid);
 
-            c_shape.AutoCalibration(x, y);
+            c_shape.AutoCalibration(c_shape.CalibrationX, c_shape.CalibrationY);
         }
+
+        private void Menu_Load_Old_Image_Click(object sender, EventArgs e)
+        {
+            string errorMessage = "";
+
+            int calibrationX = 0;
+            int calibrationY = 0;
+
+            errorMessage = c_control.LoadOldImage(ref EBW8Image1, ref c_measure.ObjectSetG, ref c_shape.EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
+
+            c_shape.CalibrationX = x;
+            c_shape.CalibrationY = y;
+
+            DrawEBW8Image1();
+
+            c_measure.Detect(ref EBW8Image1);
+
+            listBox_Measure.Items.Clear();
+
+            // Build ObjectSet
+            c_measure.ObjectSetU.Clear();
+
+            for (uint i = 0; i < c_measure.codedSelection.ElementCount; i++)
+            {
+                ECodedElement element = c_measure.codedSelection.GetElement(i); //get element
+
+                ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
+
+                if (shape == null)
+                {
+                    continue;
+                }
+
+                c_measure.ObjectSetU.Add(shape); //Add into ObjectSet
+
+
+                ListBoxAddObj(listBox_Measure, shape); //Add in ListBox
+
+                element.Dispose();
+            }
+
+            // Inspect
+            c_measure.Inspect(num_Threshold_NG.Value);
+
+            // View
+            listBox_NG.Items.Clear();
+
+            foreach (var index in c_measure.GetNGIndex)
+            {
+                ECodedElement element = c_measure.codedSelection.GetElement((uint)index);
+
+                DrawNGElement(ref element);
+
+                element.Dispose();
+
+
+                ObjectShape shape = (ObjectShape)c_measure.ObjectSetU[index];
+
+                ListBoxAddObj(listBox_NG, shape);
+            }
+
+
+
+            if (errorMessage != c_control.OK)
+            {
+                Console.WriteLine(errorMessage);
+            }
+        }
+
 
         // --------------------------Button--------------------------
         private void btn_Load_Click(object sender, EventArgs e)
@@ -245,15 +316,15 @@ namespace cyut_Auo_Component_Measurer
             EBW8Image2.CopyTo(EBW8Image1); //讓 EBW8IImage1 為正確的圖像
 
             // 畫出 EBW8Image1
-            scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image2.Width, EBW8Image2.Height);
+            viewRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image2.Width, EBW8Image2.Height);
 
             DrawEBW8Image1();
 
             // 畫出 finder
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
             EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image1); //找 ERoi2 的位置
-            EPatternFinder1FoundPatterns[0].Draw(graphics, scalingRatio);
-            EPatternFinder2FoundPatterns[0].Draw(graphics, scalingRatio);
+            EPatternFinder1FoundPatterns[0].Draw(graphics, viewRatio);
+            EPatternFinder2FoundPatterns[0].Draw(graphics, viewRatio);
         }
 
         // -------------------------------Measure-------------------------------
@@ -452,17 +523,18 @@ namespace cyut_Auo_Component_Measurer
 
             if (isGolden)
             {
-                elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetG, e.X / scalingRatio, e.Y / scalingRatio);
+                elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetG, e.X / viewRatio, e.Y / viewRatio);
 
                 if (elementIndex != -1)
                 {
                     ObjectShape shape = (ObjectShape)c_measure.ObjectSetG[elementIndex];
-                    Console.WriteLine(shape.shapeName);
+                    Console.WriteLine(shape.elementBoundingWidth);
+                    Console.WriteLine(shape.elementBoundingHeight);
                 }
             }
             else
             {
-                elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetU, e.X / scalingRatio, e.Y / scalingRatio);
+                elementIndex = c_measure.IsClickObject(ref c_measure.ObjectSetU, e.X / viewRatio, e.Y / viewRatio);
             }
 
             if (elementIndex == -1)
@@ -719,11 +791,11 @@ namespace cyut_Auo_Component_Measurer
                 m_pMyCamera.MV_CC_CloseDevice_NET();
                 m_pMyCamera.MV_CC_DestroyDevice_NET();
 
-                scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
+                viewRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
 
                 pictureBox1.Image = null;
                 pictureBox1.Refresh();
-                EBW8Image1.Draw(graphics, scalingRatio);
+                EBW8Image1.Draw(graphics, viewRatio);
             }
 
         }
@@ -1066,6 +1138,115 @@ namespace cyut_Auo_Component_Measurer
             MessageBox.Show(errorMsg, "PROMPT");
         }
 
+        // -----------------------Adjust-----------------------
+        private void Learn()
+        {
+            string RunningPath = Environment.CurrentDirectory;
+            string StdImagePath = string.Format("{0}Resources\\PressItem.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
+            EBW8ImageStd.Load(StdImagePath);
+
+            EPatternFinder1 = new EPatternFinder();
+            // 先學習不規則圖形
+            // 可用於校正水平位置
+            // Attach the roi to its parent
+            EBW8Roi1.Attach(EBW8ImageStd);
+            EBW8Roi1.SetPlacement(67, 558, 632, 242);
+            EPatternFinder1.Learn(EBW8Roi1);
+
+            EPatternFinder1.AngleTolerance = 50.00f;
+            EPatternFinder1.ScaleTolerance = 0.60f;
+
+            EPatternFinder2 = new EPatternFinder();
+            // 第二個標準點
+            // 用於 鏡像 和 垂直翻轉
+            EBW8Roi2.Attach(EBW8ImageStd);
+            EBW8Roi2.SetPlacement(714, 753, 594, 78);
+            EPatternFinder2.Learn(EBW8Roi2);
+
+            // 由於前面都會校正一次，所以容忍值不用太高，速度會更快
+            EPatternFinder2.AngleTolerance = 10.00f;
+            EPatternFinder2.ScaleTolerance = 0.10f;
+        }
+
+        private void Adjust_Fixed(object sender, EventArgs e)
+        {
+            // 位置校正 & 水平校正
+            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
+
+            // 如果沒找到
+            if (EPatternFinder1FoundPatterns[0].Score < 0.8)
+            {
+                MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
+                return;
+            }
+
+            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.X;
+            finder1CenterY = EPatternFinder1FoundPatterns[0].Center.Y;
+
+            EBW8Image2 = new EImageBW8();
+            EBW8Image2.SetSize(EBW8ImageStd);
+
+            adjustRatio = 1 / EPatternFinder1FoundPatterns[0].Scale;
+
+            // ERoi1Center 需要手動調整
+            EasyImage.ScaleRotate(EBW8Image1, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8Image2, 0);
+        }
+
+        private void Adjust_Horizontal(object sender, EventArgs e)
+        {
+            // 水平校正後
+            Adjust_Fixed(sender, e); //水平旋轉 和 大小縮放
+            // 在 EBW8Image2 找 EROI2
+            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image2);
+
+            // 如果 finder2 分數太低
+            // 鏡像旋轉
+            if (EPatternFinder2FoundPatterns[0].Score < 0.8)
+            {
+                EBW8Image2 = new EImageBW8();
+                EBW8Image2.SetSize(EBW8Image1);
+
+                EBW8Image1Center = new Point(EBW8Image1.Width / 2, EBW8Image1.Height / 2);
+
+                EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, -1.00f, 1.00f, 0, EBW8Image2, 0);
+
+                EBW8Image2.CopyTo(EBW8Image1);
+            }
+            else
+            {
+                //Console.WriteLine("Don't need horizontal.");
+            }
+        }
+
+        private void Adjust_Vertical(object sender, EventArgs e)
+        {
+            // 水平校正後
+            Adjust_Fixed(sender, e); //水平旋轉 和 大小縮放
+            // 在 EBW8Image2 找 EROI2
+            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image2); //找 ERoi1 的位置
+            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image2); //找 ERoi2 的位置
+
+            // 如果 finder1Y > finder2Y 旋轉
+            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.Y;
+            finder2CenterY = EPatternFinder2FoundPatterns[0].Center.Y;
+
+            if (finder1CenterX > finder2CenterY)
+            {
+                EBW8Image2 = new EImageBW8();
+                EBW8Image2.SetSize(EBW8Image1);
+
+                EBW8Image1Center = new Point(EBW8Image1.Width / 2, EBW8Image1.Height / 2);
+
+                EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1.00f, -1.00f, 0, EBW8Image2, 0);
+
+                EBW8Image2.CopyTo(EBW8Image1);
+            }
+            else
+            {
+                //Console.WriteLine("Don't need vertical.");
+            }
+        }
+
 
 
         // -------------------------------Method-------------------------------
@@ -1111,13 +1292,13 @@ namespace cyut_Auo_Component_Measurer
             pictureBox1.Image = null;
             pictureBox1.Refresh();
             float width = EBW8Image1.Width;
-            scalingRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
-            EBW8Image1.Draw(graphics, scalingRatio);
+            viewRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
+            EBW8Image1.Draw(graphics, viewRatio);
         }
 
         private void DrawElement(ref ECodedElement element)
         {
-            c_measure.codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, scalingRatio);
+            c_measure.codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, viewRatio);
 
             panelIndex = 0;
             panelNGIndex = 0;
@@ -1126,7 +1307,7 @@ namespace cyut_Auo_Component_Measurer
 
         private void DrawNGElement(ref ECodedElement element)
         {
-            c_measure.codedImage1.Draw(graphics, element, scalingRatio);
+            c_measure.codedImage1.Draw(graphics, element, viewRatio);
 
             panelIndex = 0;
             panelNGIndex = 0;
@@ -1291,113 +1472,5 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
-        // -------------------------------Adjust-------------------------------
-        private void Learn()
-        {
-            string RunningPath = Environment.CurrentDirectory;
-            string StdImagePath = string.Format("{0}Resources\\PressItem.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
-            EBW8ImageStd.Load(StdImagePath);
-
-            EPatternFinder1 = new EPatternFinder();
-            // 先學習不規則圖形
-            // 可用於校正水平位置
-            // Attach the roi to its parent
-            EBW8Roi1.Attach(EBW8ImageStd);
-            EBW8Roi1.SetPlacement(67, 558, 632, 242);
-            EPatternFinder1.Learn(EBW8Roi1);
-
-            EPatternFinder1.AngleTolerance = 50.00f;
-            EPatternFinder1.ScaleTolerance = 0.60f;
-
-            EPatternFinder2 = new EPatternFinder();
-            // 第二個標準點
-            // 用於 鏡像 和 垂直翻轉
-            EBW8Roi2.Attach(EBW8ImageStd);
-            EBW8Roi2.SetPlacement(714, 753, 594, 78);
-            EPatternFinder2.Learn(EBW8Roi2);
-
-            // 由於前面都會校正一次，所以容忍值不用太高，速度會更快
-            EPatternFinder2.AngleTolerance = 10.00f;
-            EPatternFinder2.ScaleTolerance = 0.10f;
-        }
-
-        private void Adjust_Fixed(object sender, EventArgs e)
-        {
-            // 位置校正 & 水平校正
-            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
-
-            // 如果沒找到
-            if (EPatternFinder1FoundPatterns[0].Score < 0.8)
-            {
-                MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
-                return;
-            }
-
-            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.X;
-            finder1CenterY = EPatternFinder1FoundPatterns[0].Center.Y;
-
-            EBW8Image2 = new EImageBW8();
-            EBW8Image2.SetSize(EBW8ImageStd);
-
-            adjustRatio = 1 / EPatternFinder1FoundPatterns[0].Scale;
-
-            // ERoi1Center 需要手動調整
-            EasyImage.ScaleRotate(EBW8Image1, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8Image2, 0);
-        }
-
-        private void Adjust_Horizontal(object sender, EventArgs e)
-        {
-            // 水平校正後
-            Adjust_Fixed(sender, e); //水平旋轉 和 大小縮放
-            // 在 EBW8Image2 找 EROI2
-            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image2);
-
-            // 如果 finder2 分數太低
-            // 鏡像旋轉
-            if (EPatternFinder2FoundPatterns[0].Score < 0.8)
-            {
-                EBW8Image2 = new EImageBW8();
-                EBW8Image2.SetSize(EBW8Image1);
-
-                EBW8Image1Center = new Point(EBW8Image1.Width / 2, EBW8Image1.Height / 2);
-
-                EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, -1.00f, 1.00f, 0, EBW8Image2, 0);
-
-                EBW8Image2.CopyTo(EBW8Image1);
-            }
-            else
-            {
-                //Console.WriteLine("Don't need horizontal.");
-            }
-        }
-
-        private void Adjust_Vertical(object sender, EventArgs e)
-        {
-            // 水平校正後
-            Adjust_Fixed(sender, e); //水平旋轉 和 大小縮放
-            // 在 EBW8Image2 找 EROI2
-            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image2); //找 ERoi1 的位置
-            EPatternFinder2FoundPatterns = EPatternFinder2.Find(EBW8Image2); //找 ERoi2 的位置
-
-            // 如果 finder1Y > finder2Y 旋轉
-            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.Y;
-            finder2CenterY = EPatternFinder2FoundPatterns[0].Center.Y;
-
-            if (finder1CenterX > finder2CenterY)
-            {
-                EBW8Image2 = new EImageBW8();
-                EBW8Image2.SetSize(EBW8Image1);
-
-                EBW8Image1Center = new Point(EBW8Image1.Width / 2, EBW8Image1.Height / 2);
-
-                EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1.00f, -1.00f, 0, EBW8Image2, 0);
-
-                EBW8Image2.CopyTo(EBW8Image1);
-            }
-            else
-            {
-                //Console.WriteLine("Don't need vertical.");
-            }
-        }
     }
 }

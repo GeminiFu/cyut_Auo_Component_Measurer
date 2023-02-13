@@ -49,8 +49,8 @@ namespace cyut_Auo_Component_Measurer
             }
             else
             {
-                this.calibrationX = x;
-                this.calibrationY = y;
+                //this.calibrationX = x;
+                //this.calibrationY = y;
             }
         }
 
@@ -136,17 +136,24 @@ namespace cyut_Auo_Component_Measurer
 
 
                 //shapeRectangle.SetWidthHeight(ref element);
-                 shapeRectangle.width = rectangle.SizeX;
+                shapeRectangle.width = rectangle.SizeX;
                 shapeRectangle.height = rectangle.SizeY;
+
+                shapeRectangle.elementBoundingWidth = element.BoundingBoxWidth;
+                shapeRectangle.elementBoundingHeight = element.BoundingBoxHeight;
 
                 // 方形判定
                 if (element.BoundingBoxWidth / element.BoundingBoxHeight >= 0.95 && element.BoundingBoxWidth / element.BoundingBoxHeight <= 1.05) //正方形
                 {
                     shapeRectangle.SetSquare();
-                }else
+                }
+                else
                 {
                     //Console.WriteLine(index + "is rectangle");
                 }
+
+
+                rectangle.Dispose();
 
                 return shapeRectangle;
             }
@@ -163,6 +170,9 @@ namespace cyut_Auo_Component_Measurer
                 circleShape.index = index;
 
                 // 圓型
+
+                circle.Dispose();
+
                 return circleShape;
             }
 
@@ -315,6 +325,8 @@ namespace cyut_Auo_Component_Measurer
         public float centerX, centerY;
         public int checkResult = -1; //紀錄該物件是否被檢查過，以及結果 -1: 還沒有檢查 0:OK  1:NG
         public uint index; //紀錄codedImage中的索引
+        public float elementBoundingWidth;
+        public float elementBoundingHeight;
 
         private string ok = "Shape is ok.";
 

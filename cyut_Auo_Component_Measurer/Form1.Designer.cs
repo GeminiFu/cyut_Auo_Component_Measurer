@@ -36,6 +36,7 @@
             this.檔案ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Load_Setting = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Save_Setting = new System.Windows.Forms.ToolStripMenuItem();
+            this.Menu_Load_Old_Image = new System.Windows.Forms.ToolStripMenuItem();
             this.設定ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dotGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btn_Measure_Standard = new System.Windows.Forms.Button();
@@ -113,7 +114,8 @@
             // 
             this.檔案ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Menu_Load_Setting,
-            this.Menu_Save_Setting});
+            this.Menu_Save_Setting,
+            this.Menu_Load_Old_Image});
             this.檔案ToolStripMenuItem.Name = "檔案ToolStripMenuItem";
             this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(43, 19);
             this.檔案ToolStripMenuItem.Text = "檔案";
@@ -121,16 +123,23 @@
             // Menu_Load_Setting
             // 
             this.Menu_Load_Setting.Name = "Menu_Load_Setting";
-            this.Menu_Load_Setting.Size = new System.Drawing.Size(134, 22);
+            this.Menu_Load_Setting.Size = new System.Drawing.Size(180, 22);
             this.Menu_Load_Setting.Text = "讀取設定檔";
             this.Menu_Load_Setting.Click += new System.EventHandler(this.Menu_Load_Setting_Click);
             // 
             // Menu_Save_Setting
             // 
             this.Menu_Save_Setting.Name = "Menu_Save_Setting";
-            this.Menu_Save_Setting.Size = new System.Drawing.Size(134, 22);
+            this.Menu_Save_Setting.Size = new System.Drawing.Size(180, 22);
             this.Menu_Save_Setting.Text = "儲存設定檔";
             this.Menu_Save_Setting.Click += new System.EventHandler(this.Menu_Save_Setting_Click);
+            // 
+            // Menu_Load_Old_Image
+            // 
+            this.Menu_Load_Old_Image.Name = "Menu_Load_Old_Image";
+            this.Menu_Load_Old_Image.Size = new System.Drawing.Size(180, 22);
+            this.Menu_Load_Old_Image.Text = "讀取舊檔案";
+            this.Menu_Load_Old_Image.Click += new System.EventHandler(this.Menu_Load_Old_Image_Click);
             // 
             // 設定ToolStripMenuItem
             // 
@@ -378,6 +387,7 @@
         private System.Windows.Forms.Panel panel_Standard;
         private System.Windows.Forms.Button btn_Adjust;
         private System.Windows.Forms.ComboBox list_Of_Camera_Devices;
+        private System.Windows.Forms.ToolStripMenuItem Menu_Load_Old_Image;
     }
 }
 
