@@ -89,6 +89,7 @@
     <Compile Include="Form_Dot_Grid.Designer.cs">
       <DependentUpon>Form_Dot_Grid.cs</DependentUpon>
     </Compile>
+    <Compile Include="ObjectInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShapeOperator.cs" />
