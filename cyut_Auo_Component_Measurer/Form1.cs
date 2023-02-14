@@ -32,10 +32,6 @@ namespace cyut_Auo_Component_Measurer
         // --------------------------Instance--------------------------
         Control c_control;
 
-        // 要開給 FormDotGrid 讓它傳上父輩
-        public int x = 5;
-        public int y = 5;
-
         // --------------------------View--------------------------
         float viewRatio;
         Graphics graphics;
@@ -103,8 +99,8 @@ namespace cyut_Auo_Component_Measurer
         // --------------------------Shape--------------------------
         EWorldShape EWorldShape1 = new EWorldShape();
         internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
-        int calibrationX = 5;
-        int calibrationY = 5;
+        public int calibrationX = 5;
+        public int calibrationY = 5;
         float calibrationRatioX = 0;
         float calibrationRatioY = 0;
 
@@ -121,7 +117,7 @@ namespace cyut_Auo_Component_Measurer
             string errorMessage;
 
             //初始化設定
-            errorMessage = c_control.InitializeSetting(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
+            errorMessage = c_control.InitializeSetting(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
@@ -177,11 +173,7 @@ namespace cyut_Auo_Component_Measurer
                 btn_MVSCamera_Click(sender, e);
             }
 
-            // 設定 x, y
-            x = calibrationX;
-            y = calibrationY;
-
-            Form_Dot_Grid f2 = new Form_Dot_Grid(x, y);
+            Form_Dot_Grid f2 = new Form_Dot_Grid(calibrationX, calibrationY);
             f2.ShowDialog(this);
             btn_MVSCamera_Click(sender, e);
 
@@ -199,9 +191,6 @@ namespace cyut_Auo_Component_Measurer
             int calibrationY = 0;
 
             errorMessage = c_control.LoadOldImage(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
-
-            calibrationX = x;
-            calibrationY = y;
 
             DrawEBW8Image1();
 
@@ -529,7 +518,6 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Listbox-------------------------------
         private void listBox_Measure_Selected_Changed(object sender, EventArgs e)
         {
-            Console.WriteLine("render");
             if (listBox_Measure.SelectedItem == null)
             {
                 return;
@@ -1492,7 +1480,7 @@ namespace cyut_Auo_Component_Measurer
 
         internal int IsClickObject(ref ArrayList ObjectSet, float clickX, float clickY)
         {
-            for(int index = 0 ; index < ObjectSet.Count; index++)
+            for (int index = 0; index < ObjectSet.Count; index++)
             {
                 ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
 
@@ -1620,7 +1608,7 @@ namespace cyut_Auo_Component_Measurer
                 objectTest.heightError = objectTest.height - objectTest.heightStd;
 
                 // 比對誤差是否在 Threshold 裡面
-                if(objectTest.widthError < (float)thresholdNG && objectTest.heightError < (float)thresholdNG)
+                if (objectTest.widthError < (float)thresholdNG && objectTest.heightError < (float)thresholdNG)
                 {
                     objectTest.CheckResult = 0;
 

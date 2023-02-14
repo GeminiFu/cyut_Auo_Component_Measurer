@@ -23,8 +23,8 @@ namespace cyut_Auo_Component_Measurer
         {
             Form1 f1 = (Form1)this.Owner;
 
-            f1.x = (int)numX.Value;
-            f1.y = (int)numY.Value;
+            f1.calibrationX = (int)numX.Value;
+            f1.calibrationY = (int)numY.Value;
 
             this.Close();
 

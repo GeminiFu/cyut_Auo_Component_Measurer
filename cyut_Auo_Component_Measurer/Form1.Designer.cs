@@ -54,6 +54,7 @@
             this.panel_Standard = new System.Windows.Forms.Panel();
             this.btn_Adjust = new System.Windows.Forms.Button();
             this.list_Of_Camera_Devices = new System.Windows.Forms.ComboBox();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -115,6 +116,7 @@
             this.檔案ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Menu_Load_Setting,
             this.Menu_Save_Setting,
+            this.toolStripMenuItem2,
             this.Menu_Load_Old_Image});
             this.檔案ToolStripMenuItem.Name = "檔案ToolStripMenuItem";
             this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(43, 19);
@@ -322,6 +324,11 @@
             this.list_Of_Camera_Devices.TabIndex = 46;
             this.list_Of_Camera_Devices.Visible = false;
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
@@ -388,6 +395,7 @@
         private System.Windows.Forms.Button btn_Adjust;
         private System.Windows.Forms.ComboBox list_Of_Camera_Devices;
         private System.Windows.Forms.ToolStripMenuItem Menu_Load_Old_Image;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }
 

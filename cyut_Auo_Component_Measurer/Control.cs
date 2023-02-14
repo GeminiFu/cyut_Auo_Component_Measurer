@@ -66,7 +66,7 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Setting-------------------------------
         // 初始化
         // 目的：載入預設標準資料、建立新的歷史資料夾
-        internal string InitializeSetting(ref EImageBW8 standard,ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, int x, int y)
+        internal string InitializeSetting(ref EImageBW8 standard,ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage;
 
@@ -108,36 +108,16 @@ namespace cyut_Auo_Component_Measurer
             for (int i = 0; i < ObjectSetG.Count; i++)
             {
                 Object obj = ObjectSetG[i];
-                ObjectShape shape;
 
-                shape = JsonConvert.DeserializeObject<ObjectShape>(obj.ToString());
+                ObjectInfo objectInfo = JsonConvert.DeserializeObject<ObjectInfo>(obj.ToString());
 
-                switch (shape.shapeName)
-                {
-                    case "square":
-                        ObjectRectangle square = JsonConvert.DeserializeObject<ObjectRectangle>(obj.ToString());
-                        ObjectSetG[i] = square;
-                        break;
-                    case "rectangle":
-                        ObjectRectangle rect = JsonConvert.DeserializeObject<ObjectRectangle>(obj.ToString());
-                        ObjectSetG[i] = rect;
-                        break;
-                    case "circle":
-                        ObjectCircle circle = JsonConvert.DeserializeObject<ObjectCircle>(obj.ToString());
-                        ObjectSetG[i] = circle;
-                        break;
-                    case "special1":
-                        ObjectSpecial1 special1 = JsonConvert.DeserializeObject<ObjectSpecial1>(obj.ToString());
-                        ObjectSetG[i] = special1;
-                        break;
-                    default:
-                        Console.WriteLine(shape.shapeName);
-                        break;
-                }
+                ObjectSetG[i] = objectInfo;
+                
             }
 
             // dot grid image
             dotGridImage.Load(path + "\\Dot_Grid.png");
+
             // calibration x y 
             x = int.Parse(File.ReadAllText(path + "\\Calibration_X.txt"));
             y = int.Parse(File.ReadAllText(path + "\\Calibration_Y.txt"));
@@ -372,7 +352,7 @@ namespace cyut_Auo_Component_Measurer
 
         internal string SaveInspectResult(ref EImageBW8 testImage, bool isOK)
         {
-            string errorMessage = "";
+            string errorMessage;
             string fileName = DateTime.Now.ToString("yyyyMMdd") + "_" + DateTime.Now.ToString("HHmmss"); ;
 
             if (isOK)
@@ -384,8 +364,6 @@ namespace cyut_Auo_Component_Measurer
                 fileName = "NG_" + fileName;
             }
             string savePath = pathSave + "\\" + fileName + ".png";
-
-            Console.WriteLine(savePath);
 
             testImage.Save(savePath);
 
