@@ -369,10 +369,9 @@ namespace cyut_Auo_Component_Measurer
 
             Detect(ref EBW8Image1);
 
-            listBox_Measure.Items.Clear();
-
             // Build ObjectSet
             ObjectSetU.Clear();
+            listBox_Measure.Items.Clear();
 
             for (uint i = 0; i < codedSelection.ElementCount; i++)
             {
@@ -403,10 +402,7 @@ namespace cyut_Auo_Component_Measurer
 
                 element.Dispose();
 
-
-                ObjectShape shape = (ObjectShape)ObjectSetU[index];
-
-                ListBoxAddObj(listBox_NG, shape);
+                ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[index]);
             }
 
             if (GetNGIndex.Count == 0)
@@ -1565,28 +1561,91 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------Inspect-------------------------------
-        internal void Inspect(decimal thresholdNG)
+        //internal void Inspect(decimal thresholdNG)
+        //{
+        //    // !!!!!!!!!!!!!!!!!! Check ObjectSetG
+        //    ObjectShape shapeTest;
+        //    ObjectShape shapeStandard;
+
+        //    float sameShapeThreshold = 11;
+
+
+        //    NGIndex.Clear();
+
+        //    for (int i = 0; i < ObjectSetU.Count; i++)
+        //    {
+        //        shapeTest = (ObjectShape)ObjectSetU[i];
+        //        int j = 0;
+        //        // 看兩個 shape 位置是不是差不多，確認兩個可以做比對
+        //        do
+        //        {
+        //            shapeStandard = (ObjectShape)ObjectSetG[j];
+        //            if ((Math.Abs(shapeTest.centerX - shapeStandard.centerX) < sameShapeThreshold) &&
+        //                (Math.Abs(shapeTest.centerY - shapeStandard.centerY) < sameShapeThreshold)
+        //                )
+        //            {
+        //                break;
+        //            }
+
+        //            j++;
+
+        //        } while (j < ObjectSetG.Count);
+
+        //        if (j >= ObjectSetG.Count)
+        //        {
+        //            shapeTest.checkResult = 1;
+        //            NGIndex.Add(i);
+        //            continue;
+        //        }
+
+        //        // 把 standard 設置給它 (可以不用)
+        //        // 比對兩個是不是同樣的圖形 (暫時不用)
+        //        if (shapeTest.GetType() != shapeStandard.GetType())
+        //        {
+        //            Console.WriteLine("形狀不同"); // 長方形和正方形的形狀判定
+        //            //shapeTest.checkResult = 1;
+        //            //continue;
+        //        }
+
+        //        // 相減儲存在誤差
+        //        shapeTest.SaveInspectInfo(shapeStandard);
+        //        // 比對誤差是否在 Threshold 裡面
+        //        if (shapeTest.Inspect(thresholdNG))
+        //        {
+        //            shapeTest.checkResult = 0;
+        //        }
+        //        else
+        //        {
+        //            shapeTest.checkResult = 1;
+
+        //            NGIndex.Add(i);
+        //        }
+        //    }
+
+
+        //}
+
+        private void Inspect(decimal thresholdNG)
         {
-
             // !!!!!!!!!!!!!!!!!! Check ObjectSetG
-            ObjectShape shapeTest;
-            ObjectShape shapeStandard;
+            ObjectInfo objectTest;
+            ObjectInfo objectStandard;
 
-            float sameShapeThreshold = 11;
-
+            float sameShapeThreshold = 10;
 
             NGIndex.Clear();
 
             for (int i = 0; i < ObjectSetU.Count; i++)
             {
-                shapeTest = (ObjectShape)ObjectSetU[i];
-                int j = 0;
+                objectTest = (ObjectInfo)ObjectSetU[i];
+
                 // 看兩個 shape 位置是不是差不多，確認兩個可以做比對
+                int j = 0;
                 do
                 {
-                    shapeStandard = (ObjectShape)ObjectSetG[j];
-                    if ((Math.Abs(shapeTest.centerX - shapeStandard.centerX) < sameShapeThreshold) &&
-                        (Math.Abs(shapeTest.centerY - shapeStandard.centerY) < sameShapeThreshold)
+                    objectStandard = (ObjectInfo)ObjectSetG[j];
+                    if ((Math.Abs(objectTest.CenterX - objectStandard.CenterX) < sameShapeThreshold) &&
+                        (Math.Abs(objectTest.CenterY - objectStandard.CenterY) < sameShapeThreshold)
                         )
                     {
                         break;
@@ -1596,43 +1655,37 @@ namespace cyut_Auo_Component_Measurer
 
                 } while (j < ObjectSetG.Count);
 
-                if (j >= ObjectSetG.Count)
+                if (j == ObjectSetG.Count)
                 {
-                    shapeTest.checkResult = 1;
+                    objectTest.CheckResult = 1;
                     NGIndex.Add(i);
                     continue;
                 }
 
-                // 把 standard 設置給它 (可以不用)
                 // 比對兩個是不是同樣的圖形 (暫時不用)
-                if (shapeTest.GetType() != shapeStandard.GetType())
-                {
-                    Console.WriteLine("形狀不同"); // 長方形和正方形的形狀判定
-                    //shapeTest.checkResult = 1;
-                    //continue;
-                }
+                // 把 standard 設置給它
+                objectTest.widthStd = objectStandard.widthStd;
+                objectTest.heightStd = objectStandard.heightStd;
 
-                //Console.WriteLine("shapeStandard's index is:" + shapeStandard.index);
-                //Console.WriteLine("shapeStandard's name is:" + shapeStandard.shapeName);
-                //Console.WriteLine("shapeTest's index is:" + shapeTest.index);
-                //Console.WriteLine("shapeTest's name is:" + shapeTest.shapeName);
                 // 相減儲存在誤差
-                shapeTest.SaveInspectInfo(shapeStandard);
+                objectTest.widthError = objectTest.width - objectTest.widthStd;
+                objectTest.heightError = objectTest.height - objectTest.heightStd;
+
                 // 比對誤差是否在 Threshold 裡面
-                if (shapeTest.Inspect(thresholdNG))
+                if(objectTest.widthError < (float)thresholdNG && objectTest.heightError < (float)thresholdNG)
                 {
-                    shapeTest.checkResult = 0;
+                    objectTest.CheckResult = 0;
+
                 }
                 else
                 {
-                    shapeTest.checkResult = 1;
+                    objectTest.CheckResult = 1;
 
                     NGIndex.Add(i);
                 }
             }
-
-
         }
+
 
         // -------------------------------Shape-------------------------------
         internal void AutoCalibration(int x, int y)
