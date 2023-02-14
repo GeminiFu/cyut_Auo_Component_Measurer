@@ -160,5 +160,11 @@
   <ItemGroup>
     <None Include="Resources\PressItem.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PressItem_Whole.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PressItem_Whole.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

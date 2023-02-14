@@ -93,16 +93,13 @@ namespace cyut_Auo_Component_Measurer
 
         List<int> NGIndex = new List<int>();
 
-        internal List<int> GetNGIndex { get { return NGIndex; } }
-
-
         // --------------------------Shape--------------------------
         EWorldShape EWorldShape1 = new EWorldShape();
         internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
         public int calibrationX = 5;
         public int calibrationY = 5;
-        float calibrationRatioX = 0;
-        float calibrationRatioY = 0;
+        float ResolutionX;
+        float ResolutionY;
 
 
 
@@ -122,7 +119,7 @@ namespace cyut_Auo_Component_Measurer
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
 
-            //AutoCalibration(CalibrationX, CalibrationY);
+            AutoCalibration(calibrationX, calibrationY);
 
             graphics = pictureBox1.CreateGraphics();
 
@@ -175,6 +172,8 @@ namespace cyut_Auo_Component_Measurer
 
             Form_Dot_Grid f2 = new Form_Dot_Grid(calibrationX, calibrationY);
             f2.ShowDialog(this);
+
+            //btn_Camera_Click(sender, e);
             btn_MVSCamera_Click(sender, e);
 
             EBW8ImageDotGrid.SetSize(EBW8Image1);
@@ -221,7 +220,7 @@ namespace cyut_Auo_Component_Measurer
             // View
             listBox_NG.Items.Clear();
 
-            foreach (var index in GetNGIndex)
+            foreach (var index in NGIndex)
             {
                 ECodedElement element = codedSelection.GetElement((uint)index);
 
@@ -255,6 +254,8 @@ namespace cyut_Auo_Component_Measurer
             }
 
             DrawEBW8Image1();
+
+            DataReset();
         }
 
         private void btn_Camera_Click(object sender, EventArgs e)
@@ -281,6 +282,8 @@ namespace cyut_Auo_Component_Measurer
                 BitmapToEImageBW8(ref bmp, ref EBW8Image1);
 
                 DrawEBW8Image1();
+
+                DataReset();
             }
 
             isStreaming = !isStreaming;
@@ -379,7 +382,7 @@ namespace cyut_Auo_Component_Measurer
             // View
             listBox_NG.Items.Clear();
 
-            foreach (var index in GetNGIndex)
+            foreach (var index in NGIndex)
             {
                 ECodedElement element = codedSelection.GetElement((uint)index);
 
@@ -390,7 +393,7 @@ namespace cyut_Auo_Component_Measurer
                 ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[index]);
             }
 
-            if (GetNGIndex.Count == 0)
+            if (NGIndex.Count == 0)
             {
                 c_control.SaveInspectResult(ref EBW8Image1, true);
             }
@@ -463,6 +466,8 @@ namespace cyut_Auo_Component_Measurer
 
                 objectInfo.heightStd = heightStd;
             }
+
+            batchIndexes.Clear();
         }
 
         // --------------------------Picturebox--------------------------
@@ -742,6 +747,8 @@ namespace cyut_Auo_Component_Measurer
                 pictureBox1.Image = null;
                 pictureBox1.Refresh();
                 EBW8Image1.Draw(graphics, viewRatio);
+
+                DataReset();
             }
 
         }
@@ -1192,6 +1199,7 @@ namespace cyut_Auo_Component_Measurer
                 //Console.WriteLine("Don't need vertical.");
             }
         }
+
         // -------------------------------Method-------------------------------
         private void ListBoxAddObj(ListBox listBox, ObjectInfo obj)
         {
@@ -1229,178 +1237,29 @@ namespace cyut_Auo_Component_Measurer
                 return pbHeight / imageHeight;
         }
 
-        // -------------------------------View-------------------------------
-        private void DrawEBW8Image1()
+        private void DataReset()
         {
-            pictureBox1.Image = null;
-            pictureBox1.Refresh();
-            float width = EBW8Image1.Width;
-            viewRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
-            EBW8Image1.Draw(graphics, viewRatio);
-        }
-
-        private void DrawElement(ref ECodedElement element)
-        {
-            codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, viewRatio);
-
+            adjustRatio = 0;
+            viewRatio = 0;
             panelIndex = 0;
             panelNGIndex = 0;
             panelStandardIndex = 0;
-        }
 
-        private void DrawNGElement(ref ECodedElement element)
-        {
-            codedImage1.Draw(graphics, element, viewRatio);
 
-            panelIndex = 0;
-            panelNGIndex = 0;
-            panelStandardIndex = 0;
-        }
 
-        private void RenderShapeInfo(int index, ArrayList ObjectSet)
-        {
-            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+            // previous product data clear
+            codedSelection.Clear();
+            ObjectSetU.Clear();
+            NGIndex.Clear();
 
+            // listbox clear
+            listBox_Measure.Items.Clear();
+            listBox_NG.Items.Clear();
+
+            // panel clear
             panel_Measure.Controls.Clear();
-
-            switch (objectInfo.ShapeName)
-            {
-                case "square":
-                    AddItemInPanelMeasure("寬", objectInfo.width);
-                    AddItemInPanelMeasure("高", objectInfo.height);
-                    break;
-                case "rectangle":
-                    AddItemInPanelMeasure("寬", objectInfo.width);
-                    AddItemInPanelMeasure("高", objectInfo.height);
-                    break;
-                case "circle":
-                    AddItemInPanelMeasure("半徑", objectInfo.width);
-                    break;
-                case "special1":
-                    AddItemInPanelMeasure("寬", objectInfo.width);
-                    AddItemInPanelMeasure("高", objectInfo.height);
-                    break;
-            }
-
-        }
-
-        private void RenderShapeErrorInfo(int index, ArrayList ObjectSet)
-        {
-            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
-
             panel_NG.Controls.Clear();
-
-            switch (objectInfo.ShapeName)
-            {
-                case "square":
-                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
-                    AddItemInPanelNG("高誤差", objectInfo.heightError);
-                    break;
-                case "rectangle":
-                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
-                    AddItemInPanelNG("高誤差", objectInfo.heightError);
-                    break;
-                case "circle":
-                    AddItemInPanelNG("半徑誤差", objectInfo.widthError);
-                    break;
-                case "special1":
-                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
-                    AddItemInPanelNG("高誤差", objectInfo.heightError);
-                    break;
-            }
-
-        }
-
-        private void RenderStandard(int index, ArrayList ObjectSet)
-        {
-            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
-
             panel_Standard.Controls.Clear();
-
-            switch (objectInfo.ShapeName)
-            {
-                case "square":
-                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
-                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
-                    break;
-                case "rectangle":
-                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
-                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
-                    break;
-                case "circle":
-                    AddItemInPanelStandard("標準半徑", objectInfo.widthStd);
-                    break;
-                case "special1":
-                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
-                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
-                    break;
-            }
-
-
-        }
-
-        private void AddItemInPanelMeasure(string labelText, float value)
-        {
-            Label label_Title = new Label();
-            label_Title.Text = labelText;
-            label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelIndex * 30);
-            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
-
-            Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 1);
-            label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, panelIndex * 30);
-            label_Value.BackColor = Color.FromArgb(255, 224, 192);
-            label_Value.Width = 80;
-
-            panel_Measure.Controls.Add(label_Title);
-            panel_Measure.Controls.Add(label_Value);
-            panelIndex++;
-        }
-
-        private void AddItemInPanelNG(string labelText, float value)
-        {
-            Label label_Title = new Label();
-            label_Title.Text = labelText;
-            label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelNGIndex * 30);
-            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
-
-            Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 1);
-            label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, panelNGIndex * 30);
-            label_Value.BackColor = Color.FromArgb(255, 224, 192);
-            label_Value.Width = 80;
-
-            panel_NG.Controls.Add(label_Title);
-            panel_NG.Controls.Add(label_Value);
-            panelNGIndex++;
-        }
-
-        private void AddItemInPanelStandard(string labelText, float value)
-        {
-            Label label_Title = new Label();
-            label_Title.Text = labelText;
-            label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelStandardIndex * 30);
-            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
-
-            NumericUpDown num_Standard = new NumericUpDown();
-            decimal number = decimal.Round((decimal)value, 1);
-            num_Standard.DecimalPlaces = 1;
-            num_Standard.Increment = 0.1M;
-            num_Standard.Maximum = 5000;
-            num_Standard.Value = number;
-
-            num_Standard.Location = new Point(label_Title.Width + 10, panelStandardIndex * 30);
-            num_Standard.Width = 80;
-
-            panel_Standard.Controls.Add(label_Title);
-            panel_Standard.Controls.Add(num_Standard);
-            panelStandardIndex++;
-
         }
 
         // -------------------------------Measure-------------------------------
@@ -1630,12 +1489,14 @@ namespace cyut_Auo_Component_Measurer
                 MessageBox.Show("EBW8ImageDotGrid is void.");
                 return;
             }
+
             try
             {
                 EWorldShape1.AutoCalibrateDotGrid(EBW8ImageDotGrid, x, y);
             }
             catch (Exception)
             {
+
             }
 
 
@@ -1646,8 +1507,8 @@ namespace cyut_Auo_Component_Measurer
             }
             else
             {
-                //this.calibrationX = x;
-                //this.calibrationY = y;
+                ResolutionX = EWorldShape1.XResolution;
+                ResolutionY = EWorldShape1.YResolution;
             }
         }
 
@@ -1656,13 +1517,30 @@ namespace cyut_Auo_Component_Measurer
             ObjectInfo objectInfo = new ObjectInfo();
 
             // 給值
-            objectInfo.CenterX = element.BoundingBoxCenterX;
+            objectInfo.CenterX = element.BoundingBoxCenterX / ResolutionX;
+            if (adjustRatio > 0)
+            {
+                objectInfo.CenterX /= adjustRatio;
+            }
 
-            objectInfo.CenterY = element.BoundingBoxCenterY;
+            objectInfo.CenterY = element.BoundingBoxCenterY / ResolutionY;
+            if (adjustRatio > 0)
+            {
+                objectInfo.CenterY /= adjustRatio;
+            }
 
-            objectInfo.width = element.BoundingBoxWidth;
 
-            objectInfo.height = element.BoundingBoxHeight;
+            objectInfo.width = element.BoundingBoxWidth / ResolutionX;
+            if (adjustRatio > 0)
+            {
+                objectInfo.width /= adjustRatio;
+            }
+
+            objectInfo.height = element.BoundingBoxHeight / ResolutionY;
+            if (adjustRatio > 0)
+            {
+                objectInfo.height /= adjustRatio;
+            }
 
             objectInfo.CheckResult = -1;
 
@@ -1702,7 +1580,7 @@ namespace cyut_Auo_Component_Measurer
 
                 if (rectangle != null)
                 {
-                    objectInfo.ShapeName = "rectagle";
+                    objectInfo.ShapeName = "rectangle";
                     return objectInfo;
                 }
 
@@ -1763,5 +1641,240 @@ namespace cyut_Auo_Component_Measurer
             }
 
         }
+
+        private EPoint MeasureSpecial(ref EImageBW8 image, ref ECodedElement element)
+        {
+            EPointGauge EPointGauge = new EPointGauge();
+
+            //特殊形狀，只有量測精準寬與高
+            //假設條件，圖案必須是上下左右對稱，有角度偏差會進行修正
+            //量測方式: 以BoundingCenter為中心，修正角度後進行十字線，兩條PointGauge進行量測
+            double tmpW = 0, tmpH = 0;
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            EPointGauge.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
+            EPointGauge.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
+            EPointGauge.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
+            EPointGauge.Tolerance = element.BoundingBoxWidth / 2 + 10;
+            EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle;
+            EPointGauge.Angle = element.MinimumEnclosingRectangleAngle;//要看那一個角度量出來比較準
+            EPointGauge.Thickness = 3; //增加厚度，避免小雜訊
+                                       //EPointGauge1.Angle = element.EllipseAngle;
+            EPointGauge.Measure(image);
+            //EPointGauge.SetZoom(scalingRatio);
+            //EPointGauge.Draw(g, EDrawingMode.Actual, true);
+            //檢查有沒有取到兩個點
+            if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
+            {
+                return null;
+            }
+            else
+            {
+                EPoint tmpP1, tmpP2;
+                tmpP1 = EPointGauge.GetMeasuredPoint(0);
+                tmpP2 = EPointGauge.GetMeasuredPoint(1);
+                tmpW = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
+                //量測另外一個垂直方向
+                //EWorldShape1.SetSensorSize(EBW8Image1.Width, EBW8Image1.Height);
+                //EPointGauge1.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
+                //EPointGauge1.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
+                //EPointGauge1.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
+                EPointGauge.Tolerance = element.BoundingBoxHeight / 2 + 10;
+                EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle + 270;
+                EPointGauge.Angle = element.MinimumEnclosingRectangleAngle + 270;//要看那一個角度量出來比較準，PS: 加90度居然無法量測，好怪
+                                                                                 //EPointGauge1.Angle = element.EllipseAngle;
+                EPointGauge.Measure(image);
+
+                //EPointGauge.SetZoom(scalingRatio);
+                //EPointGauge.Draw(g, EDrawingMode.Actual, true);
+                //檢查有沒有取到兩個點
+                if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
+                {
+                    return null;
+                }
+                else
+                {
+                    tmpP1 = EPointGauge.GetMeasuredPoint(0);
+                    tmpP2 = EPointGauge.GetMeasuredPoint(1);
+                    tmpH = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
+                    return new EPoint((float)tmpW, (float)tmpH);
+                }
+            }
+        }
+
+        // -------------------------------View-------------------------------
+        private void DrawEBW8Image1()
+        {
+            pictureBox1.Image = null;
+            pictureBox1.Refresh();
+            float width = EBW8Image1.Width;
+            viewRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
+            EBW8Image1.Draw(graphics, viewRatio);
+        }
+
+        private void DrawElement(ref ECodedElement element)
+        {
+            codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, viewRatio);
+
+            panelIndex = 0;
+            panelNGIndex = 0;
+            panelStandardIndex = 0;
+        }
+
+        private void DrawNGElement(ref ECodedElement element)
+        {
+            codedImage1.Draw(graphics, element, viewRatio);
+
+            panelIndex = 0;
+            panelNGIndex = 0;
+            panelStandardIndex = 0;
+        }
+
+        private void RenderShapeInfo(int index, ArrayList ObjectSet)
+        {
+            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+
+            panel_Measure.Controls.Clear();
+
+            switch (objectInfo.ShapeName)
+            {
+                case "square":
+                    AddItemInPanelMeasure("寬", objectInfo.width);
+                    AddItemInPanelMeasure("高", objectInfo.height);
+                    break;
+                case "rectangle":
+                    AddItemInPanelMeasure("寬", objectInfo.width);
+                    AddItemInPanelMeasure("高", objectInfo.height);
+                    break;
+                case "circle":
+                    AddItemInPanelMeasure("半徑", objectInfo.width);
+                    break;
+                case "special":
+                    AddItemInPanelMeasure("寬", objectInfo.width);
+                    AddItemInPanelMeasure("高", objectInfo.height);
+                    break;
+            }
+
+        }
+
+        private void RenderShapeErrorInfo(int index, ArrayList ObjectSet)
+        {
+            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+
+            panel_NG.Controls.Clear();
+
+            switch (objectInfo.ShapeName)
+            {
+                case "square":
+                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
+                    AddItemInPanelNG("高誤差", objectInfo.heightError);
+                    break;
+                case "rectangle":
+                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
+                    AddItemInPanelNG("高誤差", objectInfo.heightError);
+                    break;
+                case "circle":
+                    AddItemInPanelNG("半徑誤差", objectInfo.widthError);
+                    break;
+                case "special":
+                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
+                    AddItemInPanelNG("高誤差", objectInfo.heightError);
+                    break;
+            }
+
+        }
+
+        private void RenderStandard(int index, ArrayList ObjectSet)
+        {
+            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+
+            panel_Standard.Controls.Clear();
+
+            switch (objectInfo.ShapeName)
+            {
+                case "square":
+                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
+                    break;
+                case "rectangle":
+                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
+                    break;
+                case "circle":
+                    AddItemInPanelStandard("標準半徑", objectInfo.widthStd);
+                    break;
+                case "special":
+                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
+                    break;
+            }
+
+
+        }
+
+        private void AddItemInPanelMeasure(string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, panelIndex * 30);
+            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, panelIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel_Measure.Controls.Add(label_Title);
+            panel_Measure.Controls.Add(label_Value);
+            panelIndex++;
+        }
+
+        private void AddItemInPanelNG(string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, panelNGIndex * 30);
+            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
+
+            Label label_Value = new Label();
+            decimal number = decimal.Round((decimal)value, 1);
+            label_Value.Text = number.ToString();
+            label_Value.Location = new Point(label_Title.Width + 10, panelNGIndex * 30);
+            label_Value.BackColor = Color.FromArgb(255, 224, 192);
+            label_Value.Width = 80;
+
+            panel_NG.Controls.Add(label_Title);
+            panel_NG.Controls.Add(label_Value);
+            panelNGIndex++;
+        }
+
+        private void AddItemInPanelStandard(string labelText, float value)
+        {
+            Label label_Title = new Label();
+            label_Title.Text = labelText;
+            label_Title.Text += ":";
+            label_Title.Location = new Point(0, panelStandardIndex * 30);
+            label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
+
+            NumericUpDown num_Standard = new NumericUpDown();
+            decimal number = decimal.Round((decimal)value, 1);
+            num_Standard.DecimalPlaces = 1;
+            num_Standard.Increment = 0.1M;
+            num_Standard.Maximum = 5000;
+            num_Standard.Value = number;
+
+            num_Standard.Location = new Point(label_Title.Width + 10, panelStandardIndex * 30);
+            num_Standard.Width = 80;
+
+            panel_Standard.Controls.Add(label_Title);
+            panel_Standard.Controls.Add(num_Standard);
+            panelStandardIndex++;
+
+        }
+
+
     }
 }

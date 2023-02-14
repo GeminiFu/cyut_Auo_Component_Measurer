@@ -36,6 +36,7 @@
             this.檔案ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Load_Setting = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Save_Setting = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.Menu_Load_Old_Image = new System.Windows.Forms.ToolStripMenuItem();
             this.設定ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dotGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,7 +55,6 @@
             this.panel_Standard = new System.Windows.Forms.Panel();
             this.btn_Adjust = new System.Windows.Forms.Button();
             this.list_Of_Camera_Devices = new System.Windows.Forms.ComboBox();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -125,21 +125,26 @@
             // Menu_Load_Setting
             // 
             this.Menu_Load_Setting.Name = "Menu_Load_Setting";
-            this.Menu_Load_Setting.Size = new System.Drawing.Size(180, 22);
+            this.Menu_Load_Setting.Size = new System.Drawing.Size(134, 22);
             this.Menu_Load_Setting.Text = "讀取設定檔";
             this.Menu_Load_Setting.Click += new System.EventHandler(this.Menu_Load_Setting_Click);
             // 
             // Menu_Save_Setting
             // 
             this.Menu_Save_Setting.Name = "Menu_Save_Setting";
-            this.Menu_Save_Setting.Size = new System.Drawing.Size(180, 22);
+            this.Menu_Save_Setting.Size = new System.Drawing.Size(134, 22);
             this.Menu_Save_Setting.Text = "儲存設定檔";
             this.Menu_Save_Setting.Click += new System.EventHandler(this.Menu_Save_Setting_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(131, 6);
             // 
             // Menu_Load_Old_Image
             // 
             this.Menu_Load_Old_Image.Name = "Menu_Load_Old_Image";
-            this.Menu_Load_Old_Image.Size = new System.Drawing.Size(180, 22);
+            this.Menu_Load_Old_Image.Size = new System.Drawing.Size(134, 22);
             this.Menu_Load_Old_Image.Text = "讀取舊檔案";
             this.Menu_Load_Old_Image.Click += new System.EventHandler(this.Menu_Load_Old_Image_Click);
             // 
@@ -323,11 +328,6 @@
             this.list_Of_Camera_Devices.Size = new System.Drawing.Size(121, 24);
             this.list_Of_Camera_Devices.TabIndex = 46;
             this.list_Of_Camera_Devices.Visible = false;
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
             // 
             // Form1
             // 
