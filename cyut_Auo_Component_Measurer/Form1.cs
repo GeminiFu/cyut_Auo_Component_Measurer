@@ -113,6 +113,15 @@ namespace cyut_Auo_Component_Measurer
         internal List<int> GetNGIndex { get { return NGIndex; } }
 
 
+        // --------------------------Shape--------------------------
+        EWorldShape EWorldShape1 = new EWorldShape();
+        internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
+        int calibrationX = 5;
+        int calibrationY = 5;
+        float calibrationRatioX = 0;
+        float calibrationRatioY = 0;
+
+
 
 
         // --------------------------Form--------------------------
@@ -121,17 +130,16 @@ namespace cyut_Auo_Component_Measurer
             InitializeComponent();
 
             c_control = new Control();
-            c_shape = new ShapeOperator();
 
             string errorMessage;
 
             //初始化設定
-            errorMessage = c_control.InitializeSetting(ref EBW8Image1, ref ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+            errorMessage = c_control.InitializeSetting(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
 
-            //c_shape.AutoCalibration(c_shape.CalibrationX, c_shape.CalibrationY);
+            //AutoCalibration(CalibrationX, CalibrationY);
 
             graphics = pictureBox1.CreateGraphics();
 
@@ -157,7 +165,7 @@ namespace cyut_Auo_Component_Measurer
         private void Menu_Save_Setting_Click(object sender, EventArgs e)
         {
             string errorMessage;
-            errorMessage = c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+            errorMessage = c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
@@ -167,7 +175,7 @@ namespace cyut_Auo_Component_Measurer
         {
             string errorMessage;
 
-            errorMessage = c_control.MenuLoadSetting(ref EBW8Image1, ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+            errorMessage = c_control.MenuLoadSetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
@@ -183,17 +191,17 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // 設定 x, y
-            x = c_shape.CalibrationX;
-            y = c_shape.CalibrationY;
+            x = calibrationX;
+            y = calibrationY;
 
             Form_Dot_Grid f2 = new Form_Dot_Grid(x, y);
             f2.ShowDialog(this);
             btn_MVSCamera_Click(sender, e);
 
-            c_shape.EBW8ImageDotGrid.SetSize(EBW8Image1);
-            EasyImage.Copy(EBW8Image1, c_shape.EBW8ImageDotGrid);
+            EBW8ImageDotGrid.SetSize(EBW8Image1);
+            EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
 
-            c_shape.AutoCalibration(c_shape.CalibrationX, c_shape.CalibrationY);
+            AutoCalibration(calibrationX, calibrationY);
         }
 
         private void Menu_Load_Old_Image_Click(object sender, EventArgs e)
@@ -203,10 +211,10 @@ namespace cyut_Auo_Component_Measurer
             int calibrationX = 0;
             int calibrationY = 0;
 
-            errorMessage = c_control.LoadOldImage(ref EBW8Image1, ref ObjectSetG, ref c_shape.EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
+            errorMessage = c_control.LoadOldImage(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
 
-            c_shape.CalibrationX = x;
-            c_shape.CalibrationY = y;
+            calibrationX = x;
+            calibrationY = y;
 
             DrawEBW8Image1();
 
@@ -221,7 +229,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = codedSelection.GetElement(i); //get element
 
-                ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
+                ObjectShape shape = ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
 
                 if (shape == null)
                 {
@@ -355,7 +363,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = codedSelection.GetElement(i); //get element
 
-                ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i);
+                ObjectShape shape = ShapeDetermine(ref EBW8Image1, ref element, i);
 
                 if (shape == null)
                 {
@@ -371,7 +379,7 @@ namespace cyut_Auo_Component_Measurer
 
             SetObjectG();
 
-            c_control.SaveHistorySetting(ref EBW8Image1, ObjectSetG, ref c_shape.EBW8ImageDotGrid, c_shape.CalibrationX, c_shape.CalibrationY);
+            c_control.SaveHistorySetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
             isGolden = true;
         }
@@ -391,7 +399,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = codedSelection.GetElement(i); //get element
 
-                ObjectShape shape = c_shape.ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
+                ObjectShape shape = ShapeDetermine(ref EBW8Image1, ref element, i); //element to shape
 
                 if (shape == null)
                 {
@@ -1631,6 +1639,291 @@ namespace cyut_Auo_Component_Measurer
 
 
         }
+
+        // -------------------------------Shape-------------------------------
+        internal void AutoCalibration(int x, int y)
+        {
+            if (EBW8ImageDotGrid.IsVoid)
+            {
+                MessageBox.Show("EBW8ImageDotGrid is void.");
+                return;
+            }
+            try
+            {
+                EWorldShape1.AutoCalibrateDotGrid(EBW8ImageDotGrid, x, y);
+            }
+            catch (Exception)
+            {
+            }
+
+
+            if (EWorldShape1.CalibrationSucceeded() == false)
+            {
+                MessageBox.Show("Calibration Failed");
+                return;
+            }
+            else
+            {
+                //this.calibrationX = x;
+                //this.calibrationY = y;
+            }
+        }
+
+        internal ObjectShape ShapeDetermine(ref ECodedElement element, uint index)
+        {
+            float threshold;
+            float area = element.BoundingBoxWidth * element.BoundingBoxHeight;
+
+            //這裡需要先使用Raio判斷長方形或圓形(正方形)，亦或者分別量測，有結果的才算是有那個形狀
+            if (element.BoundingBoxWidth / element.BoundingBoxHeight >= 0.95 && element.BoundingBoxWidth / element.BoundingBoxHeight <= 1.05) //正方形或圓形
+            {
+                //必須先量測正方形，再來量測圓形，不然會誤判
+                //嘗試看看是否為正方形
+
+
+                // threshold =  1/4 area - 1/16 * PI * area
+                threshold = (area * 4 / 9) - (area / 9 * (float)Math.PI); // 直角面積 - 1/3圓角面積
+
+                if ((area - (float)element.Area) > threshold)
+                {
+                    ObjectCircle circle = new ObjectCircle();
+
+                    circle.SetCenter(ref element);
+                    circle.SetDiameter(ref element);
+                    circle.index = index;
+
+                    // 圓型
+                    return circle;
+                }
+                else
+                {
+                    ObjectRectangle square = new ObjectRectangle();
+                    square.SetSquare();
+                    square.SetCenter(ref element);
+                    square.SetWidthHeight(ref element);
+                    square.index = index;
+
+                    // 方形
+                    return square;
+                }
+            }
+            else
+            {
+                threshold = area * 0.9f;
+
+                if (element.Area > threshold)
+                {
+                    ObjectRectangle rectangle = new ObjectRectangle();
+                    rectangle.SetCenter(ref element);
+                    rectangle.SetWidthHeight(ref element);
+                    rectangle.index = index;
+                    return rectangle;
+                }
+                else
+                {
+                    ObjectSpecial1 special1 = new ObjectSpecial1();
+                    special1.SetCenter(ref element);
+                    special1.SetWidthHeight(ref element);
+                    special1.index = index;
+
+                    return special1;
+                }
+
+            }
+
+        }
+
+        internal ObjectShape ShapeDetermine(ref EImageBW8 image, ref ECodedElement element, uint index)
+        {
+            // 矩形判定
+            ERectangle rectangle = MeasureRect(ref image, ref element);
+
+            if (rectangle != null)
+            {
+                ObjectRectangle shapeRectangle = new ObjectRectangle();
+                shapeRectangle.SetCenter(ref element);
+                shapeRectangle.index = index;
+
+
+                //shapeRectangle.SetWidthHeight(ref element);
+                shapeRectangle.width = rectangle.SizeX;
+                shapeRectangle.height = rectangle.SizeY;
+
+                shapeRectangle.elementBoundingWidth = element.BoundingBoxWidth;
+                shapeRectangle.elementBoundingHeight = element.BoundingBoxHeight;
+
+                // 方形判定
+                if (element.BoundingBoxWidth / element.BoundingBoxHeight >= 0.95 && element.BoundingBoxWidth / element.BoundingBoxHeight <= 1.05) //正方形
+                {
+                    shapeRectangle.SetSquare();
+                }
+                else
+                {
+                    //Console.WriteLine(index + "is rectangle");
+                }
+
+
+                rectangle.Dispose();
+
+                return shapeRectangle;
+            }
+
+            // 圓形判定
+            ECircle circle = MeasureCircle(ref image, ref element);
+
+            if (circle != null)
+            {
+                ObjectCircle circleShape = new ObjectCircle();
+
+                circleShape.SetCenter(ref element);
+                circleShape.SetDiameter(ref element);
+                circleShape.index = index;
+
+                // 圓型
+
+                circle.Dispose();
+
+                return circleShape;
+            }
+
+            //EPoint point = MeasureSpecial(ref image, ref element);
+
+            //if (point != null)
+            //{
+            //    Console.WriteLine(index + " special");
+
+            //    ObjectSpecial1 special1 = new ObjectSpecial1();
+            //    special1.SetCenter(ref element);
+            //    special1.SetWidthHeight(ref element);
+            //    special1.index = index;
+
+            //    return special1;
+            //}
+            //else
+            //{
+            //    Console.WriteLine(index + " no such shape");
+            //    return null;
+            //}
+
+            ObjectSpecial1 special1 = new ObjectSpecial1();
+            special1.SetCenter(ref element);
+            special1.SetWidthHeight(ref element);
+            special1.index = index;
+
+            return special1;
+        }
+
+
+        private ERectangle MeasureRect(ref EImageBW8 image, ref ECodedElement element)
+        {
+            ERectangleGauge ERectangleGauge1 = new ERectangleGauge();
+
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            ERectangleGauge1.Attach(EWorldShape1);
+            ERectangleGauge1.Center = element.BoundingBoxCenter;
+            if (element.BoundingBoxWidth > element.BoundingBoxHeight) //容忍值必須以寬高數值小的為基準，不然涵蓋兩個邊
+            {
+                ERectangleGauge1.Tolerance = element.BoundingBoxHeight / 4;
+            }
+            else
+            {
+                ERectangleGauge1.Tolerance = element.BoundingBoxWidth / 4;
+            }
+            ERectangleGauge1.TransitionType = ETransitionType.Bw; //由外往裡面看
+            ERectangleGauge1.SamplingStep = 1;
+            ERectangleGauge1.SetSize(element.BoundingBoxWidth, element.BoundingBoxHeight);
+            ERectangleGauge1.Measure(image);
+
+            if (ERectangleGauge1.NumValidSamples < ERectangleGauge1.NumSamples * 0.9) //防呆機制，萬一給的不是長方形
+            {
+                return null;
+            }
+            else
+            {
+                return ERectangleGauge1.MeasuredRectangle;
+            }
+        }
+        private ECircle MeasureCircle(ref EImageBW8 image, ref ECodedElement element)
+        {
+            ECircleGauge ECircleGauge = new ECircleGauge();
+            //先用圓形量測
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            ECircleGauge.Attach(EWorldShape1);
+            ECircleGauge.Center = element.BoundingBoxCenter;
+            ECircleGauge.Diameter = element.BoundingBoxWidth;
+            ECircleGauge.TransitionType = ETransitionType.Wb; //是由圓心往外看，跟Rectangle不同
+            ECircleGauge.Tolerance = element.BoundingBoxWidth / 5;
+            ECircleGauge.SamplingStep = 1; //每個點都要檢查
+            ECircleGauge.Measure(image);
+            if (ECircleGauge.NumValidSamples < ECircleGauge.NumSamples * 0.9) //防呆機制，萬一給的不是圓形
+            {
+                return null;
+            }
+            else
+            {
+                return ECircleGauge.MeasuredCircle;
+            }
+
+        }
+        internal EPoint MeasureSpecial(ref EImageBW8 image, ref ECodedElement element)
+        {
+            EPointGauge EPointGauge = new EPointGauge();
+
+            //特殊形狀，只有量測精準寬與高
+            //假設條件，圖案必須是上下左右對稱，有角度偏差會進行修正
+            //量測方式: 以BoundingCenter為中心，修正角度後進行十字線，兩條PointGauge進行量測
+            double tmpW = 0, tmpH = 0;
+            EWorldShape1.SetSensorSize(image.Width, image.Height);
+            EPointGauge.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
+            EPointGauge.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
+            EPointGauge.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
+            EPointGauge.Tolerance = element.BoundingBoxWidth / 2 + 10;
+            EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle;
+            EPointGauge.Angle = element.MinimumEnclosingRectangleAngle;//要看那一個角度量出來比較準
+            EPointGauge.Thickness = 3; //增加厚度，避免小雜訊
+                                       //EPointGauge1.Angle = element.EllipseAngle;
+            EPointGauge.Measure(image);
+            //EPointGauge.SetZoom(scalingRatio);
+            //EPointGauge.Draw(g, EDrawingMode.Actual, true);
+            //檢查有沒有取到兩個點
+            if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
+            {
+                return null;
+            }
+            else
+            {
+                EPoint tmpP1, tmpP2;
+                tmpP1 = EPointGauge.GetMeasuredPoint(0);
+                tmpP2 = EPointGauge.GetMeasuredPoint(1);
+                tmpW = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
+                //量測另外一個垂直方向
+                //EWorldShape1.SetSensorSize(EBW8Image1.Width, EBW8Image1.Height);
+                //EPointGauge1.Attach(EWorldShape1); //將LineGauge繫結到世界座標系統
+                //EPointGauge1.TransitionType = ETransitionType.BwOrWb; //設定邊緣轉換類型，兩端剛好有Bw與Wb
+                //EPointGauge1.SetCenterXY(element.BoundingBoxCenterX, element.BoundingBoxCenterY);
+                EPointGauge.Tolerance = element.BoundingBoxHeight / 2 + 10;
+                EPointGauge.ToleranceAngle = element.MinimumEnclosingRectangleAngle + 270;
+                EPointGauge.Angle = element.MinimumEnclosingRectangleAngle + 270;//要看那一個角度量出來比較準，PS: 加90度居然無法量測，好怪
+                                                                                 //EPointGauge1.Angle = element.EllipseAngle;
+                EPointGauge.Measure(image);
+
+                //EPointGauge.SetZoom(scalingRatio);
+                //EPointGauge.Draw(g, EDrawingMode.Actual, true);
+                //檢查有沒有取到兩個點
+                if (EPointGauge.NumMeasuredPoints != 2) //如果量測到的point不到兩個，表示沒有量測到邊緣
+                {
+                    return null;
+                }
+                else
+                {
+                    tmpP1 = EPointGauge.GetMeasuredPoint(0);
+                    tmpP2 = EPointGauge.GetMeasuredPoint(1);
+                    tmpH = Math.Sqrt(Math.Pow(tmpP1.X - tmpP2.X, 2) + Math.Pow(tmpP1.Y - tmpP2.Y, 2));
+                    return new EPoint((float)tmpW, (float)tmpH);
+                }
+            }
+        }
+
 
     }
 }
