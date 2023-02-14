@@ -1316,30 +1316,26 @@ namespace cyut_Auo_Component_Measurer
 
         private void RenderShapeInfo(int index, ArrayList ObjectSet)
         {
-            ObjectShape shape = (ObjectShape)ObjectSet[index];
+            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
 
             panel_Measure.Controls.Clear();
 
-            switch (shape.shapeName)
+            switch (objectInfo.ShapeName)
             {
                 case "square":
-                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanelMeasure("寬", square.width);
-                    AddItemInPanelMeasure("高", square.height);
+                    AddItemInPanelMeasure("寬", objectInfo.width);
+                    AddItemInPanelMeasure("高", objectInfo.height);
                     break;
                 case "rectangle":
-                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanelMeasure("寬", rect.width);
-                    AddItemInPanelMeasure("高", rect.height);
+                    AddItemInPanelMeasure("寬", objectInfo.width);
+                    AddItemInPanelMeasure("高", objectInfo.height);
                     break;
                 case "circle":
-                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInPanelMeasure("半徑", circle.diameter);
+                    AddItemInPanelMeasure("半徑", objectInfo.width);
                     break;
                 case "special1":
-                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInPanelMeasure("寬", special1.width);
-                    AddItemInPanelMeasure("高", special1.height);
+                    AddItemInPanelMeasure("寬", objectInfo.width);
+                    AddItemInPanelMeasure("高", objectInfo.height);
                     break;
             }
 
@@ -1347,30 +1343,26 @@ namespace cyut_Auo_Component_Measurer
 
         private void RenderShapeErrorInfo(int index, ArrayList ObjectSet)
         {
-            ObjectShape shape = (ObjectShape)ObjectSet[index];
+            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
 
             panel_NG.Controls.Clear();
 
-            switch (shape.shapeName)
+            switch (objectInfo.ShapeName)
             {
                 case "square":
-                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanelNG("寬誤差", square.widthError);
-                    AddItemInPanelNG("高誤差", square.heightError);
+                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
+                    AddItemInPanelNG("高誤差", objectInfo.heightError);
                     break;
                 case "rectangle":
-                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanelNG("寬誤差", rect.widthError);
-                    AddItemInPanelNG("高誤差", rect.heightError);
+                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
+                    AddItemInPanelNG("高誤差", objectInfo.heightError);
                     break;
                 case "circle":
-                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInPanelNG("半徑誤差", circle.diameterError);
+                    AddItemInPanelNG("半徑誤差", objectInfo.widthError);
                     break;
                 case "special1":
-                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInPanelNG("寬誤差", special1.widthError);
-                    AddItemInPanelNG("高誤差", special1.heightError);
+                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
+                    AddItemInPanelNG("高誤差", objectInfo.heightError);
                     break;
             }
 
@@ -1378,30 +1370,26 @@ namespace cyut_Auo_Component_Measurer
 
         private void RenderStandard(int index, ArrayList ObjectSet)
         {
-            ObjectShape shape = (ObjectShape)ObjectSet[index];
+            ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
 
             panel_Standard.Controls.Clear();
 
-            switch (shape.shapeName)
+            switch (objectInfo.ShapeName)
             {
                 case "square":
-                    ObjectRectangle square = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanelStandard("標準寬", square.widthStd);
-                    AddItemInPanelStandard("標準高", square.heightStd);
+                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
                     break;
                 case "rectangle":
-                    ObjectRectangle rect = (ObjectRectangle)ObjectSet[index];
-                    AddItemInPanelStandard("標準寬", rect.widthStd);
-                    AddItemInPanelStandard("標準高", rect.heightStd);
+                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
                     break;
                 case "circle":
-                    ObjectCircle circle = (ObjectCircle)ObjectSet[index];
-                    AddItemInPanelStandard("標準半徑", circle.diameterStd);
+                    AddItemInPanelStandard("標準半徑", objectInfo.widthStd);
                     break;
                 case "special1":
-                    ObjectSpecial1 special1 = (ObjectSpecial1)ObjectSet[index];
-                    AddItemInPanelStandard("標準寬", special1.widthStd);
-                    AddItemInPanelStandard("標準高", special1.heightStd);
+                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
                     break;
             }
 
