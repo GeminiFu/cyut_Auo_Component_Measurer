@@ -515,13 +515,6 @@ namespace cyut_Auo_Component_Measurer
             if (isGolden)
             {
                 elementIndex = IsClickObject(ref ObjectSetG, e.X / viewRatio, e.Y / viewRatio);
-
-                if (elementIndex != -1)
-                {
-                    ObjectShape shape = (ObjectShape)ObjectSetG[elementIndex];
-                    Console.WriteLine(shape.elementBoundingWidth);
-                    Console.WriteLine(shape.elementBoundingHeight);
-                }
             }
             else
             {
@@ -1537,11 +1530,16 @@ namespace cyut_Auo_Component_Measurer
 
         internal int IsClickObject(ref ArrayList ObjectSet, float clickX, float clickY)
         {
-            foreach (ObjectShape shape in ObjectSet)
+            for(int index = 0 ; index < ObjectSet.Count; index++)
             {
-                if (shape.IsInShape(clickX, clickY))
+                ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+
+                float x_distance = Math.Abs(objectInfo.CenterX - clickX);
+                float y_distance = Math.Abs(objectInfo.CenterY - clickY);
+
+                if (x_distance < (objectInfo.width / 2) && y_distance < (objectInfo.height / 2))
                 {
-                    return (int)shape.index;
+                    return index;
                 }
             }
 
