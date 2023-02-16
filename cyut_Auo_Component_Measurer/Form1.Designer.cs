@@ -97,7 +97,7 @@
             this.btn_Camera.Text = "使用相機";
             this.btn_Camera.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Camera.UseVisualStyleBackColor = true;
-            this.btn_Camera.Click += new System.EventHandler(this.btn_MVSCamera_Click);
+            this.btn_Camera.Click += new System.EventHandler(this.btn_Use_Camera_Click);
             // 
             // menuStrip1
             // 

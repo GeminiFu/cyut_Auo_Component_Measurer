@@ -36,6 +36,10 @@ namespace cyut_Auo_Component_Measurer
         float viewRatio;
         Graphics graphics;
 
+
+        float mmWidth;
+        float mmHeight;
+
         int panelIndex = 0;
         int panelNGIndex = 0;
         int panelStandardIndex = 0;
@@ -166,15 +170,15 @@ namespace cyut_Auo_Component_Measurer
             // 開相機
             if (isStreaming == false)
             {
-                //btn_Camera_Click(sender, e);
-                btn_MVSCamera_Click(sender, e);
+                btn_Camera_Click(sender, e);
+                //btn_MVSCamera_Click(sender, e);
             }
 
             Form_Dot_Grid f2 = new Form_Dot_Grid(calibrationX, calibrationY);
             f2.ShowDialog(this);
 
-            //btn_Camera_Click(sender, e);
-            btn_MVSCamera_Click(sender, e);
+            btn_Camera_Click(sender, e);
+            //btn_MVSCamera_Click(sender, e);
 
             EBW8ImageDotGrid.SetSize(EBW8Image1);
             EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
@@ -377,7 +381,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // Inspect
-            Inspect(num_Threshold_NG.Value);
+            Inspect(num_Threshold_NG.Value * (decimal)ResolutionX);
 
             // View
             listBox_NG.Items.Clear();
@@ -1095,7 +1099,7 @@ namespace cyut_Auo_Component_Measurer
         private void Learn()
         {
             string RunningPath = Environment.CurrentDirectory;
-            string StdImagePath = string.Format("{0}Resources\\PressItem.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
+            string StdImagePath = string.Format("{0}Resources\\PressItem_Whole.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
             EBW8ImageStd.Load(StdImagePath);
 
             EPatternFinder1 = new EPatternFinder();
@@ -1103,7 +1107,7 @@ namespace cyut_Auo_Component_Measurer
             // 可用於校正水平位置
             // Attach the roi to its parent
             EBW8Roi1.Attach(EBW8ImageStd);
-            EBW8Roi1.SetPlacement(67, 558, 632, 242);
+            EBW8Roi1.SetPlacement(1100, 1100, 540, 210);
             EPatternFinder1.Learn(EBW8Roi1);
 
             EPatternFinder1.AngleTolerance = 50.00f;
@@ -1113,7 +1117,7 @@ namespace cyut_Auo_Component_Measurer
             // 第二個標準點
             // 用於 鏡像 和 垂直翻轉
             EBW8Roi2.Attach(EBW8ImageStd);
-            EBW8Roi2.SetPlacement(714, 753, 594, 78);
+            EBW8Roi2.SetPlacement(2220, 1225, 160, 50);
             EPatternFinder2.Learn(EBW8Roi2);
 
             // 由於前面都會校正一次，所以容忍值不用太高，速度會更快
@@ -1517,30 +1521,14 @@ namespace cyut_Auo_Component_Measurer
             ObjectInfo objectInfo = new ObjectInfo();
 
             // 給值
-            objectInfo.CenterX = element.BoundingBoxCenterX / ResolutionX;
-            if (adjustRatio > 0)
-            {
-                objectInfo.CenterX /= adjustRatio;
-            }
+            objectInfo.CenterX = element.BoundingBoxCenterX;
 
-            objectInfo.CenterY = element.BoundingBoxCenterY / ResolutionY;
-            if (adjustRatio > 0)
-            {
-                objectInfo.CenterY /= adjustRatio;
-            }
+            objectInfo.CenterY = element.BoundingBoxCenterY ;
 
 
-            objectInfo.width = element.BoundingBoxWidth / ResolutionX;
-            if (adjustRatio > 0)
-            {
-                objectInfo.width /= adjustRatio;
-            }
+            objectInfo.width = element.BoundingBoxWidth ;
 
-            objectInfo.height = element.BoundingBoxHeight / ResolutionY;
-            if (adjustRatio > 0)
-            {
-                objectInfo.height /= adjustRatio;
-            }
+            objectInfo.height = element.BoundingBoxHeight ;
 
             objectInfo.CheckResult = -1;
 
@@ -1729,28 +1717,43 @@ namespace cyut_Auo_Component_Measurer
             panelStandardIndex = 0;
         }
 
+        private void pixelToMM(float pixelWidth, float pixelHeight)
+        {
+            mmWidth = pixelWidth / ResolutionX;
+
+            mmHeight = pixelHeight / ResolutionY;
+
+            if(adjustRatio > 0)
+            {
+                mmWidth /= adjustRatio;
+                mmHeight /= adjustRatio;
+            }
+        }
+
         private void RenderShapeInfo(int index, ArrayList ObjectSet)
         {
             ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+
+            pixelToMM(objectInfo.width, objectInfo.height);
 
             panel_Measure.Controls.Clear();
 
             switch (objectInfo.ShapeName)
             {
                 case "square":
-                    AddItemInPanelMeasure("寬", objectInfo.width);
-                    AddItemInPanelMeasure("高", objectInfo.height);
+                    AddItemInPanelMeasure("寬", mmWidth);
+                    AddItemInPanelMeasure("高", mmHeight);
                     break;
                 case "rectangle":
-                    AddItemInPanelMeasure("寬", objectInfo.width);
-                    AddItemInPanelMeasure("高", objectInfo.height);
+                    AddItemInPanelMeasure("寬", mmWidth);
+                    AddItemInPanelMeasure("高", mmHeight);
                     break;
                 case "circle":
-                    AddItemInPanelMeasure("半徑", objectInfo.width);
+                    AddItemInPanelMeasure("半徑", mmWidth);
                     break;
                 case "special":
-                    AddItemInPanelMeasure("寬", objectInfo.width);
-                    AddItemInPanelMeasure("高", objectInfo.height);
+                    AddItemInPanelMeasure("寬", mmWidth);
+                    AddItemInPanelMeasure("高", mmHeight);
                     break;
             }
 
@@ -1759,25 +1762,26 @@ namespace cyut_Auo_Component_Measurer
         private void RenderShapeErrorInfo(int index, ArrayList ObjectSet)
         {
             ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
+            pixelToMM(objectInfo.widthError, objectInfo.heightError);
 
             panel_NG.Controls.Clear();
 
             switch (objectInfo.ShapeName)
             {
                 case "square":
-                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
-                    AddItemInPanelNG("高誤差", objectInfo.heightError);
+                    AddItemInPanelNG("寬誤差", mmWidth);
+                    AddItemInPanelNG("高誤差", mmHeight);
                     break;
                 case "rectangle":
-                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
-                    AddItemInPanelNG("高誤差", objectInfo.heightError);
+                    AddItemInPanelNG("寬誤差", mmWidth);
+                    AddItemInPanelNG("高誤差", mmHeight);
                     break;
                 case "circle":
-                    AddItemInPanelNG("半徑誤差", objectInfo.widthError);
+                    AddItemInPanelNG("半徑誤差", mmWidth);
                     break;
                 case "special":
-                    AddItemInPanelNG("寬誤差", objectInfo.widthError);
-                    AddItemInPanelNG("高誤差", objectInfo.heightError);
+                    AddItemInPanelNG("寬誤差", mmWidth);
+                    AddItemInPanelNG("高誤差", mmHeight);
                     break;
             }
 
@@ -1787,24 +1791,26 @@ namespace cyut_Auo_Component_Measurer
         {
             ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
 
+            pixelToMM(objectInfo.widthStd, objectInfo.heightStd);
+
             panel_Standard.Controls.Clear();
 
             switch (objectInfo.ShapeName)
             {
                 case "square":
-                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
-                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
+                    AddItemInPanelStandard("標準寬", mmWidth);
+                    AddItemInPanelStandard("標準高", mmHeight);
                     break;
                 case "rectangle":
-                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
-                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
+                    AddItemInPanelStandard("標準寬", mmWidth);
+                    AddItemInPanelStandard("標準高", mmHeight);
                     break;
                 case "circle":
-                    AddItemInPanelStandard("標準半徑", objectInfo.widthStd);
+                    AddItemInPanelStandard("標準半徑", mmWidth);
                     break;
                 case "special":
-                    AddItemInPanelStandard("標準寬", objectInfo.widthStd);
-                    AddItemInPanelStandard("標準高", objectInfo.heightStd);
+                    AddItemInPanelStandard("標準寬", mmWidth);
+                    AddItemInPanelStandard("標準高", mmHeight);
                     break;
             }
 
@@ -1875,6 +1881,9 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
-
+        private void btn_Use_Camera_Click(object sender, EventArgs e)
+        {
+            btn_Camera_Click(sender, e);
+        }
     }
 }
