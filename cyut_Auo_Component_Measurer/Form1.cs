@@ -165,6 +165,8 @@ namespace cyut_Auo_Component_Measurer
 
         private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string message;
+
             // 開相機
             if (isStreaming == false)
             {
@@ -187,7 +189,9 @@ namespace cyut_Auo_Component_Measurer
 
             EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
 
-            AutoCalibration();
+            message = AutoCalibration();
+
+            MessageBox.Show(message);
         }
 
         private void Menu_Load_Old_Image_Click(object sender, EventArgs e)
@@ -572,12 +576,29 @@ namespace cyut_Auo_Component_Measurer
                     capture = new VideoCapture(0);
                 }
 
-                capture.ImageGrabbed += Capture_ImageGrabbed;
+                if (capture.IsOpened)
+                {
+                    capture.ImageGrabbed += Capture_ImageGrabbed;
 
-                capture.Start(); //開始攝影
+                    capture.Start(); //開始攝影
+                }
+                else
+                {
+                    MessageBox.Show("相機錯誤。");
+                    capture = null;
+                    return;
+                }
             }
             else
             {
+                if (capture.Grab() == false)
+                {
+                    MessageBox.Show("相機錯誤。");
+                    capture = null;
+                    isStreaming = false;
+                    return;
+                }
+
                 capture.Pause();
 
                 Thread.Sleep(100);
@@ -1127,7 +1148,7 @@ namespace cyut_Auo_Component_Measurer
             // 可用於校正水平位置
             // Attach the roi to its parent
             EBW8Roi1.Attach(EBW8ImageStd);
-            EBW8Roi1.SetPlacement(250, 790, 470, 510);
+            EBW8Roi1.SetPlacement(255, 780, 840, 520);
             EPatternFinder1.Learn(EBW8Roi1);
 
             EPatternFinder1.AngleTolerance = 10.00f;
@@ -1607,14 +1628,13 @@ namespace cyut_Auo_Component_Measurer
         // 看兩個 shape 位置是不是差不多，確認兩個可以做比對
 
         // -------------------------------Shape-------------------------------
-        internal void AutoCalibration()
+        internal string AutoCalibration()
         {
             EImageBW8 calibrationImage = new EImageBW8(EBW8ImageDotGrid);
 
             if (calibrationImage.IsVoid)
             {
-                MessageBox.Show("calibrationImage is void.");
-                return;
+                return "calibrationImage is void.";
             }
 
             try
@@ -1629,11 +1649,13 @@ namespace cyut_Auo_Component_Measurer
 
             if (EWorldShape1.CalibrationSucceeded())
             {
-                MessageBox.Show("校正成功", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //MessageBox.Show("校正成功", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return "校正成功";
             }
             else
             {
-                MessageBox.Show("校正失敗", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //MessageBox.Show("校正失敗", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return "校正失敗";
             }
         }
 
