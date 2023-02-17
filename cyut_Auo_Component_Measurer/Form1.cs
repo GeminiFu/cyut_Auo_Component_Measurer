@@ -104,11 +104,6 @@ namespace cyut_Auo_Component_Measurer
         internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
         public int calibrationX = 5;
         public int calibrationY = 5;
-        float ResolutionX;
-        float ResolutionY;
-
-
-
 
         // --------------------------Form--------------------------
         public Form1()
@@ -125,7 +120,6 @@ namespace cyut_Auo_Component_Measurer
                 MessageBox.Show(errorMessage);
 
             // Calibration
-            AutoCalibration();
             AutoCalibration();
 
             graphics = pictureBox1.CreateGraphics();
@@ -260,7 +254,6 @@ namespace cyut_Auo_Component_Measurer
         // 清空上一個 product 的資料
         private void btn_Load_Click(object sender, EventArgs e)
         {
-
             string errorMessage;
 
             errorMessage = c_control.LoadEImageBW8(ref EBW8Image1);
@@ -271,9 +264,9 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            DrawEBW8Image1();
-
             ProductDataReset();
+
+            DrawEBW8Image1();
         }
 
         private void btn_Use_Camera_Click(object sender, EventArgs e)
@@ -358,6 +351,7 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------Batch-------------------------------
+
         private void btn_Batch_Search_Click(object sender, EventArgs e)
         {
             int selectedIndex = listBox_Measure.SelectedIndex;
@@ -367,18 +361,38 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            ObjectInfo objectInfo = (ObjectInfo)ObjectSetG[selectedIndex];
-            string selectedShape = objectInfo.ShapeName;
+            ArrayList TempObjectSet;
+            ObjectInfo selectedObjectInfo;
+            ObjectInfo objectInfo;
+            float threshold = 5;
+
+            if (isGolden)
+            {
+                TempObjectSet = ObjectSetG;
+            }
+            else
+            {
+                TempObjectSet = ObjectSetU;
+            }
+
+            selectedObjectInfo = (ObjectInfo)TempObjectSet[selectedIndex];
 
             batchIndexes.Clear();
 
-            for (int i = 0; i < ObjectSetG.Count; i++)
+            for (int i = 0; i < TempObjectSet.Count; i++)
             {
-                objectInfo = (ObjectInfo)ObjectSetG[i];
+                objectInfo = (ObjectInfo)TempObjectSet[i];
 
-                if (objectInfo.ShapeName == selectedShape)
+
+                if (
+                     objectInfo.ShapeName == selectedObjectInfo.ShapeName &&
+                     Math.Abs(selectedObjectInfo.width - objectInfo.width) < threshold &&
+                     Math.Abs(selectedObjectInfo.height - objectInfo.height) < threshold
+                   )
                 {
                     batchIndexes.Add(i);
+
+                    Console.WriteLine(objectInfo.ShapeName);
 
                     // View
                     ECodedElement element;
@@ -430,15 +444,18 @@ namespace cyut_Auo_Component_Measurer
             // 有沒有 ObjectSet
 
             int elementIndex;
+            ArrayList TempObjectSet;
 
             if (isGolden)
             {
-                elementIndex = IsClickObject(ref ObjectSetG, e.X / viewRatio, e.Y / viewRatio);
+                TempObjectSet = ObjectSetG;
             }
             else
             {
-                elementIndex = IsClickObject(ref ObjectSetU, e.X / viewRatio, e.Y / viewRatio);
+                TempObjectSet = ObjectSetU;
             }
+
+            elementIndex = IsClickObject(ref TempObjectSet, e.X / viewRatio, e.Y / viewRatio);
 
             if (elementIndex == -1)
             {
@@ -446,9 +463,10 @@ namespace cyut_Auo_Component_Measurer
             }
             else
             {
-                // 如果 NG index == index
-                // NG selected
+                ObjectInfo selectedObject = (ObjectInfo)TempObjectSet[elementIndex];
+                Console.WriteLine(selectedObject.ShapeName);
 
+                // listBox_Measure
                 for (int i = 0; i < listBox_Measure.Items.Count; i++)
                 {
                     if (int.Parse(listBox_Measure.Items[i].ToString().Substring(0, 3)) == elementIndex)
@@ -457,13 +475,12 @@ namespace cyut_Auo_Component_Measurer
                     }
                 }
 
+                // listBox_NG
                 listBox_NG.SelectedIndex = -1;
 
-                for (int i = 0; i < listBox_NG.Items.Count; i++)
+                for (int i = 0; i < NGIndex.Count; i++)
                 {
-                    int NGIndex = int.Parse(listBox_NG.Items[i].ToString().Substring(0, 3));
-
-                    if (NGIndex == elementIndex)
+                    if (NGIndex[i] == elementIndex)
                     {
                         listBox_NG.SelectedIndex = i;
                     }
@@ -475,14 +492,11 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Listbox-------------------------------
         private void listBox_Measure_Selected_Changed(object sender, EventArgs e)
         {
-            panelIndex = 0;
-            panelNGIndex = 0;
-            panelStandardIndex = 0;
-
             if (listBox_Measure.SelectedItem == null)
             {
                 return;
             }
+
 
             int elementIndex = int.Parse(listBox_Measure.SelectedItem.ToString().Substring(0, 3));
 
@@ -495,15 +509,15 @@ namespace cyut_Auo_Component_Measurer
             {
                 RenderShapeInfo(listBox_Measure.SelectedIndex, ObjectSetG);
                 RenderStandard(listBox_Measure.SelectedIndex, ObjectSetG);
-
             }
             else
             {
                 RenderShapeInfo(listBox_Measure.SelectedIndex, ObjectSetU);
                 RenderStandard(listBox_Measure.SelectedIndex, ObjectSetU);
-
             }
 
+            panelIndex = 0;
+            panelStandardIndex = 0;
             panel_NG.Controls.Clear();
 
             element.Dispose();
@@ -515,6 +529,8 @@ namespace cyut_Auo_Component_Measurer
             {
                 return;
             }
+
+            panelNGIndex = 0;
 
             int elementIndex = int.Parse(listBox_NG.SelectedItem.ToString().Substring(0, 3));
 
@@ -1336,6 +1352,9 @@ namespace cyut_Auo_Component_Measurer
             listBox_Measure.Items.Clear();
             listBox_NG.Items.Clear();
 
+            //
+            batchIndexes.Clear();
+
             // panel clear
             panel_Measure.Controls.Clear();
             panel_NG.Controls.Clear();
@@ -1549,7 +1568,7 @@ namespace cyut_Auo_Component_Measurer
                 // 看兩個 shape 位置是不是差不多，確認兩個可以做比對
                 objectStandard = FindTheSameInObjectSetG(objectTest);
 
-                if(objectStandard == null)
+                if (objectStandard == null)
                 {
                     objectTest.CheckResult = 1;
                     NGIndex.Add(i);
@@ -1600,6 +1619,7 @@ namespace cyut_Auo_Component_Measurer
 
             try
             {
+                EWorldShape1.SetSensorSize(calibrationImage.Width, calibrationImage.Height);
                 EWorldShape1.AutoCalibrateDotGrid(calibrationImage, calibrationX, calibrationY, false);
             }
             catch (Exception)
@@ -1607,14 +1627,9 @@ namespace cyut_Auo_Component_Measurer
 
             }
 
-            EWorldShape1.SetSensorSize(calibrationImage.Width, calibrationImage.Height);
-
             if (EWorldShape1.CalibrationSucceeded())
             {
                 MessageBox.Show("校正成功", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Console.WriteLine("X解析度:" + EWorldShape1.XResolution + " Y解析度:" + EWorldShape1.YResolution);
-                ResolutionX = EWorldShape1.XResolution;
-                ResolutionY = EWorldShape1.YResolution;
             }
             else
             {
@@ -1628,18 +1643,11 @@ namespace cyut_Auo_Component_Measurer
 
             // 給值
             objectInfo.CenterX = element.BoundingBoxCenterX;
-
             objectInfo.CenterY = element.BoundingBoxCenterY;
-
-
             objectInfo.width = element.BoundingBoxWidth;
-
             objectInfo.height = element.BoundingBoxHeight;
-
             objectInfo.CheckResult = -1;
-
             objectInfo.ElementIndex = elementIndex;
-
 
             // Set Shape Name
             //這裡需要先使用Raio判斷長方形或圓形(正方形)，亦或者分別量測，有結果的才算是有那個形狀
@@ -1686,9 +1694,10 @@ namespace cyut_Auo_Component_Measurer
         private ERectangle MeasureRect(ref EImageBW8 image, ref ECodedElement element)
         {
             ERectangleGauge ERectangleGauge1 = new ERectangleGauge();
+            EWorldShape EWorldShapeTemp = new EWorldShape();
 
-            EWorldShape1.SetSensorSize(image.Width, image.Height);
-            ERectangleGauge1.Attach(EWorldShape1);
+            EWorldShapeTemp.SetSensorSize(image.Width, image.Height);
+            ERectangleGauge1.Attach(EWorldShapeTemp);
             ERectangleGauge1.Center = element.BoundingBoxCenter;
             if (element.BoundingBoxWidth > element.BoundingBoxHeight) //容忍值必須以寬高數值小的為基準，不然涵蓋兩個邊
             {
@@ -1716,9 +1725,11 @@ namespace cyut_Auo_Component_Measurer
         private ECircle MeasureCircle(ref EImageBW8 image, ref ECodedElement element)
         {
             ECircleGauge ECircleGauge = new ECircleGauge();
+            EWorldShape EWorldShapeTemp = new EWorldShape();
+
             //先用圓形量測
-            EWorldShape1.SetSensorSize(image.Width, image.Height);
-            ECircleGauge.Attach(EWorldShape1);
+            EWorldShapeTemp.SetSensorSize(image.Width, image.Height);
+            ECircleGauge.Attach(EWorldShapeTemp);
             ECircleGauge.Center = element.BoundingBoxCenter;
             ECircleGauge.Diameter = element.BoundingBoxWidth;
             ECircleGauge.TransitionType = ETransitionType.Wb; //是由圓心往外看，跟Rectangle不同
@@ -1800,8 +1811,9 @@ namespace cyut_Auo_Component_Measurer
         {
             pictureBox1.Image = null;
             pictureBox1.Refresh();
-            float width = EBW8Image1.Width;
+
             viewRatio = CalcRatioWithPictureBox(pictureBox1, EBW8Image1.Width, EBW8Image1.Height);
+
             EBW8Image1.Draw(graphics, viewRatio);
         }
 
@@ -1988,14 +2000,11 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-
-
-
         private void pixelToMM(float pixelWidth, float pixelHeight)
         {
-            mmWidth = pixelWidth / ResolutionX;
+            mmWidth = pixelWidth / EWorldShape1.XResolution;
 
-            mmHeight = pixelHeight / ResolutionY;
+            mmHeight = pixelHeight / EWorldShape1.YResolution;
 
             if (adjustRatio > 0)
             {
@@ -2006,7 +2015,7 @@ namespace cyut_Auo_Component_Measurer
 
         private float mmToPixel(float length)
         {
-            length *= ResolutionX;
+            length *= EWorldShape1.XResolution;
 
             return length;
         }
