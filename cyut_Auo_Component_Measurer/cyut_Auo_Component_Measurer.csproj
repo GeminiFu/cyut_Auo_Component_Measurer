@@ -163,5 +163,8 @@
   <ItemGroup>
     <None Include="Resources\PressItem_Whole.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PressItem_Whole_Verticle.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -123,11 +123,12 @@ namespace cyut_Auo_Component_Measurer
             if (errorMessage != c_control.OK)
                 MessageBox.Show(errorMessage);
 
-            AutoCalibration(calibrationX, calibrationY);
+            AutoCalibration();
 
             graphics = pictureBox1.CreateGraphics();
 
-            Learn();
+            //Learn();
+            LearnVerticle();
         }
 
         private void Form_Close(object sender, FormClosedEventArgs e)
@@ -181,9 +182,10 @@ namespace cyut_Auo_Component_Measurer
             //btn_MVSCamera_Click(sender, e);
 
             EBW8ImageDotGrid.SetSize(EBW8Image1);
+
             EasyImage.Copy(EBW8Image1, EBW8ImageDotGrid);
 
-            AutoCalibration(calibrationX, calibrationY);
+            AutoCalibration();
         }
 
         private void Menu_Load_Old_Image_Click(object sender, EventArgs e)
@@ -262,35 +264,9 @@ namespace cyut_Auo_Component_Measurer
             DataReset();
         }
 
-        private void btn_Camera_Click(object sender, EventArgs e)
+        private void btn_Use_Camera_Click(object sender, EventArgs e)
         {
-            // 判斷停止還是開始
-            if (isStreaming == false)
-            {
-                if (capture == null)
-                {
-                    capture = new VideoCapture(0);
-                }
-
-                capture.ImageGrabbed += Capture_ImageGrabbed;
-
-                capture.Start(); //開始攝影
-            }
-            else
-            {
-                capture.Pause();
-
-                Thread.Sleep(100);
-
-                // bitmap to EImageBW8
-                BitmapToEImageBW8(ref bmp, ref EBW8Image1);
-
-                DrawEBW8Image1();
-
-                DataReset();
-            }
-
-            isStreaming = !isStreaming;
+            btn_Camera_Click(sender, e);
         }
 
         private void btn_Adjust_Click(object sender, EventArgs e)
@@ -302,11 +278,13 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            Adjust_Horizontal(sender, e); //鏡像
+            //Adjust_Horizontal(sender, e); //鏡像
 
-            Adjust_Vertical(sender, e); //垂直翻轉
+            //Adjust_Vertical(sender, e); //垂直翻轉
 
-            Adjust_Fixed(sender, e); //放大 或 縮小會需要多次矯正
+            //Adjust_Fixed(sender, e); //放大 或 縮小會需要多次矯正
+
+            Adjust_Verticle();
 
             EBW8Image2.CopyTo(EBW8Image1); //讓 EBW8IImage1 為正確的圖像
 
@@ -594,6 +572,39 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // --------------------------Camera--------------------------
+        private void btn_Camera_Click(object sender, EventArgs e)
+        {
+            // 判斷停止還是開始
+            if (isStreaming == false)
+            {
+                if (capture == null)
+                {
+                    capture = new VideoCapture(0);
+                }
+
+                capture.ImageGrabbed += Capture_ImageGrabbed;
+
+                capture.Start(); //開始攝影
+            }
+            else
+            {
+                capture.Pause();
+
+                Thread.Sleep(100);
+
+                // bitmap to EImageBW8
+                BitmapToEImageBW8(ref bmp, ref EBW8Image1);
+
+                UnwrapEBW8Image1();
+
+                DrawEBW8Image1();
+
+                DataReset();
+            }
+
+            isStreaming = !isStreaming;
+        }
+
         private void Capture_ImageGrabbed(object sender, EventArgs e)
         {
             Mat m = new Mat();
@@ -1125,6 +1136,61 @@ namespace cyut_Auo_Component_Measurer
             EPatternFinder2.ScaleTolerance = 0.10f;
         }
 
+        private void LearnVerticle()
+        {
+            string RunningPath = Environment.CurrentDirectory;
+            string StdImagePath = string.Format("{0}Resources\\PressItem_Whole_Verticle.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
+            EBW8ImageStd.Load(StdImagePath);
+
+            EPatternFinder1 = new EPatternFinder();
+            // 先學習不規則圖形
+            // 可用於校正水平位置
+            // Attach the roi to its parent
+            EBW8Roi1.Attach(EBW8ImageStd);
+            EBW8Roi1.SetPlacement(740, 1108, 210, 520);
+            ERoi1Center = new Point(EBW8Roi1.OrgX + (EBW8Roi1.Width / 2), EBW8Roi1.OrgY + (EBW8Roi1.Height / 2));
+            EPatternFinder1.Learn(EBW8Roi1);
+
+            EPatternFinder1.AngleTolerance = 25.00f;
+            EPatternFinder1.ScaleTolerance = 0.5f;
+
+            EPatternFinder2 = new EPatternFinder();
+            // 第二個標準點
+            // 用於 鏡像 和 垂直翻轉
+            EBW8Roi2.Attach(EBW8ImageStd);
+            EBW8Roi2.SetPlacement(780, 2225, 45, 150);
+            EPatternFinder2.Learn(EBW8Roi2);
+
+            // 由於前面都會校正一次，所以容忍值不用太高，速度會更快
+            EPatternFinder2.AngleTolerance = 10.00f;
+            EPatternFinder2.ScaleTolerance = 0.05f;
+        }
+
+        private void Adjust_Verticle()
+        {
+            // 位置校正 & 水平校正
+            EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
+
+            // 如果沒找到
+            if (EPatternFinder1FoundPatterns[0].Score < 0.8)
+            {
+                MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
+                return;
+            }
+
+            finder1CenterX = EPatternFinder1FoundPatterns[0].Center.X;
+            finder1CenterY = EPatternFinder1FoundPatterns[0].Center.Y;
+
+            EBW8Image2 = new EImageBW8();
+            EBW8Image2.SetSize(EBW8ImageStd);
+
+            adjustRatio = 1 / EPatternFinder1FoundPatterns[0].Scale;
+
+            // ERoi1Center 需要手動調整
+            EasyImage.ScaleRotate(EBW8Image1, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8Image2, 0);
+
+        }
+
         private void Adjust_Fixed(object sender, EventArgs e)
         {
             // 位置校正 & 水平校正
@@ -1486,7 +1552,7 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------Shape-------------------------------
-        internal void AutoCalibration(int x, int y)
+        internal void AutoCalibration()
         {
             if (EBW8ImageDotGrid.IsVoid)
             {
@@ -1496,23 +1562,24 @@ namespace cyut_Auo_Component_Measurer
 
             try
             {
-                EWorldShape1.AutoCalibrateDotGrid(EBW8ImageDotGrid, x, y);
+                EWorldShape1.AutoCalibrateDotGrid(EBW8ImageDotGrid, calibrationX, calibrationY, false);
             }
             catch (Exception)
             {
 
             }
 
+            EWorldShape1.SetSensorSize(EBW8Image1.Width, EBW8Image1.Height);
 
-            if (EWorldShape1.CalibrationSucceeded() == false)
+            if (EWorldShape1.CalibrationSucceeded())
             {
-                MessageBox.Show("Calibration Failed");
-                return;
+                MessageBox.Show("校正成功", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Console.WriteLine("X解析度:" + EWorldShape1.XResolution + " Y解析度:" + EWorldShape1.YResolution);
+
             }
             else
             {
-                ResolutionX = EWorldShape1.XResolution;
-                ResolutionY = EWorldShape1.YResolution;
+                MessageBox.Show("校正失敗", "Calibration", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -1523,12 +1590,12 @@ namespace cyut_Auo_Component_Measurer
             // 給值
             objectInfo.CenterX = element.BoundingBoxCenterX;
 
-            objectInfo.CenterY = element.BoundingBoxCenterY ;
+            objectInfo.CenterY = element.BoundingBoxCenterY;
 
 
-            objectInfo.width = element.BoundingBoxWidth ;
+            objectInfo.width = element.BoundingBoxWidth;
 
-            objectInfo.height = element.BoundingBoxHeight ;
+            objectInfo.height = element.BoundingBoxHeight;
 
             objectInfo.CheckResult = -1;
 
@@ -1717,19 +1784,6 @@ namespace cyut_Auo_Component_Measurer
             panelStandardIndex = 0;
         }
 
-        private void pixelToMM(float pixelWidth, float pixelHeight)
-        {
-            mmWidth = pixelWidth / ResolutionX;
-
-            mmHeight = pixelHeight / ResolutionY;
-
-            if(adjustRatio > 0)
-            {
-                mmWidth /= adjustRatio;
-                mmHeight /= adjustRatio;
-            }
-        }
-
         private void RenderShapeInfo(int index, ArrayList ObjectSet)
         {
             ObjectInfo objectInfo = (ObjectInfo)ObjectSet[index];
@@ -1881,9 +1935,43 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
-        private void btn_Use_Camera_Click(object sender, EventArgs e)
+
+
+        private void pixelToMM(float pixelWidth, float pixelHeight)
         {
-            btn_Camera_Click(sender, e);
+            mmWidth = pixelWidth / ResolutionX;
+
+            mmHeight = pixelHeight / ResolutionY;
+
+            if (adjustRatio > 0)
+            {
+                mmWidth /= adjustRatio;
+                mmHeight /= adjustRatio;
+            }
+        }
+
+        private float mmToPixel(float length)
+        {
+            length *= ResolutionX;
+
+            return length;
+        }
+
+        private void btn_Unwrap_Click(object sender, EventArgs e)
+        {
+            UnwrapEBW8Image1();
+        }
+
+        private void UnwrapEBW8Image1()
+        {
+            EImageBW8 EBW8ImageUnwrap = new EImageBW8();
+
+            EBW8ImageUnwrap.SetSize(EBW8Image1);
+            EWorldShape1.Unwarp(EBW8Image1, EBW8ImageUnwrap);
+
+            EBW8ImageUnwrap.CopyTo(EBW8Image1);
+
+            EBW8ImageUnwrap.Dispose();
         }
     }
 }
