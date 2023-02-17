@@ -29,6 +29,7 @@ namespace cyut_Auo_Component_Measurer
 
         EImageC24 EC24Image1 = new EImageC24();
         EImageBW8 EBW8Image1 = new EImageBW8();
+        EImageBW8 EBW8Imagetemp = new EImageBW8();
 
         bool isGolden;
         // --------------------------Instance--------------------------
@@ -37,6 +38,8 @@ namespace cyut_Auo_Component_Measurer
         // --------------------------View--------------------------
         float viewRatio;
         Graphics graphics;
+        ToolStripMenuItem imageTranseformMenuItem;
+        int rotateDegree = 0;
 
 
         float mmWidth;
@@ -123,6 +126,7 @@ namespace cyut_Auo_Component_Measurer
             AutoCalibration();
 
             graphics = pictureBox1.CreateGraphics();
+            imageTranseformMenuItem = image_Rotate_0_toolStripMenuItem;
 
             Learn();
             //LearnVerticle();
@@ -269,6 +273,8 @@ namespace cyut_Auo_Component_Measurer
             }
 
             ProductDataReset();
+
+            ImageRotate(imageTranseformMenuItem, e);
 
             DrawEBW8Image1();
         }
@@ -1148,11 +1154,11 @@ namespace cyut_Auo_Component_Measurer
             // 可用於校正水平位置
             // Attach the roi to its parent
             EBW8Roi1.Attach(EBW8ImageStd);
-            EBW8Roi1.SetPlacement(255, 780, 840, 520);
+            EBW8Roi1.SetPlacement(400, 780, 690, 520);
             EPatternFinder1.Learn(EBW8Roi1);
 
-            EPatternFinder1.AngleTolerance = 10.00f;
-            EPatternFinder1.ScaleTolerance = 0.25f;
+            EPatternFinder1.AngleTolerance = 20.00f;
+            EPatternFinder1.ScaleTolerance = 0.99f;
 
             EPatternFinder2 = new EPatternFinder();
             // 第二個標準點
@@ -1237,8 +1243,13 @@ namespace cyut_Auo_Component_Measurer
             // 如果沒找到
             if (EPatternFinder1FoundPatterns[0].Score < 0.8 || EPatternFinder1FoundPatterns.Count() == 0)
             {
-                MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
+                //MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
+                Console.WriteLine("找不到類似圖形，請確認圖像是否正確。");
                 return false;
+            }
+            else
+            {
+                Console.WriteLine("找到圖形了。");
             }
 
             finder1CenterX = EPatternFinder1FoundPatterns[0].Center.X;
@@ -1380,6 +1391,8 @@ namespace cyut_Auo_Component_Measurer
             panel_Measure.Controls.Clear();
             panel_NG.Controls.Clear();
             panel_Standard.Controls.Clear();
+
+            rotateDegree = 0;
         }
 
         private ObjectInfo FindTheSameInObjectSetG(ObjectInfo objectTest)
@@ -2040,6 +2053,67 @@ namespace cyut_Auo_Component_Measurer
             length *= EWorldShape1.XResolution;
 
             return length;
+        }
+
+
+        private void ImageRotate(object sender, EventArgs e)
+        {
+            ToolStripMenuItem activeItem = sender as ToolStripMenuItem;
+
+            if (activeItem != imageTranseformMenuItem && imageTranseformMenuItem != null) imageTranseformMenuItem.Checked = false;
+            activeItem.Checked = true;
+
+            imageTranseformMenuItem = activeItem.Checked ? activeItem : null;
+
+            int selectDegree = int.Parse(activeItem.Tag.ToString());
+
+            switch (Math.Abs(selectDegree - rotateDegree))
+            {
+                case 0:
+                case 180:
+
+                    EBW8Imagetemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
+
+                    EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1, 1, selectDegree - rotateDegree, EBW8Imagetemp, 0);
+
+                    EasyImage.Copy(EBW8Imagetemp, EBW8Image1);
+                    rotateDegree = selectDegree;
+                    DrawEBW8Image1();
+                    break;
+                case 90:
+                case 270:
+                    EBW8Imagetemp.SetSize(EBW8Image1.Height, EBW8Image1.Width);
+
+                    EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.Y, EBW8Image1Center.X, 1, 1, selectDegree - rotateDegree, EBW8Imagetemp, 0);
+
+                    EBW8Image1.SetSize(EBW8Imagetemp);
+                    EasyImage.Copy(EBW8Imagetemp, EBW8Image1);
+                    rotateDegree = selectDegree;
+                    DrawEBW8Image1();
+
+                    break;
+            }
+        }
+
+        private void image_Flip_Horizontal_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EBW8Imagetemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
+
+            EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, -1.0f, 1.0f, 0, EBW8Imagetemp, 0);
+            EasyImage.Copy(EBW8Imagetemp, EBW8Image1);
+
+            DrawEBW8Image1();
+        }
+
+        private void image_Flip_Verticle_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EBW8Imagetemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
+
+            EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1.0f, -1.0f, 0, EBW8Imagetemp, 0);
+            EasyImage.Copy(EBW8Imagetemp, EBW8Image1);
+
+            DrawEBW8Image1();
+
         }
 
 
