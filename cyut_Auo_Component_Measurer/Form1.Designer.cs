@@ -55,7 +55,6 @@
             this.panel_Standard = new System.Windows.Forms.Panel();
             this.btn_Adjust = new System.Windows.Forms.Button();
             this.list_Of_Camera_Devices = new System.Windows.Forms.ComboBox();
-            this.btn_Unwrap = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -330,22 +329,11 @@
             this.list_Of_Camera_Devices.TabIndex = 46;
             this.list_Of_Camera_Devices.Visible = false;
             // 
-            // btn_Unwrap
-            // 
-            this.btn_Unwrap.Location = new System.Drawing.Point(687, 135);
-            this.btn_Unwrap.Name = "btn_Unwrap";
-            this.btn_Unwrap.Size = new System.Drawing.Size(75, 23);
-            this.btn_Unwrap.TabIndex = 47;
-            this.btn_Unwrap.Text = "unwrap";
-            this.btn_Unwrap.UseVisualStyleBackColor = true;
-            this.btn_Unwrap.Click += new System.EventHandler(this.btn_Unwrap_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1216, 638);
-            this.Controls.Add(this.btn_Unwrap);
             this.Controls.Add(this.list_Of_Camera_Devices);
             this.Controls.Add(this.btn_Adjust);
             this.Controls.Add(this.btn_Batch_Search);
@@ -408,7 +396,6 @@
         private System.Windows.Forms.ComboBox list_Of_Camera_Devices;
         private System.Windows.Forms.ToolStripMenuItem Menu_Load_Old_Image;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.Button btn_Unwrap;
     }
 }
 
