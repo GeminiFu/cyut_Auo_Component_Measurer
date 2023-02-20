@@ -168,7 +168,7 @@
             // dotGridToolStripMenuItem
             // 
             this.dotGridToolStripMenuItem.Name = "dotGridToolStripMenuItem";
-            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.dotGridToolStripMenuItem.Text = "Dot Grid";
             this.dotGridToolStripMenuItem.Click += new System.EventHandler(this.dotGridToolStripMenuItem_Click);
             // 
@@ -183,7 +183,7 @@
             this.image_Flip_Horizontal_ToolStripMenuItem,
             this.image_Flip_Verticle_ToolStripMenuItem});
             this.圖像翻轉ToolStripMenuItem.Name = "圖像翻轉ToolStripMenuItem";
-            this.圖像翻轉ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.圖像翻轉ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.圖像翻轉ToolStripMenuItem.Text = "圖像翻轉";
             // 
             // image_Rotate_0_toolStripMenuItem
@@ -191,7 +191,7 @@
             this.image_Rotate_0_toolStripMenuItem.Checked = true;
             this.image_Rotate_0_toolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.image_Rotate_0_toolStripMenuItem.Name = "image_Rotate_0_toolStripMenuItem";
-            this.image_Rotate_0_toolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.image_Rotate_0_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_0_toolStripMenuItem.Tag = "0";
             this.image_Rotate_0_toolStripMenuItem.Text = "0";
             this.image_Rotate_0_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -199,7 +199,7 @@
             // image_Rotate_90_toolStripMenuItem
             // 
             this.image_Rotate_90_toolStripMenuItem.Name = "image_Rotate_90_toolStripMenuItem";
-            this.image_Rotate_90_toolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.image_Rotate_90_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_90_toolStripMenuItem.Tag = "90";
             this.image_Rotate_90_toolStripMenuItem.Text = "90";
             this.image_Rotate_90_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -207,7 +207,7 @@
             // image_Rotate_180_toolStripMenuItem
             // 
             this.image_Rotate_180_toolStripMenuItem.Name = "image_Rotate_180_toolStripMenuItem";
-            this.image_Rotate_180_toolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.image_Rotate_180_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_180_toolStripMenuItem.Tag = "180";
             this.image_Rotate_180_toolStripMenuItem.Text = "180";
             this.image_Rotate_180_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -215,7 +215,7 @@
             // image_Rotate_270_toolStripMenuItem
             // 
             this.image_Rotate_270_toolStripMenuItem.Name = "image_Rotate_270_toolStripMenuItem";
-            this.image_Rotate_270_toolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.image_Rotate_270_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_270_toolStripMenuItem.Tag = "270";
             this.image_Rotate_270_toolStripMenuItem.Text = "270";
             this.image_Rotate_270_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -223,12 +223,12 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(119, 6);
             // 
             // image_Flip_Horizontal_ToolStripMenuItem
             // 
             this.image_Flip_Horizontal_ToolStripMenuItem.Name = "image_Flip_Horizontal_ToolStripMenuItem";
-            this.image_Flip_Horizontal_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.image_Flip_Horizontal_ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Flip_Horizontal_ToolStripMenuItem.Tag = "horizontal";
             this.image_Flip_Horizontal_ToolStripMenuItem.Text = "水平翻轉";
             this.image_Flip_Horizontal_ToolStripMenuItem.Click += new System.EventHandler(this.image_Flip_Horizontal_ToolStripMenuItem_Click);
@@ -236,7 +236,7 @@
             // image_Flip_Verticle_ToolStripMenuItem
             // 
             this.image_Flip_Verticle_ToolStripMenuItem.Name = "image_Flip_Verticle_ToolStripMenuItem";
-            this.image_Flip_Verticle_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.image_Flip_Verticle_ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Flip_Verticle_ToolStripMenuItem.Tag = "verticle";
             this.image_Flip_Verticle_ToolStripMenuItem.Text = "垂直翻轉";
             this.image_Flip_Verticle_ToolStripMenuItem.Click += new System.EventHandler(this.image_Flip_Verticle_ToolStripMenuItem_Click);
@@ -287,7 +287,7 @@
             this.num_Threshold_NG.TabIndex = 22;
             this.num_Threshold_NG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.num_Threshold_NG.Value = new decimal(new int[] {
-            15,
+            1,
             0,
             0,
             65536});
