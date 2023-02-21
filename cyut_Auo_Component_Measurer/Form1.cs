@@ -1215,10 +1215,8 @@ namespace cyut_Auo_Component_Measurer
             // 先學習不規則圖形
             // 可用於校正水平位置
             // Attach the roi to its parent
-            EBW8Roi1.Attach(EBW8ImageLearn);
-            EBW8Roi1.SetPlacement(259, 1724, 699, 514);
-            ERoi1Center = new Point(EBW8Roi1.OrgX + (EBW8Roi1.Width / 2), EBW8Roi1.OrgY + (EBW8Roi1.Height / 2));
-
+            EBW8Roi1.Attach(EBW8ImageStd);
+            EBW8Roi1.SetPlacement(400, 780, 690, 520);
             EPatternFinder1.Learn(EBW8Roi1);
 
             EPatternFinder1.AngleTolerance = 25.00f;
