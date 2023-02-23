@@ -601,22 +601,18 @@ namespace cyut_Auo_Component_Measurer
                     capture.Set(Emgu.CV.CvEnum.CapProp.FrameHeight, 3000);
                 }
 
-                capture.ImageGrabbed += Capture_ImageGrabbed;
+                if (capture.IsOpened)
+                {
+                    capture.ImageGrabbed += Capture_ImageGrabbed;
 
-                capture.Start(); //開始攝影
-
-                //if (capture.IsOpened)
-                //{
-                //    capture.ImageGrabbed += Capture_ImageGrabbed;
-
-                //    capture.Start(); //開始攝影
-                //}
-                //else
-                //{
-                //    MessageBox.Show("相機錯誤。");
-                //    capture = null;
-                //    return;
-                //}
+                    capture.Start(); //開始攝影
+                }
+                else
+                {
+                    MessageBox.Show("相機錯誤。");
+                    capture = null;
+                    return;
+                }
             }
             else
             {
@@ -2047,13 +2043,13 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelIndex * 30);
+            label_Title.Location = new Point(5, 10 + panelIndex * 30);
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
-            label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, panelIndex * 30);
+            label_Value.Text = number.ToString() + " mm";
+            label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelNGIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
@@ -2067,13 +2063,13 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelNGIndex * 30);
+            label_Title.Location = new Point(5, 10 + panelNGIndex * 30);
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
             decimal number = decimal.Round((decimal)value, 1);
-            label_Value.Text = number.ToString();
-            label_Value.Location = new Point(label_Title.Width + 10, panelNGIndex * 30);
+            label_Value.Text = number.ToString() + " mm";
+            label_Value.Location = new Point(5 + label_Title.Width + 10, 10+ panelNGIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
@@ -2087,7 +2083,7 @@ namespace cyut_Auo_Component_Measurer
             Label label_Title = new Label();
             label_Title.Text = labelText;
             label_Title.Text += ":";
-            label_Title.Location = new Point(0, panelStandardIndex * 30);
+            label_Title.Location = new Point(5, 10 + panelStandardIndex * 30);
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             NumericUpDown num_Standard = new NumericUpDown();
@@ -2097,11 +2093,19 @@ namespace cyut_Auo_Component_Measurer
             num_Standard.Maximum = 5000;
             num_Standard.Value = number;
 
-            num_Standard.Location = new Point(label_Title.Width + 10, panelStandardIndex * 30);
+            num_Standard.Location = new Point(5 + label_Title.Width + 10, 10 + panelStandardIndex * 30);
             num_Standard.Width = 80;
+
+            Label label_MM = new Label();
+            label_MM.Text = "mm";
+            label_MM.Location = new Point(5 + label_Title.Width + 10 + num_Standard.Width + 10, 10 + panelStandardIndex * 30);
+            label_MM.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
+
 
             panel_Standard.Controls.Add(label_Title);
             panel_Standard.Controls.Add(num_Standard);
+            panel_Standard.Controls.Add(label_MM);
+
             panelStandardIndex++;
 
         }
