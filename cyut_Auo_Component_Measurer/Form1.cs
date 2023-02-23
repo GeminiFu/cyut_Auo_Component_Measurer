@@ -1,4 +1,5 @@
 ﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Flann;
 using Emgu.Util;
 using Euresys.Open_eVision_22_08;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace cyut_Auo_Component_Measurer
 {
@@ -131,6 +133,8 @@ namespace cyut_Auo_Component_Measurer
 
             Learn();
             //LearnVerticle();
+
+            pictureBox1.MouseWheel += pictureBox_Mouse_Wheel;
         }
 
         private void Form_Close(object sender, FormClosedEventArgs e)
@@ -194,7 +198,7 @@ namespace cyut_Auo_Component_Measurer
 
             MessageBox.Show(message);
 
-            if(message == "校正失敗")
+            if (message == "校正失敗")
             {
                 return;
             }
@@ -592,23 +596,27 @@ namespace cyut_Auo_Component_Measurer
             {
                 if (capture == null)
                 {
-                    capture = new VideoCapture(0);
+                    capture = new VideoCapture(1, VideoCapture.API.DShow);
                     capture.Set(Emgu.CV.CvEnum.CapProp.FrameWidth, 4000);
                     capture.Set(Emgu.CV.CvEnum.CapProp.FrameHeight, 3000);
                 }
 
-                if (capture.IsOpened)
-                {
-                    capture.ImageGrabbed += Capture_ImageGrabbed;
+                capture.ImageGrabbed += Capture_ImageGrabbed;
 
-                    capture.Start(); //開始攝影
-                }
-                else
-                {
-                    MessageBox.Show("相機錯誤。");
-                    capture = null;
-                    return;
-                }
+                capture.Start(); //開始攝影
+
+                //if (capture.IsOpened)
+                //{
+                //    capture.ImageGrabbed += Capture_ImageGrabbed;
+
+                //    capture.Start(); //開始攝影
+                //}
+                //else
+                //{
+                //    MessageBox.Show("相機錯誤。");
+                //    capture = null;
+                //    return;
+                //}
             }
             else
             {
@@ -746,7 +754,7 @@ namespace cyut_Auo_Component_Measurer
             EImageBW8 EBW8ImageTemp = new EImageBW8();
 
 
-            if(EWorldShape1.CalibrationSucceeded() == false)
+            if (EWorldShape1.CalibrationSucceeded() == false)
             {
                 message = "No calibration.";
                 return;
@@ -2193,9 +2201,60 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
+
+        int mutiple = 1;
+        float moveXRatio;
+        float moveYRatio;
+        bool isEnlarge = false;
+
+        private void pictureBox_Mouse_Wheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                mutiple *= 2;
+                isEnlarge = true;
+            }
+            else
+            {
+                mutiple /= 2;
+            }
+
+            if (mutiple <= 1)
+            {
+                mutiple = 1;
+                isEnlarge = false;
+                DrawEBW8Image(ref EBW8Image1);
+            }
+
+            if (mutiple >= 1 / viewRatio)
+            {
+                mutiple = (int)Math.Round((double)1 / (double)viewRatio);
+            }
+        }
+
+        private void pictureBox_Move(object sender, MouseEventArgs e)
+        {
+            if (isEnlarge)
+            {
+                moveXRatio = (viewRatio * mutiple * EBW8Image1.Width - pictureBox1.Width) / pictureBox1.Width;
+                moveYRatio = (viewRatio * mutiple * EBW8Image1.Height - pictureBox1.Height) / pictureBox1.Height;
+                EBW8Image1.Draw(graphics, viewRatio  * mutiple, viewRatio * mutiple, -1f * e.X * moveXRatio / (viewRatio * mutiple), -1f * e.Y * moveYRatio / (viewRatio * mutiple));
+            }
+        }
+
         private void pictureBox_Double_Click(object sender, MouseEventArgs e)
         {
-
+            if(mutiple == 1)
+            {
+                mutiple = 2;
+                isEnlarge = true;
+            }
+            else
+            {
+                mutiple = 1;
+                isEnlarge = false;
+                DrawEBW8Image(ref EBW8Image1);
+            }
         }
     }
 }
