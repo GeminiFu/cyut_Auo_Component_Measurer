@@ -201,7 +201,7 @@ namespace cyut_Auo_Component_Measurer
 
             EasyImage.Copy(EBW8ImageDotGrid, EBW8Image1);
 
-            UnwrapEBW8Image1();
+            UnwarpEBW8Image1();
 
             ImageRotate(imageTranseformMenuItem, e);
 
@@ -629,7 +629,7 @@ namespace cyut_Auo_Component_Measurer
 
                 ProductDataReset();
 
-                UnwrapEBW8Image1();
+                UnwarpEBW8Image1();
 
                 ImageRotate(imageTranseformMenuItem, new EventArgs());
 
@@ -739,10 +739,12 @@ namespace cyut_Auo_Component_Measurer
             return EC24ImageTemp;
         }
 
-        private void UnwrapEBW8Image1()
+        private void UnwarpEBW8Image1()
         {
             string message;
-            EImageBW8 EBW8ImageUnwrap = new EImageBW8();
+            EImageBW8 EBW8ImageUnwarp = new EImageBW8();
+            EImageBW8 EBW8ImageTemp = new EImageBW8();
+
 
             if(EWorldShape1.CalibrationSucceeded() == false)
             {
@@ -750,14 +752,17 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            EBW8ImageUnwrap.SetSize(EBW8Image1);
-            EWorldShape1.Unwarp(EBW8Image1, EBW8ImageUnwrap);
+            EBW8ImageUnwarp.SetSize(EBW8Image1);
+            EBW8ImageTemp.SetSize(EBW8Image1);
 
-            EBW8ImageUnwrap.CopyTo(EBW8Image1);
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8Image1, EBW8ImageTemp);
+            EWorldShape1.Unwarp(EBW8ImageTemp, EBW8ImageUnwarp);
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8ImageUnwarp, EBW8ImageTemp);
+            EBW8ImageTemp.CopyTo(EBW8Image1);
 
             DrawEBW8Image(ref EBW8Image1);
 
-            EBW8ImageUnwrap.Dispose();
+            EBW8ImageUnwarp.Dispose();
 
             message = "Wrap Success!";
         }
@@ -1209,18 +1214,18 @@ namespace cyut_Auo_Component_Measurer
             string StdImagePath = string.Format("{0}Resources\\PressItem_Whole.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
             //EBW8ImageLearn.Load(StdImagePath);
 
-            EBW8ImageLearn.Load(@"C:\Users\USER\Desktop\工作\專案\自動檢測系統\零件全圖\Standard.png");
+            EBW8ImageLearn.Load(@"D:\User\Desktop\資源\零件全圖\Standard.png");
 
             EPatternFinder1 = new EPatternFinder();
             // 先學習不規則圖形
             // 可用於校正水平位置
             // Attach the roi to its parent
-            EBW8Roi1.Attach(EBW8ImageStd);
-            EBW8Roi1.SetPlacement(400, 780, 690, 520);
+            EBW8Roi1.Attach(EBW8ImageLearn);
+            EBW8Roi1.SetPlacement(690, 1260, 782, 588);
             EPatternFinder1.Learn(EBW8Roi1);
 
             EPatternFinder1.AngleTolerance = 25.00f;
-            EPatternFinder1.ScaleTolerance = 0.10f;
+            EPatternFinder1.ScaleTolerance = 0.50f;
 
 
             //EPatternFinder2 = new EPatternFinder();
@@ -1315,6 +1320,7 @@ namespace cyut_Auo_Component_Measurer
                 EPatternFinder1FoundPatterns[0].Draw(graphics, viewRatio);
                 //MessageBox.Show("找不到類似圖形，請確認圖像是否正確。");
                 Console.WriteLine("找不到類似圖形，請確認圖像是否正確。");
+                EPatternFinder1FoundPatterns[0].Draw(graphics, viewRatio);
                 return false;
             }
             else
@@ -2187,6 +2193,9 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
+        private void pictureBox_Double_Click(object sender, MouseEventArgs e)
+        {
 
+        }
     }
 }
