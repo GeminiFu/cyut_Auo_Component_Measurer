@@ -137,19 +137,19 @@ namespace cyut_Auo_Component_Measurer
 
 
             if (!Directory.Exists(path))
-                return "沒有找到資料夾";
+                return "沒有找到資料夾。";
 
             if (!File.Exists(pathObjectSetG))
-                return "沒有找到 ObjectSetG";
+                return "沒有找到 ObjectSetG。";
 
             if (!File.Exists(pathDotGridImage))
-                return "沒有找到點圖";
+                return "沒有找到點圖。";
 
             if (!File.Exists(pathCalibrationX))
-                return "沒有找到 X 文字檔";
+                return "沒有找到 X 文字檔。";
 
             if (!File.Exists(pathCalibrationY))
-                return "沒有找到 Y 文字檔";
+                return "沒有找到 Y 文字檔。";
 
             return ok;
         }
@@ -239,11 +239,11 @@ namespace cyut_Auo_Component_Measurer
         {
             // check dot grid image
             if (dotGridImage.IsVoid)
-                return "請先校正點圖";
+                return "請先校正點圖。";
 
             // check ObjectSetG
             if (ObjectSetG.Count <= 0)
-                return "請先量測標準物";
+                return "請先量測標準物。";
 
             return ok;
         }
