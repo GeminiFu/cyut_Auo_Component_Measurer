@@ -110,6 +110,15 @@ namespace cyut_Auo_Component_Measurer
         internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
         public int calibrationX = 5;
         public int calibrationY = 5;
+        public bool isDoCalibration;
+
+        // --------------------------Picturebox--------------------------
+        int mutiple = 1;
+        float moveXRatio;
+        float moveYRatio;
+        bool isEnlarge = false;
+        int currentMouseX;
+        int currentMouseY;
 
         // --------------------------Form--------------------------
         public Form1()
@@ -123,7 +132,7 @@ namespace cyut_Auo_Component_Measurer
             errorMessage = c_control.InitializeSetting(ref EBW8Image1, ref ObjectSetG, ref EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
 
             if (errorMessage != c_control.OK)
-                MessageBox.Show(errorMessage);
+                MessageBox.Show("初始化設定錯誤：" + errorMessage + "請設定點圖校正和標準數據並存檔。");
 
             // Calibration
             AutoCalibration();
@@ -189,6 +198,11 @@ namespace cyut_Auo_Component_Measurer
 
             Form_Dot_Grid f2 = new Form_Dot_Grid(calibrationX, calibrationY);
             f2.ShowDialog(this);
+
+            if (isDoCalibration == false)
+            {
+                return;
+            }
 
             btn_Use_Camera_Click(sender, e);
 
@@ -302,6 +316,7 @@ namespace cyut_Auo_Component_Measurer
         // Drwa Image
         private void btn_Adjust_Click(object sender, EventArgs e)
         {
+
             //Adjust_Horizontal(sender, e); //鏡像
 
             //Adjust_Vertical(sender, e); //垂直翻轉
@@ -317,8 +332,6 @@ namespace cyut_Auo_Component_Measurer
             EBW8ImageAdjust.CopyTo(EBW8Image1); //讓 EBW8IImage1 為正確的圖像
             DrawEBW8Image(ref EBW8Image1);
 
-            Console.WriteLine(EBW8Image1.Width);
-            Console.WriteLine(EBW8Image1.Height);
 
             // 畫出 finder
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
@@ -445,7 +458,7 @@ namespace cyut_Auo_Component_Measurer
             else
             {
                 NumericUpDown controlWidth = (NumericUpDown)panel_Standard.Controls[1];
-                NumericUpDown controlHeight = (NumericUpDown)panel_Standard.Controls[3];
+                NumericUpDown controlHeight = (NumericUpDown)panel_Standard.Controls[4];
 
                 widthStd = mmToPixel(controlWidth.Value);
                 heightStd = mmToPixel(controlHeight.Value);
@@ -513,6 +526,63 @@ namespace cyut_Auo_Component_Measurer
                     }
                 }
 
+            }
+        }
+
+
+
+        private void pictureBox_Mouse_Wheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                mutiple *= 2;
+                isEnlarge = true;
+            }
+            else
+            {
+                mutiple /= 2;
+            }
+
+            if (mutiple <= 1)
+            {
+                mutiple = 1;
+                isEnlarge = false;
+                DrawEBW8Image(ref EBW8Image1);
+            }
+
+            if (mutiple >= 1 / viewRatio)
+            {
+                mutiple = (int)Math.Round((double)1 / (double)viewRatio);
+            }
+        }
+
+        private void pictureBox_Move(object sender, MouseEventArgs e)
+        {
+            if (isEnlarge)
+            {
+                currentMouseX = e.X;
+                currentMouseY = e.Y;
+                moveXRatio = (viewRatio * mutiple * EBW8Image1.Width - pictureBox1.Width) / pictureBox1.Width;
+                moveYRatio = (viewRatio * mutiple * EBW8Image1.Height - pictureBox1.Height) / pictureBox1.Height;
+                EBW8Image1.Draw(graphics, viewRatio * mutiple, viewRatio * mutiple, -1f * currentMouseX * moveXRatio / (viewRatio * mutiple), -1f * currentMouseY * moveYRatio / (viewRatio * mutiple));
+            }
+        }
+
+        private void pictureBox_Double_Click(object sender, MouseEventArgs e)
+        {
+            currentMouseX = e.X;
+            currentMouseY = e.Y;
+
+            if (mutiple == 1)
+            {
+                mutiple = 2;
+                isEnlarge = true;
+            }
+            else
+            {
+                mutiple = 1;
+                isEnlarge = false;
+                DrawEBW8Image(ref EBW8Image1);
             }
         }
 
@@ -596,7 +666,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 if (capture == null)
                 {
-                    capture = new VideoCapture(1, VideoCapture.API.DShow);
+                    capture = new VideoCapture(0, VideoCapture.API.DShow);
                     capture.Set(Emgu.CV.CvEnum.CapProp.FrameWidth, 4000);
                     capture.Set(Emgu.CV.CvEnum.CapProp.FrameHeight, 3000);
                 }
@@ -657,7 +727,23 @@ namespace cyut_Auo_Component_Measurer
                     capture.Retrieve(m);
                     bmp = m.ToBitmap(); //不能使用 new Bitmap(m.Bitmap)
 
-                    pictureBox1.Image = bmp;
+
+
+                    BitmapToEImageBW8(bmp, ref EBW8Image1);
+
+                    if (mutiple == 1)
+                    {
+                        pictureBox1.Image = bmp;
+                    }
+                    else
+                    {
+                        isEnlarge = false;
+
+                        moveXRatio = (viewRatio * mutiple * EBW8Image1.Width - pictureBox1.Width) / pictureBox1.Width;
+                        moveYRatio = (viewRatio * mutiple * EBW8Image1.Height - pictureBox1.Height) / pictureBox1.Height;
+                        EBW8Image1.Draw(graphics, viewRatio * mutiple, viewRatio * mutiple, -1f * currentMouseX * moveXRatio / (viewRatio * mutiple), -1f * currentMouseY * moveYRatio / (viewRatio * mutiple));
+                    }
+
 
                     m.Dispose();
 
@@ -665,6 +751,8 @@ namespace cyut_Auo_Component_Measurer
                     {
                         return;
                     }
+
+
                 }
                 else
                 {
@@ -767,6 +855,7 @@ namespace cyut_Auo_Component_Measurer
             DrawEBW8Image(ref EBW8Image1);
 
             EBW8ImageUnwarp.Dispose();
+            EBW8ImageTemp.Dispose();
 
             message = "Wrap Success!";
         }
@@ -1215,18 +1304,20 @@ namespace cyut_Auo_Component_Measurer
         private void Learn()
         {
             string RunningPath = Environment.CurrentDirectory;
-            string StdImagePath = string.Format("{0}Resources\\PressItem_Whole.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\..\")));
-            //EBW8ImageLearn.Load(StdImagePath);
+            string StdImagePath = string.Format("{0}Resources\\Standard.png", Path.GetFullPath(Path.Combine(RunningPath, @"..\..\")));
+            EBW8ImageLearn.Load(StdImagePath);
 
-            EBW8ImageLearn.Load(@"D:\User\Desktop\資源\零件全圖\Standard.png");
 
             EPatternFinder1 = new EPatternFinder();
             // 先學習不規則圖形
             // 可用於校正水平位置
             // Attach the roi to its parent
             EBW8Roi1.Attach(EBW8ImageLearn);
-            EBW8Roi1.SetPlacement(690, 1260, 782, 588);
+            EBW8Roi1.SetPlacement(406, 1145, 880, 669);
             EPatternFinder1.Learn(EBW8Roi1);
+            ERoi1Center.X = EBW8Roi1.OrgX + EBW8Roi1.Width / 2;
+            ERoi1Center.Y = EBW8Roi1.OrgY + EBW8Roi1.Height / 2;
+
 
             EPatternFinder1.AngleTolerance = 25.00f;
             EPatternFinder1.ScaleTolerance = 0.50f;
@@ -1341,14 +1432,30 @@ namespace cyut_Auo_Component_Measurer
 
             adjustRatio = 1 / EPatternFinder1FoundPatterns[0].Scale;
 
-            // ERoi1Center 需要手動調整
+            EImageBW8 EBW8ImageTemp = new EImageBW8();
+
+
+
+            EBW8ImageTemp.SetSize(EBW8Image1);
+
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8Image1, EBW8ImageTemp);
+
 
             // 校正方式
             // 位置：
             // 比例：
             // 角度：
             // 把校正過後的圖片放在 EBW8ImageAdjust
-            EasyImage.ScaleRotate(EBW8Image1, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8ImageAdjust, 0);
+            EasyImage.ScaleRotate(EBW8ImageTemp, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8ImageAdjust, 0);
+
+
+
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8ImageAdjust, EBW8ImageTemp);
+            EBW8ImageTemp.CopyTo(EBW8ImageAdjust);
+
+            EBW8ImageTemp.Dispose();
+
+
 
             return true;
         }
@@ -2047,9 +2154,9 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 1);
+            decimal number = decimal.Round((decimal)value, 2);
             label_Value.Text = number.ToString() + " mm";
-            label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelNGIndex * 30);
+            label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
@@ -2067,9 +2174,9 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 1);
+            decimal number = decimal.Round((decimal)value, 2);
             label_Value.Text = number.ToString() + " mm";
-            label_Value.Location = new Point(5 + label_Title.Width + 10, 10+ panelNGIndex * 30);
+            label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelNGIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
             label_Value.Width = 80;
 
@@ -2087,11 +2194,10 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             NumericUpDown num_Standard = new NumericUpDown();
-            decimal number = decimal.Round((decimal)value, 1);
-            num_Standard.DecimalPlaces = 1;
+            num_Standard.DecimalPlaces = 2;
             num_Standard.Increment = 0.1M;
             num_Standard.Maximum = 5000;
-            num_Standard.Value = number;
+            num_Standard.Value = (decimal)value;
 
             num_Standard.Location = new Point(5 + label_Title.Width + 10, 10 + panelStandardIndex * 30);
             num_Standard.Width = 80;
@@ -2206,59 +2312,6 @@ namespace cyut_Auo_Component_Measurer
         }
 
 
-        int mutiple = 1;
-        float moveXRatio;
-        float moveYRatio;
-        bool isEnlarge = false;
 
-        private void pictureBox_Mouse_Wheel(object sender, MouseEventArgs e)
-        {
-            if (e.Delta > 0)
-            {
-                mutiple *= 2;
-                isEnlarge = true;
-            }
-            else
-            {
-                mutiple /= 2;
-            }
-
-            if (mutiple <= 1)
-            {
-                mutiple = 1;
-                isEnlarge = false;
-                DrawEBW8Image(ref EBW8Image1);
-            }
-
-            if (mutiple >= 1 / viewRatio)
-            {
-                mutiple = (int)Math.Round((double)1 / (double)viewRatio);
-            }
-        }
-
-        private void pictureBox_Move(object sender, MouseEventArgs e)
-        {
-            if (isEnlarge)
-            {
-                moveXRatio = (viewRatio * mutiple * EBW8Image1.Width - pictureBox1.Width) / pictureBox1.Width;
-                moveYRatio = (viewRatio * mutiple * EBW8Image1.Height - pictureBox1.Height) / pictureBox1.Height;
-                EBW8Image1.Draw(graphics, viewRatio  * mutiple, viewRatio * mutiple, -1f * e.X * moveXRatio / (viewRatio * mutiple), -1f * e.Y * moveYRatio / (viewRatio * mutiple));
-            }
-        }
-
-        private void pictureBox_Double_Click(object sender, MouseEventArgs e)
-        {
-            if(mutiple == 1)
-            {
-                mutiple = 2;
-                isEnlarge = true;
-            }
-            else
-            {
-                mutiple = 1;
-                isEnlarge = false;
-                DrawEBW8Image(ref EBW8Image1);
-            }
-        }
     }
 }

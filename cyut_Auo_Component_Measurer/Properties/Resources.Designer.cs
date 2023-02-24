@@ -133,19 +133,9 @@ namespace cyut_Auo_Component_Measurer.Properties {
         /// <summary>
         ///   查詢類型 System.Drawing.Bitmap 的當地語系化資源。
         /// </summary>
-        internal static System.Drawing.Bitmap PressItem_Whole {
+        internal static System.Drawing.Bitmap Standard {
             get {
-                object obj = ResourceManager.GetObject("PressItem_Whole", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   查詢類型 System.Drawing.Bitmap 的當地語系化資源。
-        /// </summary>
-        internal static System.Drawing.Bitmap PressItem_Whole_Verticle {
-            get {
-                object obj = ResourceManager.GetObject("PressItem_Whole_Verticle", resourceCulture);
+                object obj = ResourceManager.GetObject("Standard", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

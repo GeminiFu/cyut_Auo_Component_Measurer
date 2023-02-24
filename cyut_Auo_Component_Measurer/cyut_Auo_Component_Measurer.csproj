@@ -165,5 +165,11 @@
   <ItemGroup>
     <None Include="Resources\PressItem_Whole_Verticle.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Standard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Setting\Standard.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

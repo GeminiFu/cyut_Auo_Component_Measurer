@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.btn_Load = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btn_Camera = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.檔案ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,17 +66,18 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Load
             // 
-            this.btn_Load.Location = new System.Drawing.Point(7, 30);
+            this.btn_Load.Location = new System.Drawing.Point(32, 30);
             this.btn_Load.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Load.Name = "btn_Load";
             this.btn_Load.Size = new System.Drawing.Size(100, 40);
@@ -87,32 +87,14 @@
             this.btn_Load.UseVisualStyleBackColor = true;
             this.btn_Load.Click += new System.EventHandler(this.btn_Load_Click);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 8);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(815, 674);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Double_Click);
-            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Mose_Down);
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Move);
-            // 
             // btn_Camera
             // 
-            this.btn_Camera.Location = new System.Drawing.Point(146, 30);
+            this.btn_Camera.Location = new System.Drawing.Point(143, 30);
             this.btn_Camera.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Camera.Name = "btn_Camera";
-            this.btn_Camera.Size = new System.Drawing.Size(100, 40);
+            this.btn_Camera.Size = new System.Drawing.Size(159, 40);
             this.btn_Camera.TabIndex = 2;
-            this.btn_Camera.Text = "使用相機";
+            this.btn_Camera.Text = "camera / capture";
             this.btn_Camera.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Camera.UseVisualStyleBackColor = true;
             this.btn_Camera.Click += new System.EventHandler(this.btn_Use_Camera_Click);
@@ -127,7 +109,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(10, 4, 0, 4);
-            this.menuStrip1.Size = new System.Drawing.Size(1374, 27);
+            this.menuStrip1.Size = new System.Drawing.Size(1435, 27);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -139,32 +121,32 @@
             this.toolStripMenuItem2,
             this.Menu_Load_Old_Image});
             this.檔案ToolStripMenuItem.Name = "檔案ToolStripMenuItem";
-            this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.檔案ToolStripMenuItem.Size = new System.Drawing.Size(43, 19);
             this.檔案ToolStripMenuItem.Text = "檔案";
             // 
             // Menu_Load_Setting
             // 
             this.Menu_Load_Setting.Name = "Menu_Load_Setting";
-            this.Menu_Load_Setting.Size = new System.Drawing.Size(158, 24);
+            this.Menu_Load_Setting.Size = new System.Drawing.Size(134, 22);
             this.Menu_Load_Setting.Text = "讀取設定檔";
             this.Menu_Load_Setting.Click += new System.EventHandler(this.Menu_Load_Setting_Click);
             // 
             // Menu_Save_Setting
             // 
             this.Menu_Save_Setting.Name = "Menu_Save_Setting";
-            this.Menu_Save_Setting.Size = new System.Drawing.Size(158, 24);
+            this.Menu_Save_Setting.Size = new System.Drawing.Size(134, 22);
             this.Menu_Save_Setting.Text = "儲存設定檔";
             this.Menu_Save_Setting.Click += new System.EventHandler(this.Menu_Save_Setting_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(155, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(131, 6);
             // 
             // Menu_Load_Old_Image
             // 
             this.Menu_Load_Old_Image.Name = "Menu_Load_Old_Image";
-            this.Menu_Load_Old_Image.Size = new System.Drawing.Size(158, 24);
+            this.Menu_Load_Old_Image.Size = new System.Drawing.Size(134, 22);
             this.Menu_Load_Old_Image.Text = "讀取舊檔案";
             this.Menu_Load_Old_Image.Click += new System.EventHandler(this.Menu_Load_Old_Image_Click);
             // 
@@ -174,13 +156,13 @@
             this.dotGridToolStripMenuItem,
             this.圖像翻轉ToolStripMenuItem});
             this.設定ToolStripMenuItem.Name = "設定ToolStripMenuItem";
-            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(43, 19);
             this.設定ToolStripMenuItem.Text = "設定";
             // 
             // dotGridToolStripMenuItem
             // 
             this.dotGridToolStripMenuItem.Name = "dotGridToolStripMenuItem";
-            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.dotGridToolStripMenuItem.Text = "Dot Grid";
             this.dotGridToolStripMenuItem.Click += new System.EventHandler(this.dotGridToolStripMenuItem_Click);
             // 
@@ -195,7 +177,7 @@
             this.image_Flip_Horizontal_ToolStripMenuItem,
             this.image_Flip_Verticle_ToolStripMenuItem});
             this.圖像翻轉ToolStripMenuItem.Name = "圖像翻轉ToolStripMenuItem";
-            this.圖像翻轉ToolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.圖像翻轉ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.圖像翻轉ToolStripMenuItem.Text = "圖像翻轉";
             // 
             // image_Rotate_0_toolStripMenuItem
@@ -203,7 +185,7 @@
             this.image_Rotate_0_toolStripMenuItem.Checked = true;
             this.image_Rotate_0_toolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.image_Rotate_0_toolStripMenuItem.Name = "image_Rotate_0_toolStripMenuItem";
-            this.image_Rotate_0_toolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.image_Rotate_0_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_0_toolStripMenuItem.Tag = "0";
             this.image_Rotate_0_toolStripMenuItem.Text = "0";
             this.image_Rotate_0_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -211,7 +193,7 @@
             // image_Rotate_90_toolStripMenuItem
             // 
             this.image_Rotate_90_toolStripMenuItem.Name = "image_Rotate_90_toolStripMenuItem";
-            this.image_Rotate_90_toolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.image_Rotate_90_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_90_toolStripMenuItem.Tag = "90";
             this.image_Rotate_90_toolStripMenuItem.Text = "90";
             this.image_Rotate_90_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -219,7 +201,7 @@
             // image_Rotate_180_toolStripMenuItem
             // 
             this.image_Rotate_180_toolStripMenuItem.Name = "image_Rotate_180_toolStripMenuItem";
-            this.image_Rotate_180_toolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.image_Rotate_180_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_180_toolStripMenuItem.Tag = "180";
             this.image_Rotate_180_toolStripMenuItem.Text = "180";
             this.image_Rotate_180_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -227,7 +209,7 @@
             // image_Rotate_270_toolStripMenuItem
             // 
             this.image_Rotate_270_toolStripMenuItem.Name = "image_Rotate_270_toolStripMenuItem";
-            this.image_Rotate_270_toolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.image_Rotate_270_toolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Rotate_270_toolStripMenuItem.Tag = "270";
             this.image_Rotate_270_toolStripMenuItem.Text = "270";
             this.image_Rotate_270_toolStripMenuItem.Click += new System.EventHandler(this.ImageRotate);
@@ -235,12 +217,12 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(139, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(119, 6);
             // 
             // image_Flip_Horizontal_ToolStripMenuItem
             // 
             this.image_Flip_Horizontal_ToolStripMenuItem.Name = "image_Flip_Horizontal_ToolStripMenuItem";
-            this.image_Flip_Horizontal_ToolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.image_Flip_Horizontal_ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Flip_Horizontal_ToolStripMenuItem.Tag = "horizontal";
             this.image_Flip_Horizontal_ToolStripMenuItem.Text = "水平翻轉";
             this.image_Flip_Horizontal_ToolStripMenuItem.Click += new System.EventHandler(this.image_Flip_Horizontal_ToolStripMenuItem_Click);
@@ -248,7 +230,7 @@
             // image_Flip_Verticle_ToolStripMenuItem
             // 
             this.image_Flip_Verticle_ToolStripMenuItem.Name = "image_Flip_Verticle_ToolStripMenuItem";
-            this.image_Flip_Verticle_ToolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.image_Flip_Verticle_ToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.image_Flip_Verticle_ToolStripMenuItem.Tag = "verticle";
             this.image_Flip_Verticle_ToolStripMenuItem.Text = "垂直翻轉";
             this.image_Flip_Verticle_ToolStripMenuItem.Click += new System.EventHandler(this.image_Flip_Verticle_ToolStripMenuItem_Click);
@@ -279,7 +261,7 @@
             // 
             // num_Threshold_NG
             // 
-            this.num_Threshold_NG.DecimalPlaces = 1;
+            this.num_Threshold_NG.DecimalPlaces = 2;
             this.num_Threshold_NG.Increment = new decimal(new int[] {
             1,
             0,
@@ -316,7 +298,7 @@
             // 
             this.panel_Measure.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.panel_Measure.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_Measure.Location = new System.Drawing.Point(838, 248);
+            this.panel_Measure.Location = new System.Drawing.Point(899, 248);
             this.panel_Measure.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel_Measure.Name = "panel_Measure";
             this.panel_Measure.Padding = new System.Windows.Forms.Padding(20);
@@ -328,7 +310,7 @@
             this.listBox_Measure.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.listBox_Measure.FormattingEnabled = true;
             this.listBox_Measure.ItemHeight = 20;
-            this.listBox_Measure.Location = new System.Drawing.Point(837, 61);
+            this.listBox_Measure.Location = new System.Drawing.Point(898, 61);
             this.listBox_Measure.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.listBox_Measure.Name = "listBox_Measure";
             this.listBox_Measure.Size = new System.Drawing.Size(177, 164);
@@ -339,7 +321,7 @@
             // 
             this.label_Measure.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label_Measure.AutoSize = true;
-            this.label_Measure.Location = new System.Drawing.Point(834, 37);
+            this.label_Measure.Location = new System.Drawing.Point(895, 37);
             this.label_Measure.Name = "label_Measure";
             this.label_Measure.Size = new System.Drawing.Size(89, 20);
             this.label_Measure.TabIndex = 27;
@@ -349,7 +331,7 @@
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(835, 354);
+            this.label1.Location = new System.Drawing.Point(896, 354);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(118, 20);
             this.label1.TabIndex = 30;
@@ -360,7 +342,7 @@
             this.listBox_NG.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.listBox_NG.FormattingEnabled = true;
             this.listBox_NG.ItemHeight = 20;
-            this.listBox_NG.Location = new System.Drawing.Point(838, 377);
+            this.listBox_NG.Location = new System.Drawing.Point(899, 377);
             this.listBox_NG.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.listBox_NG.Name = "listBox_NG";
             this.listBox_NG.Size = new System.Drawing.Size(177, 164);
@@ -371,7 +353,7 @@
             // 
             this.panel_NG.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.panel_NG.BackColor = System.Drawing.SystemColors.Control;
-            this.panel_NG.Location = new System.Drawing.Point(839, 549);
+            this.panel_NG.Location = new System.Drawing.Point(900, 549);
             this.panel_NG.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel_NG.Name = "panel_NG";
             this.panel_NG.Size = new System.Drawing.Size(176, 87);
@@ -380,8 +362,6 @@
             // btn_Batch_Search
             // 
             this.btn_Batch_Search.Font = new System.Drawing.Font("新細明體", 12F);
-            this.btn_Batch_Search.Location = new System.Drawing.Point(58, 536);
-            this.btn_Batch_Search.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Batch_Search.Location = new System.Drawing.Point(69, 537);
             this.btn_Batch_Search.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Batch_Search.Name = "btn_Batch_Search";
@@ -460,16 +440,16 @@
             this.panel1.Location = new System.Drawing.Point(338, 40);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1024, 699);
+            this.panel1.Size = new System.Drawing.Size(1085, 699);
             this.panel1.TabIndex = 23;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.btn_Load);
             this.groupBox1.Controls.Add(this.btn_Camera);
-            this.groupBox1.Location = new System.Drawing.Point(37, 59);
+            this.groupBox1.Location = new System.Drawing.Point(12, 59);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(256, 89);
+            this.groupBox1.Size = new System.Drawing.Size(309, 89);
             this.groupBox1.TabIndex = 47;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "圖片";
@@ -498,12 +478,30 @@
             this.label3.TabIndex = 21;
             this.label3.Text = "標準值:";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 8);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(876, 674);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Double_Click);
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Mose_Down);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Move);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(1374, 765);
+            this.ClientSize = new System.Drawing.Size(1435, 765);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_Batch_Search);
@@ -520,7 +518,6 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Close);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).EndInit();
@@ -529,6 +526,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
