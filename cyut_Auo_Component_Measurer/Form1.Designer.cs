@@ -63,16 +63,16 @@
             this.list_Of_Camera_Devices = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Load
@@ -237,6 +237,7 @@
             // 
             // btn_Measure_Standard
             // 
+            this.btn_Measure_Standard.Enabled = false;
             this.btn_Measure_Standard.Location = new System.Drawing.Point(18, 30);
             this.btn_Measure_Standard.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Measure_Standard.Name = "btn_Measure_Standard";
@@ -249,6 +250,7 @@
             // 
             // btn_Measure_Product
             // 
+            this.btn_Measure_Product.Enabled = false;
             this.btn_Measure_Product.Location = new System.Drawing.Point(158, 30);
             this.btn_Measure_Product.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Measure_Product.Name = "btn_Measure_Product";
@@ -361,6 +363,7 @@
             // 
             // btn_Batch_Search
             // 
+            this.btn_Batch_Search.Enabled = false;
             this.btn_Batch_Search.Font = new System.Drawing.Font("新細明體", 12F);
             this.btn_Batch_Search.Location = new System.Drawing.Point(69, 537);
             this.btn_Batch_Search.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -373,6 +376,7 @@
             // 
             // btn_Batch_Setting
             // 
+            this.btn_Batch_Setting.Enabled = false;
             this.btn_Batch_Setting.Font = new System.Drawing.Font("新細明體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btn_Batch_Setting.Location = new System.Drawing.Point(69, 589);
             this.btn_Batch_Setting.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -443,6 +447,24 @@
             this.panel1.Size = new System.Drawing.Size(1085, 699);
             this.panel1.TabIndex = 23;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 8);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(876, 674);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Double_Click);
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Mose_Down);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Move);
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.btn_Load);
@@ -478,24 +500,6 @@
             this.label3.TabIndex = 21;
             this.label3.Text = "標準值:";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 8);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(876, 674);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Double_Click);
-            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Mose_Down);
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_Move);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
@@ -523,10 +527,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

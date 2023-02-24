@@ -23,12 +23,17 @@ namespace cyut_Auo_Component_Measurer
         {
             Form1 f1 = (Form1)this.Owner;
 
+            if(numX.Value == 0 || numY.Value == 0)
+            {
+                MessageBox.Show("X 或 Y 不能為 0。");
+                return;
+            }
+
             f1.calibrationX = (int)numX.Value;
             f1.calibrationY = (int)numY.Value;
 
             f1.isDoCalibration = true;
             this.Close();
-
         }
 
         private void btn_Cancel_Click(object sender, EventArgs e)

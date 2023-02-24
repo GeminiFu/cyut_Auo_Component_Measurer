@@ -137,19 +137,19 @@ namespace cyut_Auo_Component_Measurer
 
 
             if (!Directory.Exists(path))
-                return "沒有找到資料夾。";
+                return "沒有找到資料夾 Setting。";
 
             if (!File.Exists(pathObjectSetG))
-                return "沒有找到 ObjectSetG。";
+                return "沒有找到檔案 ObjectSetG.json。";
 
             if (!File.Exists(pathDotGridImage))
-                return "沒有找到點圖。";
+                return "沒有找到圖片 Dot_Grid.png。";
 
             if (!File.Exists(pathCalibrationX))
-                return "沒有找到 X 文字檔。";
+                return "沒有找到檔案 Calibration_X.txt。";
 
             if (!File.Exists(pathCalibrationY))
-                return "沒有找到 Y 文字檔。";
+                return "沒有找到檔案 Calibration_Y.txt。";
 
             return ok;
         }
