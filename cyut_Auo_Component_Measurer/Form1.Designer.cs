@@ -268,7 +268,7 @@
             1,
             0,
             0,
-            65536});
+            131072});
             this.num_Threshold_NG.Location = new System.Drawing.Point(171, 118);
             this.num_Threshold_NG.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.num_Threshold_NG.Maximum = new decimal(new int[] {
@@ -281,10 +281,10 @@
             this.num_Threshold_NG.TabIndex = 22;
             this.num_Threshold_NG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.num_Threshold_NG.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
-            65536});
+            131072});
             // 
             // label_Threshold_NG
             // 

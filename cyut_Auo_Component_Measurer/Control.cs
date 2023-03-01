@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace cyut_Auo_Component_Measurer
 {
@@ -72,7 +73,7 @@ namespace cyut_Auo_Component_Measurer
 
             string path = Environment.CurrentDirectory;
             // load ObjectSetG, Dot grid
-            errorMessage = LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, path);
+            errorMessage = LoadLocalSetting(ref standard, ref ObjectSetG, ref dotGridImage, ref x, ref y, path);
 
             if (errorMessage != ok) //防呆
                 return errorMessage;
@@ -88,7 +89,7 @@ namespace cyut_Auo_Component_Measurer
 
         // 載入本地標準資料
         // 目的：載入本地的 ObjectSetG、Dot Grid Image、Calibration XY
-        internal string LoadLocalSetting(ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
+        internal string LoadLocalSetting(ref EImageBW8 standard, ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y, string selectedPath)
         {
             string errorMessage;
             string path = selectedPath;
@@ -100,6 +101,8 @@ namespace cyut_Auo_Component_Measurer
                 return errorMessage;
 
             path += "\\Setting";
+
+            standard.Load(path + "\\Standard.png");
 
             // ObjectSetG
             string jsonString = File.ReadAllText($@"{path}\ObjectSetG.json");
@@ -338,7 +341,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 string selectedPath = folderBrowserDialog1.SelectedPath;
 
-                errorMessage = LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, selectedPath);
+                errorMessage = LoadLocalSetting(ref standard, ref ObjectSetG, ref dotGridImage, ref x, ref y, selectedPath);
 
                 if (errorMessage != ok)
                     return errorMessage;
@@ -370,7 +373,7 @@ namespace cyut_Auo_Component_Measurer
             return OK;
         }
 
-        internal string LoadOldImage(ref EImageBW8 image, ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
+        internal string LoadOldImage(ref EImageBW8 imageStd, ref EImageBW8 image, ref ArrayList ObjectSetG, ref EImageBW8 dotGridImage, ref int x, ref int y)
         {
             string errorMessage = "";
 
@@ -387,11 +390,10 @@ namespace cyut_Auo_Component_Measurer
 
 
                 errorMessage = CheckLocalSetting(folderPath);
-
                 if (errorMessage != ok)
                     return errorMessage;
 
-                LoadLocalSetting(ref ObjectSetG, ref dotGridImage, ref x, ref y, folderPath);
+                LoadLocalSetting(ref imageStd, ref ObjectSetG, ref dotGridImage, ref x, ref y, folderPath);
             }
 
             return OK;
