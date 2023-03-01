@@ -296,7 +296,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // Inspect
-            Inspect(mmToPixel(num_Threshold_NG.Value));
+            Inspect((float)num_Threshold_NG.Value * EWorldShape1.XResolution);
 
             // View
             listBox_NG.Items.Clear();
@@ -428,7 +428,7 @@ namespace cyut_Auo_Component_Measurer
 
             BuildObjectSet(ObjectSetU, listBox_Measure);
 
-            Inspect(mmToPixel(num_Threshold_NG.Value));
+            Inspect((float)num_Threshold_NG.Value * EWorldShape1.XResolution);
 
             DrawAllNG();
 
@@ -510,16 +510,16 @@ namespace cyut_Auo_Component_Measurer
             {
                 NumericUpDown controlDiameter = (NumericUpDown)panel_Standard.Controls[1];
 
-                widthStd = mmToPixel(controlDiameter.Value);
-                heightStd = mmToPixel(controlDiameter.Value);
+                widthStd = (float)controlDiameter.Value * EWorldShape1.XResolution;
+                heightStd = (float)controlDiameter.Value * EWorldShape1.YResolution;
             }
             else
             {
                 NumericUpDown controlWidth = (NumericUpDown)panel_Standard.Controls[1];
                 NumericUpDown controlHeight = (NumericUpDown)panel_Standard.Controls[4];
 
-                widthStd = mmToPixel(controlWidth.Value);
-                heightStd = mmToPixel(controlHeight.Value);
+                widthStd = (float)controlWidth.Value * EWorldShape1.XResolution;
+                heightStd = (float)controlHeight.Value * EWorldShape1.YResolution;
             }
 
             foreach (var index in batchIndexes)
@@ -2203,7 +2203,7 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 2);
+            decimal number = (decimal)value;
             label_Value.Text = number.ToString() + " mm";
             label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
@@ -2223,7 +2223,7 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
-            decimal number = decimal.Round((decimal)value, 2);
+            decimal number = (decimal)value;
             label_Value.Text = number.ToString() + " mm";
             label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelNGIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
