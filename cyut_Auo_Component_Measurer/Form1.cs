@@ -32,13 +32,14 @@ namespace cyut_Auo_Component_Measurer
 
         EImageC24 EC24Image1 = new EImageC24();
         EImageBW8 EBW8Image1 = new EImageBW8();
-        EImageBW8 EBW8Imagetemp = new EImageBW8();
+        EImageBW8 EBW8ImageTemp = new EImageBW8();
 
         bool isGolden;
         // --------------------------Instance--------------------------
         Control c_control = new Control();
 
         // --------------------------View--------------------------
+        EImageBW8 EBW8ImageView = new EImageBW8();
         float viewRatio;
         Graphics graphics;
         ToolStripMenuItem imageTranseformMenuItem;
@@ -1961,7 +1962,18 @@ namespace cyut_Auo_Component_Measurer
 
             viewRatio = CalcRatioWithPictureBox(pictureBox1, image.Width, image.Height);
 
-            image.Draw(graphics, viewRatio);
+            EBW8ImageView.SetSize(pictureBox1.Width, pictureBox1.Height);
+            EBW8ImageTemp.SetSize(image);
+
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, image, EBW8ImageTemp);
+            EasyImage.ScaleRotate(EBW8ImageTemp, 0, 0, 0, 0, viewRatio, viewRatio, 0, EBW8ImageView, 0);
+            EBW8ImageTemp.SetSize(EBW8ImageView);
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8ImageView, EBW8ImageTemp);
+
+            EasyImage.Copy(EBW8ImageTemp, EBW8ImageView);
+
+            EBW8ImageView.Draw(graphics);
+            //image.Draw(graphics, viewRatio);
 
             return OK;
         }
@@ -2226,20 +2238,20 @@ namespace cyut_Auo_Component_Measurer
 
         private void image_Flip_Horizontal_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EBW8Imagetemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
+            EBW8ImageTemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
 
-            EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, -1.0f, 1.0f, 0, EBW8Imagetemp, 0);
-            EasyImage.Copy(EBW8Imagetemp, EBW8Image1);
+            EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, -1.0f, 1.0f, 0, EBW8ImageTemp, 0);
+            EasyImage.Copy(EBW8ImageTemp, EBW8Image1);
 
             DrawEBW8Image(ref EBW8Image1);
         }
 
         private void image_Flip_Verticle_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EBW8Imagetemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
+            EBW8ImageTemp.SetSize(EBW8Image1.Width, EBW8Image1.Height);
 
-            EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1.0f, -1.0f, 0, EBW8Imagetemp, 0);
-            EasyImage.Copy(EBW8Imagetemp, EBW8Image1);
+            EasyImage.ScaleRotate(EBW8Image1, EBW8Image1Center.X, EBW8Image1Center.Y, EBW8Image1Center.X, EBW8Image1Center.Y, 1.0f, -1.0f, 0, EBW8ImageTemp, 0);
+            EasyImage.Copy(EBW8ImageTemp, EBW8Image1);
 
             DrawEBW8Image(ref EBW8Image1);
 
