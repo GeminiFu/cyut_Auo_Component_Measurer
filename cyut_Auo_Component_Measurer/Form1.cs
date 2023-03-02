@@ -387,7 +387,11 @@ namespace cyut_Auo_Component_Measurer
 
             EmguCV_Camera();
 
-            if(isStreaming == false && capture != null)
+            Thread.Sleep(500);
+
+            EmguCV_Camera();
+
+            if (isStreaming == false && capture != null)
             {
                 btn_Adjust_Click(sender, e);
             }
@@ -454,6 +458,10 @@ namespace cyut_Auo_Component_Measurer
         // 存檔
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
+            if(isStreaming == true)
+            {
+                btn_Use_Camera_Click(new object(), new EventArgs());
+            }
             Detect(ref EBW8Image1);
 
             BuildObjectSet(ObjectSetU, listBox_Measure);
