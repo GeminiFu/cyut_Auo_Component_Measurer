@@ -195,6 +195,8 @@ namespace cyut_Auo_Component_Measurer
 
                 if (errorMessage != c_control.OK)
                     MessageBox.Show(errorMessage);
+
+                MessageBox.Show("儲存成功。");
             }
         }
 
@@ -313,7 +315,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             // Inspect
-            Inspect((float)num_Threshold_NG.Value * EWorldShape1.XResolution);
+            Inspect((float)num_Threshold_NG.Value);
 
             // View
             listBox_NG.Items.Clear();
@@ -377,7 +379,7 @@ namespace cyut_Auo_Component_Measurer
         {
             if (EWorldShape1.CalibrationSucceeded() == false)
             {
-                MessageBox.Show("請先設定 Dot Grid");
+                MessageBox.Show("請先設定 Dot Grid。");
 
                 dotGridToolStripMenuItem_Click(sender, e);
                 return;
@@ -385,6 +387,10 @@ namespace cyut_Auo_Component_Measurer
 
             EmguCV_Camera();
 
+            if(isStreaming == false)
+            {
+                btn_Adjust_Click(sender, e);
+            }
         }
 
         // 校正圖像
@@ -453,7 +459,7 @@ namespace cyut_Auo_Component_Measurer
 
 
 
-            Inspect((float)num_Threshold_NG.Value * EWorldShape1.XResolution);
+            Inspect((float)num_Threshold_NG.Value);
 
             DrawAllNG();
 
@@ -509,7 +515,7 @@ namespace cyut_Auo_Component_Measurer
             ArrayList TempObjectSet;
             ObjectInfo selectedObjectInfo;
             ObjectInfo objectInfo;
-            float threshold = 5;
+            float threshold = 1;
 
             if (isGolden)
             {
@@ -557,16 +563,16 @@ namespace cyut_Auo_Component_Measurer
             {
                 NumericUpDown controlDiameter = (NumericUpDown)panel_Standard.Controls[1];
 
-                widthStd = (float)controlDiameter.Value * EWorldShape1.XResolution;
-                heightStd = (float)controlDiameter.Value * EWorldShape1.YResolution;
+                widthStd = (float)controlDiameter.Value;
+                heightStd = (float)controlDiameter.Value;
             }
             else
             {
                 NumericUpDown controlWidth = (NumericUpDown)panel_Standard.Controls[1];
                 NumericUpDown controlHeight = (NumericUpDown)panel_Standard.Controls[4];
 
-                widthStd = (float)controlWidth.Value * EWorldShape1.XResolution;
-                heightStd = (float)controlHeight.Value * EWorldShape1.YResolution;
+                widthStd = (float)controlWidth.Value;
+                heightStd = (float)controlHeight.Value;
             }
 
             int threashold = 10;
@@ -852,8 +858,6 @@ namespace cyut_Auo_Component_Measurer
                 }
                 btn_Batch_Search.Enabled = false;
                 btn_Batch_Setting.Enabled = false;
-
-                btn_Adjust_Click(new object(), new EventArgs());
             }
 
             isStreaming = !isStreaming;
@@ -1486,7 +1490,7 @@ namespace cyut_Auo_Component_Measurer
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
 
             // 如果沒找到
-            if (EPatternFinder1FoundPatterns[0].Score < 0.9)
+            if (EPatternFinder1FoundPatterns[0].Score < 0.8)
             {
                 EPatternFinder1FoundPatterns[0].Draw(graphics, viewRatio);
                 return "找不到類似圖形，請確認圖像是否正確。";
