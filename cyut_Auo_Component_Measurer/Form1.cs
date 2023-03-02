@@ -2321,7 +2321,7 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
-            decimal number = (decimal)value;
+            decimal number = (decimal)Math.Round(value, 2);
             label_Value.Text = number.ToString() + " mm";
             label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
@@ -2341,7 +2341,7 @@ namespace cyut_Auo_Component_Measurer
             label_Title.Width = labelText.Length * (int)Math.Round((double)Font.Size * 2) + 3;
 
             Label label_Value = new Label();
-            decimal number = (decimal)value;
+            decimal number = (decimal)Math.Round(value, 2);
             label_Value.Text = number.ToString() + " mm";
             label_Value.Location = new Point(5 + label_Title.Width + 10, 10 + panelNGIndex * 30);
             label_Value.BackColor = Color.FromArgb(255, 224, 192);
