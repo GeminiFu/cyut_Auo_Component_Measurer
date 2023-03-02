@@ -280,7 +280,7 @@
             this.num_Threshold_NG.TabIndex = 22;
             this.num_Threshold_NG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.num_Threshold_NG.Value = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             65536});
@@ -362,7 +362,6 @@
             // 
             // btn_Batch_Search
             // 
-            this.btn_Batch_Search.Enabled = false;
             this.btn_Batch_Search.Font = new System.Drawing.Font("新細明體", 12F);
             this.btn_Batch_Search.Location = new System.Drawing.Point(69, 537);
             this.btn_Batch_Search.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -371,6 +370,7 @@
             this.btn_Batch_Search.TabIndex = 44;
             this.btn_Batch_Search.Text = "搜尋相同尺寸";
             this.btn_Batch_Search.UseVisualStyleBackColor = true;
+            this.btn_Batch_Search.Visible = false;
             this.btn_Batch_Search.Click += new System.EventHandler(this.btn_Batch_Search_Click);
             // 
             // btn_Batch_Setting
@@ -384,6 +384,7 @@
             this.btn_Batch_Setting.TabIndex = 39;
             this.btn_Batch_Setting.Text = "批次設定尺寸";
             this.btn_Batch_Setting.UseVisualStyleBackColor = true;
+            this.btn_Batch_Setting.Visible = false;
             this.btn_Batch_Setting.Click += new System.EventHandler(this.btn_Batch_Setting_Click);
             // 
             // panel_Standard

@@ -387,7 +387,7 @@ namespace cyut_Auo_Component_Measurer
 
             EmguCV_Camera();
 
-            if(isStreaming == false)
+            if(isStreaming == false && capture != null)
             {
                 btn_Adjust_Click(sender, e);
             }
@@ -441,7 +441,8 @@ namespace cyut_Auo_Component_Measurer
             isGolden = true;
 
             btn_Measure_Product.Enabled = true;
-            btn_Batch_Search.Enabled = true;
+            btn_Batch_Search.Visible = true;
+            btn_Batch_Setting.Visible = true;
         }
 
         // 偵測物件
@@ -498,6 +499,9 @@ namespace cyut_Auo_Component_Measurer
             }
 
             isGolden = false;
+
+            btn_Batch_Search.Visible = false;
+            btn_Batch_Setting.Visible = false;
         }
 
         // -------------------------------Batch-------------------------------
@@ -856,8 +860,9 @@ namespace cyut_Auo_Component_Measurer
                 {
                     btn_Measure_Product.Enabled = true;
                 }
-                btn_Batch_Search.Enabled = false;
-                btn_Batch_Setting.Enabled = false;
+
+                btn_Batch_Search.Visible = false;
+                btn_Batch_Setting.Visible = false;
             }
 
             isStreaming = !isStreaming;
@@ -1813,7 +1818,11 @@ namespace cyut_Auo_Component_Measurer
                 if (objectStandard == null)
                 {
                     objectTest.CheckResult = 1;
+
+                    ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+
                     NGIndex.Add(i);
+                    
                     continue;
                 }
 
