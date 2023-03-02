@@ -280,10 +280,10 @@
             this.num_Threshold_NG.TabIndex = 22;
             this.num_Threshold_NG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.num_Threshold_NG.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
-            131072});
+            65536});
             // 
             // label_Threshold_NG
             // 

@@ -26,5 +26,6 @@ namespace cyut_Auo_Component_Measurer
         public int CheckResult { get; set; }
 
         public uint ElementIndex { get; set; }
+        public uint Area { get; set; }
     }
 }
