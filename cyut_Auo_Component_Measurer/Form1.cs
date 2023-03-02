@@ -384,6 +384,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             EmguCV_Camera();
+
         }
 
         // 校正圖像
@@ -823,7 +824,7 @@ namespace cyut_Auo_Component_Measurer
 
                 capture.Pause();
 
-                Thread.Sleep(200);
+                Thread.Sleep(500);
 
                 // bitmap to EImageBW8
                 BitmapToEImageBW8(bmp, ref EBW8Image1);
@@ -849,6 +850,8 @@ namespace cyut_Auo_Component_Measurer
                 }
                 btn_Batch_Search.Enabled = false;
                 btn_Batch_Setting.Enabled = false;
+
+                btn_Adjust_Click(new object(), new EventArgs());
             }
 
             isStreaming = !isStreaming;

@@ -59,7 +59,6 @@
             this.btn_Batch_Search = new System.Windows.Forms.Button();
             this.btn_Batch_Setting = new System.Windows.Forms.Button();
             this.panel_Standard = new System.Windows.Forms.Panel();
-            this.btn_Adjust = new System.Windows.Forms.Button();
             this.list_Of_Camera_Devices = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -77,7 +76,7 @@
             // 
             // btn_Load
             // 
-            this.btn_Load.Location = new System.Drawing.Point(32, 30);
+            this.btn_Load.Location = new System.Drawing.Point(18, 30);
             this.btn_Load.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Load.Name = "btn_Load";
             this.btn_Load.Size = new System.Drawing.Size(100, 40);
@@ -89,7 +88,7 @@
             // 
             // btn_Camera
             // 
-            this.btn_Camera.Location = new System.Drawing.Point(143, 30);
+            this.btn_Camera.Location = new System.Drawing.Point(139, 30);
             this.btn_Camera.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Camera.Name = "btn_Camera";
             this.btn_Camera.Size = new System.Drawing.Size(159, 40);
@@ -396,18 +395,6 @@
             this.panel_Standard.Size = new System.Drawing.Size(226, 89);
             this.panel_Standard.TabIndex = 23;
             // 
-            // btn_Adjust
-            // 
-            this.btn_Adjust.Location = new System.Drawing.Point(58, 161);
-            this.btn_Adjust.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btn_Adjust.Name = "btn_Adjust";
-            this.btn_Adjust.Size = new System.Drawing.Size(210, 40);
-            this.btn_Adjust.TabIndex = 45;
-            this.btn_Adjust.Text = "校正影像";
-            this.btn_Adjust.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btn_Adjust.UseVisualStyleBackColor = true;
-            this.btn_Adjust.Click += new System.EventHandler(this.btn_Adjust_Click);
-            // 
             // list_Of_Camera_Devices
             // 
             this.list_Of_Camera_Devices.FormattingEnabled = true;
@@ -469,7 +456,7 @@
             // 
             this.groupBox1.Controls.Add(this.btn_Load);
             this.groupBox1.Controls.Add(this.btn_Camera);
-            this.groupBox1.Location = new System.Drawing.Point(12, 59);
+            this.groupBox1.Location = new System.Drawing.Point(12, 77);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(309, 89);
             this.groupBox1.TabIndex = 47;
@@ -483,7 +470,7 @@
             this.groupBox2.Controls.Add(this.num_Threshold_NG);
             this.groupBox2.Controls.Add(this.label_Threshold_NG);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(12, 208);
+            this.groupBox2.Location = new System.Drawing.Point(12, 186);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(309, 161);
             this.groupBox2.TabIndex = 48;
@@ -512,7 +499,6 @@
             this.Controls.Add(this.list_Of_Camera_Devices);
             this.Controls.Add(this.btn_Batch_Setting);
             this.Controls.Add(this.panel_Standard);
-            this.Controls.Add(this.btn_Adjust);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.label3);
@@ -560,7 +546,6 @@
         private System.Windows.Forms.Button btn_Batch_Search;
         private System.Windows.Forms.Button btn_Batch_Setting;
         private System.Windows.Forms.Panel panel_Standard;
-        private System.Windows.Forms.Button btn_Adjust;
         private System.Windows.Forms.ComboBox list_Of_Camera_Devices;
         private System.Windows.Forms.ToolStripMenuItem Menu_Load_Old_Image;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
