@@ -88,12 +88,12 @@
             // 
             // btn_Camera
             // 
-            this.btn_Camera.Location = new System.Drawing.Point(139, 30);
+            this.btn_Camera.Location = new System.Drawing.Point(171, 30);
             this.btn_Camera.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btn_Camera.Name = "btn_Camera";
-            this.btn_Camera.Size = new System.Drawing.Size(159, 40);
+            this.btn_Camera.Size = new System.Drawing.Size(100, 40);
             this.btn_Camera.TabIndex = 2;
-            this.btn_Camera.Text = "camera / capture";
+            this.btn_Camera.Text = "相機截圖";
             this.btn_Camera.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btn_Camera.UseVisualStyleBackColor = true;
             this.btn_Camera.Click += new System.EventHandler(this.btn_Use_Camera_Click);

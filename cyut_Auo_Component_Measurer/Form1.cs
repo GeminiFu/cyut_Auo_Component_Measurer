@@ -2477,11 +2477,55 @@ namespace cyut_Auo_Component_Measurer
         }
         private void GetCapture()
         {
-            EmguCV_Camera();
+            if (isStreaming)
+            {
+                EmguCV_Camera();
+            }
 
-            Thread.Sleep(500);
+            if (capture == null)
+            {
+                capture = new VideoCapture(0, VideoCapture.API.DShow);
+                capture.Set(Emgu.CV.CvEnum.CapProp.FrameWidth, 4000);
+                capture.Set(Emgu.CV.CvEnum.CapProp.FrameHeight, 3000);
+            }
 
-            EmguCV_Camera();
+            if (capture.IsOpened)
+            {
+                Mat m = new Mat();
+                try
+                {
+                    capture.Retrieve(m);
+                    bmp = m.ToBitmap(); //不能使用 new Bitmap(m.Bitmap)
+
+
+                    BitmapToEImageBW8(bmp, ref EBW8Image1);
+
+                }
+                catch { }
+            }
+            // Unwarp
+            UnwarpEBW8Image1();
+
+            // Init
+            ProductDataReset();
+
+            ImageRotate(imageTranseformMenuItem, new EventArgs());
+
+            DrawEBW8Image(ref EBW8Image1);
+
+            btn_Measure_Standard.Enabled = true;
+            if (ObjectSetG == null)
+            {
+                btn_Measure_Product.Enabled = false;
+            }
+            else
+            {
+                btn_Measure_Product.Enabled = true;
+            }
+
+            btn_Batch_Search.Visible = false;
+            btn_Batch_Setting.Visible = false;
+
         }
         private void MeasureStdClickView()
         {
