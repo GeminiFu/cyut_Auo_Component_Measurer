@@ -119,7 +119,7 @@ namespace cyut_Auo_Component_Measurer
         internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
         public int calibrationX = 5;
         public int calibrationY = 5;
-        public bool isDoCalibration;
+        public bool isDoCalibration = false;
 
         // --------------------------Picturebox--------------------------
         int mutiple = 1;
@@ -139,25 +139,31 @@ namespace cyut_Auo_Component_Measurer
 
             string errorMessage;
 
-            graphics = pictureBox1.CreateGraphics();
-            imageTranseformMenuItem = image_Rotate_0_toolStripMenuItem;
-            pictureBox1.MouseWheel += pictureBox_Mouse_Wheel;
+
+            // Learn
+            errorMessage = Learn();
+
+            FormInitialize();
 
             // 初始化設定
             errorMessage = c_control.InitializeSetting(ref EBW8ImageStd, ref ObjectSetG, ref EBW8ImageDotGrid, ref calibrationX, ref calibrationY);
 
             if (errorMessage != c_control.OK)
+            {
                 MessageBox.Show("請設定 點圖校正 和 標準數據 並存檔。");
+                return;
+            }
             //Console.WriteLine(errorMessage);
 
             // Calibration
             Calibration(ref EBW8ImageDotGrid);
+        }
 
-            // Learn
-            errorMessage = Learn();
-
-            if (errorMessage != OK)
-                MessageBox.Show(errorMessage);
+        private void FormInitialize()
+        {
+            graphics = pictureBox1.CreateGraphics();
+            imageTranseformMenuItem = image_Rotate_0_toolStripMenuItem;
+            pictureBox1.MouseWheel += pictureBox_Mouse_Wheel;
         }
 
 
@@ -190,7 +196,10 @@ namespace cyut_Auo_Component_Measurer
                 errorMessage = c_control.MenuSaveSetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
                 if (errorMessage != c_control.OK)
+                {
                     MessageBox.Show(errorMessage);
+                    return;
+                }
 
                 MessageBox.Show("儲存成功。");
             }
@@ -203,7 +212,10 @@ namespace cyut_Auo_Component_Measurer
             errorMessage = c_control.MenuLoadSetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
             if (errorMessage != c_control.OK)
+            {
                 MessageBox.Show(errorMessage);
+                return;
+            }
         }
 
         private void dotGridToolStripMenuItem_Click(object sender, EventArgs e)
