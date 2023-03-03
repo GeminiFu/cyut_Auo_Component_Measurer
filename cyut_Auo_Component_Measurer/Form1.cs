@@ -150,13 +150,7 @@ namespace cyut_Auo_Component_Measurer
             //Console.WriteLine(errorMessage);
 
             // Calibration
-            if (EBW8ImageDotGrid.IsVoid == false)
-            {
-                EImageBW8 calibrationImage = new EImageBW8(EBW8ImageDotGrid);
-
-                EWorldShape1.SetSensorSize(calibrationImage.Width, calibrationImage.Height);
-                EWorldShape1.AutoCalibrateDotGrid(calibrationImage, calibrationX, calibrationY, false);
-            }
+            Calibration(ref EBW8ImageDotGrid);
 
             // Learn
             errorMessage = Learn();
@@ -164,6 +158,7 @@ namespace cyut_Auo_Component_Measurer
             if (errorMessage != OK)
                 MessageBox.Show(errorMessage);
         }
+
 
         private void Form_Close(object sender, FormClosedEventArgs e)
         {
@@ -341,25 +336,26 @@ namespace cyut_Auo_Component_Measurer
         // 清空上一個 product 的資料
         private void btn_Load_Click(object sender, EventArgs e)
         {
-            string errorMessage;
+            string message;
 
-            errorMessage = c_control.LoadEImageBW8(ref EBW8Image1);
+            message = c_control.LoadEImageBW8(ref EBW8Image1);
 
-            if (errorMessage != c_control.OK)
+            if (message != c_control.OK)
             {
-                MessageBox.Show(errorMessage);
+                MessageBox.Show(message);
                 return;
             }
 
-            ProductDataReset();
-
             ImageRotate(imageTranseformMenuItem, e);
 
-            errorMessage = DrawEBW8Image(ref EBW8Image1);
+            DrawEBW8Image(ref EBW8Image1);
 
-            if (errorMessage != OK)
-                MessageBox.Show(errorMessage);
+            ProductDataReset();
+            pictureClickView();
+        }
 
+        private void pictureClickView()
+        {
             btn_Measure_Standard.Enabled = true;
             if (ObjectSetG == null)
             {
@@ -369,8 +365,10 @@ namespace cyut_Auo_Component_Measurer
             {
                 btn_Measure_Product.Enabled = true;
             }
-            btn_Batch_Search.Enabled = false;
-            btn_Batch_Setting.Enabled = false;
+
+            btn_Batch_Search.Visible = false;
+            btn_Batch_Setting.Visible = false;
+
         }
 
 
@@ -385,17 +383,15 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            EmguCV_Camera();
-
-            Thread.Sleep(500);
-
-            EmguCV_Camera();
+            //EmguCV_Camera();
+            GetCapture();
 
             if (isStreaming == false && capture != null)
             {
                 btn_Adjust_Click(sender, e);
             }
         }
+
 
         // 校正圖像
         // Drwa Image
@@ -444,9 +440,7 @@ namespace cyut_Auo_Component_Measurer
 
             isGolden = true;
 
-            btn_Measure_Product.Enabled = true;
-            btn_Batch_Search.Visible = true;
-            btn_Batch_Setting.Visible = true;
+            MeasureStdClickView();
         }
 
         // 偵測物件
@@ -458,7 +452,7 @@ namespace cyut_Auo_Component_Measurer
         // 存檔
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
-            if(isStreaming == true)
+            if (isStreaming == true)
             {
                 btn_Use_Camera_Click(new object(), new EventArgs());
             }
@@ -474,32 +468,14 @@ namespace cyut_Auo_Component_Measurer
 
             DetectLearn(ref EBW8ImageStd);
 
-            bool isOK = true;
 
-            for (int i = 0; i < ObjectSetInspect.Length; i++)
-            {
-                if (ObjectSetInspect[i] == null)
-                {
-                    ECodedElement elementStd = codedLearnSelection.GetElement((uint)i);
-
-                    codedImageStd.Draw(graphics, elementStd, viewRatio);
-
-                    elementStd.Dispose();
-
-                    isOK = false;
-                }
-            }
+            bool isOK = DrawNotInspect();
 
             // Save File
             if (NGIndex.Count == 0 && isOK)
             {
                 c_control.SaveInspectResult(ref EBW8Image1, true);
-                ControlPaint.DrawBorder(graphics, pictureBox1.ClientRectangle
-                    , Color.LightGreen, 10, ButtonBorderStyle.Solid
-                    , Color.LightGreen, 10, ButtonBorderStyle.Solid
-                    , Color.LightGreen, 10, ButtonBorderStyle.Solid
-                    , Color.LightGreen, 10, ButtonBorderStyle.Solid
-                );
+                OKView();
             }
             else
             {
@@ -507,9 +483,7 @@ namespace cyut_Auo_Component_Measurer
             }
 
             isGolden = false;
-
-            btn_Batch_Search.Visible = false;
-            btn_Batch_Setting.Visible = false;
+            MeasureProductClickView();
         }
 
         // -------------------------------Batch-------------------------------
@@ -545,8 +519,6 @@ namespace cyut_Auo_Component_Measurer
             for (int i = 0; i < TempObjectSet.Count; i++)
             {
                 objectInfo = (ObjectInfo)TempObjectSet[i];
-
-
                 if (
                      objectInfo.ShapeName == selectedObjectInfo.ShapeName &&
                      Math.Abs(selectedObjectInfo.width - objectInfo.width) < threshold &&
@@ -571,7 +543,8 @@ namespace cyut_Auo_Component_Measurer
             float widthStd;
             float heightStd;
 
-            if (panel_Standard.Controls.Count == 2)
+            // 取得設定值
+            if (panel_Standard.Controls.Count == 3)
             {
                 NumericUpDown controlDiameter = (NumericUpDown)panel_Standard.Controls[1];
 
@@ -587,13 +560,14 @@ namespace cyut_Auo_Component_Measurer
                 heightStd = (float)controlHeight.Value;
             }
 
-            int threashold = 10;
+            // 批次設定
+            float threashold = 0.5f;
 
             foreach (var index in batchIndexes)
             {
                 ObjectInfo objectInfo = (ObjectInfo)ObjectSetG[index];
 
-                if(Math.Abs(objectInfo.widthStd - widthStd) < threashold)
+                if (Math.Abs(objectInfo.widthStd - widthStd) < threashold)
                 {
                     objectInfo.widthStd = widthStd;
                 }
@@ -643,29 +617,33 @@ namespace cyut_Auo_Component_Measurer
             {
                 ObjectInfo selectedObject = (ObjectInfo)TempObjectSet[elementIndex];
 
-                // listBox_Measure
-                for (int i = 0; i < listBox_Measure.Items.Count; i++)
-                {
-                    if (int.Parse(listBox_Measure.Items[i].ToString().Substring(0, 3)) == elementIndex)
-                    {
-                        listBox_Measure.SelectedIndex = i;
-                    }
-                }
+                SearchIndexInListBox(listBox_Measure, elementIndex);
 
                 // listBox_NG
                 listBox_NG.SelectedIndex = -1;
 
-                for (int i = 0; i < NGIndex.Count; i++)
-                {
-                    if (NGIndex[i] == elementIndex)
-                    {
-                        listBox_NG.SelectedIndex = i;
-                    }
-                }
+                //for (int i = 0; i < NGIndex.Count; i++)
+                //{
+                //    if (NGIndex[i] == elementIndex)
+                //    {
+                //        listBox_NG.SelectedIndex = i;
+                //    }
+                //}
+                SearchIndexInListBox(listBox_NG, elementIndex);
 
             }
         }
 
+        private void SearchIndexInListBox(ListBox listBox, int Index)
+        {
+            for (int i = 0; i < listBox.Items.Count; i++)
+            {
+                if (int.Parse(listBox.Items[i].ToString().Substring(0, 3)) == Index)
+                {
+                    listBox.SelectedIndex = i;
+                }
+            }
+        }
 
 
         private void pictureBox_Mouse_Wheel(object sender, MouseEventArgs e)
@@ -841,7 +819,7 @@ namespace cyut_Auo_Component_Measurer
 
                 Thread.Sleep(500);
 
-                if(bmp.Width * bmp.Height < 1000000)
+                if (bmp.Width * bmp.Height < 1000000)
                 {
                     return "畫素少於一百萬。";
                 }
@@ -1830,7 +1808,7 @@ namespace cyut_Auo_Component_Measurer
                     ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
 
                     NGIndex.Add(i);
-                    
+
                     continue;
                 }
 
@@ -1861,7 +1839,7 @@ namespace cyut_Auo_Component_Measurer
                 }
 
                 // 比對 Area
-                if(objectTest.Area > objectStandard.Area * 0.95)
+                if (objectTest.Area > objectStandard.Area * 0.95)
                 {
                     objectTest.CheckResult = 0;
                 }
@@ -2485,6 +2463,69 @@ namespace cyut_Auo_Component_Measurer
 
             DrawEBW8Image(ref EBW8Image1);
 
+        }
+
+
+
+
+        // -------------------------------Clean-------------------------------
+
+        private void Calibration(ref EImageBW8 dotGridImage)
+        {
+            EWorldShape1.SetSensorSize(dotGridImage.Width, dotGridImage.Height);
+            EWorldShape1.AutoCalibrateDotGrid(dotGridImage, calibrationX, calibrationY, false);
+        }
+        private void GetCapture()
+        {
+            EmguCV_Camera();
+
+            Thread.Sleep(500);
+
+            EmguCV_Camera();
+        }
+        private void MeasureStdClickView()
+        {
+            btn_Measure_Product.Enabled = true;
+            btn_Batch_Search.Visible = true;
+            btn_Batch_Setting.Visible = true;
+        }
+
+        private void MeasureProductClickView()
+        {
+            btn_Batch_Search.Visible = false;
+            btn_Batch_Setting.Visible = false;
+        }
+
+
+        private bool DrawNotInspect()
+        {
+            bool isOK = true;
+
+            for (int i = 0; i < ObjectSetInspect.Length; i++)
+            {
+                if (ObjectSetInspect[i] == null)
+                {
+                    ECodedElement elementStd = codedLearnSelection.GetElement((uint)i);
+
+                    codedImageStd.Draw(graphics, elementStd, viewRatio);
+
+                    elementStd.Dispose();
+
+                    isOK = false;
+                }
+            }
+
+            return isOK;
+        }
+
+        private void OKView()
+        {
+            ControlPaint.DrawBorder(graphics, pictureBox1.ClientRectangle
+                , Color.LightGreen, 10, ButtonBorderStyle.Solid
+                , Color.LightGreen, 10, ButtonBorderStyle.Solid
+                , Color.LightGreen, 10, ButtonBorderStyle.Solid
+                , Color.LightGreen, 10, ButtonBorderStyle.Solid
+            );
         }
 
     }
