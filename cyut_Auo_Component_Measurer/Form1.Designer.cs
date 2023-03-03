@@ -65,6 +65,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox_Direct_Measure = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_Threshold_NG)).BeginInit();
@@ -161,8 +162,8 @@
             // dotGridToolStripMenuItem
             // 
             this.dotGridToolStripMenuItem.Name = "dotGridToolStripMenuItem";
-            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
-            this.dotGridToolStripMenuItem.Text = "Dot Grid";
+            this.dotGridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dotGridToolStripMenuItem.Text = "點圖校正";
             this.dotGridToolStripMenuItem.Click += new System.EventHandler(this.dotGridToolStripMenuItem_Click);
             // 
             // 圖像翻轉ToolStripMenuItem
@@ -455,11 +456,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox_Direct_Measure);
             this.groupBox1.Controls.Add(this.btn_Load);
             this.groupBox1.Controls.Add(this.btn_Camera);
-            this.groupBox1.Location = new System.Drawing.Point(12, 77);
+            this.groupBox1.Location = new System.Drawing.Point(12, 63);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(309, 89);
+            this.groupBox1.Size = new System.Drawing.Size(309, 106);
             this.groupBox1.TabIndex = 47;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "圖片";
@@ -477,6 +479,16 @@
             this.groupBox2.TabIndex = 48;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "量測";
+            // 
+            // checkBox_Direct_Measure
+            // 
+            this.checkBox_Direct_Measure.AutoSize = true;
+            this.checkBox_Direct_Measure.Location = new System.Drawing.Point(211, 76);
+            this.checkBox_Direct_Measure.Name = "checkBox_Direct_Measure";
+            this.checkBox_Direct_Measure.Size = new System.Drawing.Size(92, 24);
+            this.checkBox_Direct_Measure.TabIndex = 49;
+            this.checkBox_Direct_Measure.Text = "直接測量";
+            this.checkBox_Direct_Measure.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -516,6 +528,7 @@
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -563,6 +576,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox checkBox_Direct_Measure;
     }
 }
 

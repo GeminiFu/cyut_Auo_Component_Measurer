@@ -12,6 +12,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
@@ -375,6 +376,8 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Use_Camera_Click(object sender, EventArgs e)
         {
+            string message;
+
             if (EWorldShape1.CalibrationSucceeded() == false)
             {
                 MessageBox.Show("請先設定 Dot Grid。");
@@ -388,14 +391,25 @@ namespace cyut_Auo_Component_Measurer
 
             if (isStreaming == false && capture != null)
             {
-                btn_Adjust_Click(sender, e);
+                message = btn_Adjust_Click(sender, e);
+
+                if(message != OK)
+                {
+                    MessageBox.Show(message);
+                    return;
+                }
+            }
+
+            if (checkBox_Direct_Measure.Checked)
+            {
+                btn_Measure_Product_Click(sender, e);
             }
         }
 
 
         // 校正圖像
         // Drwa Image
-        private void btn_Adjust_Click(object sender, EventArgs e)
+        private string btn_Adjust_Click(object sender, EventArgs e)
         {
             string message;
 
@@ -403,8 +417,7 @@ namespace cyut_Auo_Component_Measurer
 
             if (message != OK)
             {
-                MessageBox.Show(message);
-                return;
+                return message;
             }
 
             // 畫出 EBW8Image1
@@ -414,6 +427,8 @@ namespace cyut_Auo_Component_Measurer
             // 畫出 finder
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
             EPatternFinder1FoundPatterns[0].Draw(graphics, viewRatio);
+
+            return OK;
         }
 
         // -------------------------------Measure-------------------------------
@@ -2494,6 +2509,7 @@ namespace cyut_Auo_Component_Measurer
                 Mat m = new Mat();
                 try
                 {
+                    capture.Retrieve(m);
                     capture.Retrieve(m);
                     bmp = m.ToBitmap(); //不能使用 new Bitmap(m.Bitmap)
 
