@@ -115,6 +115,12 @@ namespace cyut_Auo_Component_Measurer
 
         List<int> NGIndex = new List<int>();
 
+        ObjectInfo[] ObjectSetInspect;
+        bool[] isFindTheSameList;
+        List<uint> missingList = new List<uint>();
+        List<uint> areaErrorList = new List<uint>();
+        List<uint> sizeErrorList = new List<uint>();
+
         // --------------------------Shape--------------------------
         EWorldShape EWorldShape1 = new EWorldShape();
         internal EImageBW8 EBW8ImageDotGrid = new EImageBW8();
@@ -297,7 +303,7 @@ namespace cyut_Auo_Component_Measurer
                 return;
             }
 
-            errorMessage = Detect(ref EBW8Image1);
+            errorMessage = Detect(ref codedImage1, ref coded1Selection, ref EBW8Image1);
 
             if (errorMessage != OK)
             {
@@ -459,7 +465,7 @@ namespace cyut_Auo_Component_Measurer
         // 存檔
         private void btn_Measure_Standard_Click(object sender, EventArgs e)
         {
-            Detect(ref EBW8Image1);
+            Detect(ref codedImage1, ref coded1Selection, ref EBW8Image1);
 
             BuildObjectSet(ObjectSetG, listBox_Measure);
 
@@ -490,7 +496,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 btn_Use_Camera_Click(new object(), new EventArgs());
             }
-            Detect(ref EBW8Image1);
+            Detect(ref codedImage1, ref coded1Selection, ref EBW8Image1);
 
             BuildObjectSet(ObjectSetU, listBox_Measure);
 
@@ -498,15 +504,15 @@ namespace cyut_Auo_Component_Measurer
 
             Inspect((float)num_Threshold_NG.Value);
 
-            DrawAllNG();
-
-            DetectLearn(ref EBW8ImageStd);
+            //DrawAllNG();
 
 
-            bool isOK = DrawNotInspect();
+            DrawNG();
+            //bool isOK = DrawNotInspect();
 
             // Save File
-            if (NGIndex.Count == 0 && isOK)
+            //if (NGIndex.Count == 0 && isOK)
+            if (NGIndex.Count == 0)
             {
                 c_control.SaveInspectResult(ref EBW8Image1, true);
                 OKView();
@@ -1621,15 +1627,16 @@ namespace cyut_Auo_Component_Measurer
         private ObjectInfo FindTheSameInObjectSetG(ObjectInfo objectTest)
         {
             ObjectInfo objectStandard;
-            float sameShapeThreshold = 2;
+            float widthThreshold = objectTest.width / 3;
+            float heightThreshold = objectTest.height / 3;
             int j = 0;
 
             do
             {
                 objectStandard = (ObjectInfo)ObjectSetG[j];
                 if (
-                     Math.Abs(objectTest.CenterX - objectStandard.CenterX) < sameShapeThreshold &&
-                     Math.Abs(objectTest.CenterY - objectStandard.CenterY) < sameShapeThreshold
+                     Math.Abs(objectTest.CenterX - objectStandard.CenterX) < widthThreshold &&
+                     Math.Abs(objectTest.CenterY - objectStandard.CenterY) < heightThreshold
                    )
                 {
                     break;
@@ -1645,6 +1652,8 @@ namespace cyut_Auo_Component_Measurer
             }
 
             ObjectSetInspect[j] = objectStandard;
+            isFindTheSameList[j] = true;
+
 
             return objectStandard;
         }
@@ -1652,8 +1661,8 @@ namespace cyut_Auo_Component_Measurer
 
         // -------------------------------Measure-------------------------------
         // -------------------------------Detect-------------------------------
-        internal string Detect(ref EImageBW8 image)
-        {
+        private string Detect(ref ECodedImage2 codedImage, ref EObjectSelection codedSelection, ref EImageBW8 image)
+        {   
             // 如果 EBW8Image1
             if (image.IsVoid)
             {
@@ -1665,22 +1674,24 @@ namespace cyut_Auo_Component_Measurer
             //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.WhiteLayerEncoded = true; //為初始設定
             //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.Mode = EGrayscaleSingleThreshold.MinResidue; //為初始設定
 
+
             // codedImage1 圖層
-            codedImage1Encoder.Encode(image, codedImage1);
+            codedImage1Encoder.Encode(image, codedImage);
 
             // codedImage1ObjectSelection 設定
-            coded1Selection.Clear();
-            coded1Selection.FeretAngle = 0.00f;
+            codedSelection.Clear();
+            codedSelection.FeretAngle = 0.00f;
 
             // codedImage1ObjectSelection 圖層
-            coded1Selection.AddObjects(codedImage1);
-            coded1Selection.AttachedImage = image;
+            codedSelection.AddObjects(codedImage);
+            codedSelection.AttachedImage = image;
 
             // don't care area 條件
-            coded1Selection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 2000, ESingleThresholdMode.Less);
-            coded1Selection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
+            codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 2000, ESingleThresholdMode.Less);
+            codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
 
             return OK;
+
         }
 
         // -------------------------------ObjectSet-------------------------------
@@ -1809,7 +1820,6 @@ namespace cyut_Auo_Component_Measurer
         //}
 
 
-        ObjectInfo[] ObjectSetInspect;
 
         private string Inspect(float thresholdNG)
         {
@@ -1817,8 +1827,8 @@ namespace cyut_Auo_Component_Measurer
 
             ObjectInfo objectTest;
             ObjectInfo objectStandard;
-
             ObjectSetInspect = new ObjectInfo[ObjectSetG.Count];
+            isFindTheSameList = new bool[ObjectSetG.Count];
 
             if (ObjectSetG.Count <= 0)
             {
@@ -2088,67 +2098,6 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // -------------------------------View-------------------------------
-        internal string DetectView(ref EImageBW8 image)
-        {
-            // 如果 EBW8Image1
-            if (image.IsVoid)
-            {
-                return "圖片不能為空，請先載入圖片或相機截圖。";
-            }
-
-            // codedImage1Encoder 設定
-            //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.BlackLayerEncoded = false; //為初始設定
-            //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.WhiteLayerEncoded = true; //為初始設定
-            //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.Mode = EGrayscaleSingleThreshold.MinResidue; //為初始設定
-
-            // codedImage1 圖層
-            codedImage1Encoder.Encode(image, codedImageView);
-
-            // codedImage1ObjectSelection 設定
-            codedViewSelection.Clear();
-            codedViewSelection.FeretAngle = 0.00f;
-
-            // codedImage1ObjectSelection 圖層
-            codedViewSelection.AddObjects(codedImageView);
-            codedViewSelection.AttachedImage = image;
-
-            // don't care area 條件
-            codedViewSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
-            codedViewSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
-
-            return OK;
-        }
-        internal string DetectLearn(ref EImageBW8 image)
-        {
-            // 如果 EBW8Image1
-            if (image.IsVoid)
-            {
-                return "圖片不能為空，請先載入圖片或相機截圖。";
-            }
-
-            // codedImage1Encoder 設定
-            //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.BlackLayerEncoded = false; //為初始設定
-            //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.WhiteLayerEncoded = true; //為初始設定
-            //codedImage1Encoder.GrayscaleSingleThresholdSegmenter.Mode = EGrayscaleSingleThreshold.MinResidue; //為初始設定
-
-            // codedImage1 圖層
-            codedImage1Encoder.Encode(image, codedImageStd);
-
-            // codedImage1ObjectSelection 設定
-            codedStdSelection.Clear();
-            codedStdSelection.FeretAngle = 0.00f;
-
-            // codedImage1ObjectSelection 圖層
-            codedStdSelection.AddObjects(codedImageStd);
-            codedStdSelection.AttachedImage = image;
-
-            // don't care area 條件
-            codedStdSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
-            codedStdSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
-
-            return OK;
-        }
-
         private string DrawEBW8Image(ref EImageBW8 image)
         {
             if (image == null || image.IsVoid)
@@ -2184,7 +2133,7 @@ namespace cyut_Auo_Component_Measurer
             float centerX = element.BoundingBoxCenterX;
             float centerY = element.BoundingBoxCenterY;
 
-            DetectView(ref EBW8ImageView);
+            string message = Detect(ref codedImageView, ref codedViewSelection, ref EBW8ImageView);
 
             uint j = 0;
 
@@ -2215,11 +2164,90 @@ namespace cyut_Auo_Component_Measurer
                 elementView.Dispose();
             }
 
-
             panelIndex = 0;
             panelNGIndex = 0;
             panelStandardIndex = 0;
         }
+
+        private void DrawNG()
+        {
+            DrawNGMissing(missingList);
+            DrawNGAreaError(areaErrorList);
+            DrawNGSizeError(sizeErrorList);
+        }
+
+        private void DrawNGMissing(List<uint> missingList)
+        {
+            missingList = new List<uint>();
+
+            
+            for(int index = 0; index < isFindTheSameList.Count(); index++)
+            {
+                if (isFindTheSameList[index] == false)
+                {
+                    missingList.Add((uint)index);
+                }
+            }
+
+            if (missingList == null)
+            {
+                return;
+            }
+            else
+            {
+                foreach (var index in missingList)
+                {
+                    ECodedElement element = codedStdSelection.GetElement(index);
+                    ERGBColor color = new ERGBColor(255, 20, 147);
+
+                    codedImageStd.Draw(graphics, color, element, viewRatio);
+
+                    element.Dispose();
+                 }
+            }
+        }
+
+        private void DrawNGAreaError(List<uint> areaErrorList)
+        {
+            if (areaErrorList == null)
+            {
+                return;
+            }
+            else
+            {
+                foreach (var index in areaErrorList)
+                {
+                    ECodedElement element = codedStdSelection.GetElement(index);
+                    ERGBColor color = new ERGBColor(255, 20, 147);
+
+                    codedImage1.Draw(graphics, color, element);
+                    
+                    element.Dispose();
+                }
+            }
+        }
+
+        private void DrawNGSizeError(List<uint> sizeErrorList)
+        {
+            if (sizeErrorList == null)
+            {
+                return;
+            }
+            else
+            {
+                foreach (var index in sizeErrorList)
+                {
+                    ECodedElement element = codedStdSelection.GetElement(index);
+                    ERGBColor color = new ERGBColor(255, 0, 0);
+
+                    codedImage1.Draw(graphics, color, element);
+
+                    element.Dispose();
+                }
+            }
+        }
+
+
 
         private void DrawNGElement(ref ECodedElement element)
         {
@@ -2228,7 +2256,7 @@ namespace cyut_Auo_Component_Measurer
             float centerX = element.BoundingBoxCenterX;
             float centerY = element.BoundingBoxCenterY;
 
-            DetectView(ref EBW8ImageView);
+            string message = Detect(ref codedImageView, ref codedViewSelection, ref EBW8ImageView);
 
             uint j = 0;
 
@@ -2255,7 +2283,7 @@ namespace cyut_Auo_Component_Measurer
             if (j < codedViewSelection.ElementCount)
             {
                 elementView = codedViewSelection.GetElement(j);
-                codedImageView.Draw(graphics, elementView);
+                codedImageView.Draw(graphics , elementView);
                 elementView.Dispose();
             }
 
