@@ -32,16 +32,19 @@ namespace cyut_Auo_Component_Measurer
         // 以及簡單邏輯(error判定, if else)
 
         EImageC24 EC24Image1 = new EImageC24();
-        EImageBW8 EBW8Image1 = new EImageBW8();
-        EImageBW8 EBW8ImageStd = new EImageBW8();
+        EImageBW8 EBW8Image1 = new EImageBW8();// pictureBox
         EImageBW8 EBW8ImageTemp = new EImageBW8();
+        EImageBW8 EBW8ImageStd = new EImageBW8();// Standard
+
+        internal ECodedImage2 codedImageStd = new ECodedImage2();
+        internal EObjectSelection codedStdSelection = new EObjectSelection();
 
         bool isGolden;
         // --------------------------Instance--------------------------
         Control c_control = new Control();
 
         // --------------------------View--------------------------
-        EImageBW8 EBW8ImageView = new EImageBW8();
+        EImageBW8 EBW8ImageView = new EImageBW8();// View
         float viewRatio;
         Graphics graphics;
         ToolStripMenuItem imageTranseformMenuItem;
@@ -85,12 +88,10 @@ namespace cyut_Auo_Component_Measurer
 
 
         // -------------------------------Adjust-------------------------------
-        float adjustRatio;
-        Point EBW8Image1Center;
         EImageBW8 EBW8ImageAdjust = new EImageBW8();
         EImageBW8 EBW8ImageLearn = new EImageBW8();
-        internal ECodedImage2 codedImageStd = new ECodedImage2();
-        internal EObjectSelection codedLearnSelection = new EObjectSelection();
+        float adjustRatio;
+        Point EBW8Image1Center;
 
         // EFind
         EPatternFinder EPatternFinder1 = new EPatternFinder(); // EPatternFinder instance
@@ -123,9 +124,9 @@ namespace cyut_Auo_Component_Measurer
 
         // --------------------------Picturebox--------------------------
         int mutiple = 1;
+        bool isEnlarge = false;
         float moveXRatio;
         float moveYRatio;
-        bool isEnlarge = false;
         int currentMouseX;
         int currentMouseY;
 
@@ -139,9 +140,8 @@ namespace cyut_Auo_Component_Measurer
 
             string errorMessage;
 
-
             // Learn
-            errorMessage = Learn();
+            Learn();// 為了 EasyFind 學習
 
             FormInitialize();
 
@@ -153,18 +153,11 @@ namespace cyut_Auo_Component_Measurer
                 MessageBox.Show("請設定 點圖校正 和 標準數據 並存檔。");
                 return;
             }
-            //Console.WriteLine(errorMessage);
 
             // Calibration
             Calibration(ref EBW8ImageDotGrid);
         }
 
-        private void FormInitialize()
-        {
-            graphics = pictureBox1.CreateGraphics();
-            imageTranseformMenuItem = image_Rotate_0_toolStripMenuItem;
-            pictureBox1.MouseWheel += pictureBox_Mouse_Wheel;
-        }
 
 
         private void Form_Close(object sender, FormClosedEventArgs e)
@@ -234,11 +227,17 @@ namespace cyut_Auo_Component_Measurer
                 }
             }
 
+            if(MessageBox.Show("焦距設定好了？", "問題", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
+                return;
+            }
+
             Form_Dot_Grid f2 = new Form_Dot_Grid(calibrationX, calibrationY);
             f2.ShowDialog(this);
 
             if (isDoCalibration == false)
             {
+                EmguCV_Camera();
                 return;
             }
 
@@ -276,6 +275,8 @@ namespace cyut_Auo_Component_Measurer
             ImageRotate(imageTranseformMenuItem, e);
 
             DrawEBW8Image(ref EBW8Image1);
+
+            isDoCalibration = false;
         }
 
         private void Menu_Load_Old_Image_Click(object sender, EventArgs e)
@@ -370,6 +371,7 @@ namespace cyut_Auo_Component_Measurer
         private void pictureClickView()
         {
             btn_Measure_Standard.Enabled = true;
+
             if (ObjectSetG == null)
             {
                 btn_Measure_Product.Enabled = false;
@@ -381,7 +383,6 @@ namespace cyut_Auo_Component_Measurer
 
             btn_Batch_Search.Visible = false;
             btn_Batch_Setting.Visible = false;
-
         }
 
 
@@ -399,7 +400,13 @@ namespace cyut_Auo_Component_Measurer
             }
 
             //EmguCV_Camera();
-            GetCapture();
+            message = GetCapture();
+
+            if(message != OK)
+            {
+                MessageBox.Show(message);
+                return;
+            }
 
             if (isStreaming == false && capture != null)
             {
@@ -830,6 +837,7 @@ namespace cyut_Auo_Component_Measurer
                 }
                 else
                 {
+                    capture = null;
                     return "無法連接相機。";
                 }
             }
@@ -2127,16 +2135,16 @@ namespace cyut_Auo_Component_Measurer
             codedImage1Encoder.Encode(image, codedImageStd);
 
             // codedImage1ObjectSelection 設定
-            codedLearnSelection.Clear();
-            codedLearnSelection.FeretAngle = 0.00f;
+            codedStdSelection.Clear();
+            codedStdSelection.FeretAngle = 0.00f;
 
             // codedImage1ObjectSelection 圖層
-            codedLearnSelection.AddObjects(codedImageStd);
-            codedLearnSelection.AttachedImage = image;
+            codedStdSelection.AddObjects(codedImageStd);
+            codedStdSelection.AttachedImage = image;
 
             // don't care area 條件
-            codedLearnSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
-            codedLearnSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
+            codedStdSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
+            codedStdSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
 
             return OK;
         }
@@ -2502,7 +2510,8 @@ namespace cyut_Auo_Component_Measurer
             EWorldShape1.SetSensorSize(dotGridImage.Width, dotGridImage.Height);
             EWorldShape1.AutoCalibrateDotGrid(dotGridImage, calibrationX, calibrationY, false);
         }
-        private void GetCapture()
+
+        private string GetCapture()
         {
             if (isStreaming)
             {
@@ -2531,6 +2540,12 @@ namespace cyut_Auo_Component_Measurer
                 }
                 catch { }
             }
+            else
+            {
+                capture = null;
+                return "無法連接相機。";
+            }
+
             // Unwarp
             UnwarpEBW8Image1();
 
@@ -2541,20 +2556,11 @@ namespace cyut_Auo_Component_Measurer
 
             DrawEBW8Image(ref EBW8Image1);
 
-            btn_Measure_Standard.Enabled = true;
-            if (ObjectSetG == null)
-            {
-                btn_Measure_Product.Enabled = false;
-            }
-            else
-            {
-                btn_Measure_Product.Enabled = true;
-            }
+            pictureClickView();
 
-            btn_Batch_Search.Visible = false;
-            btn_Batch_Setting.Visible = false;
-
+            return OK;
         }
+
         private void MeasureStdClickView()
         {
             btn_Measure_Product.Enabled = true;
@@ -2577,7 +2583,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 if (ObjectSetInspect[i] == null)
                 {
-                    ECodedElement elementStd = codedLearnSelection.GetElement((uint)i);
+                    ECodedElement elementStd = codedStdSelection.GetElement((uint)i);
 
                     codedImageStd.Draw(graphics, elementStd, viewRatio);
 
@@ -2598,6 +2604,12 @@ namespace cyut_Auo_Component_Measurer
                 , Color.LightGreen, 10, ButtonBorderStyle.Solid
                 , Color.LightGreen, 10, ButtonBorderStyle.Solid
             );
+        }
+        private void FormInitialize()
+        {
+            graphics = pictureBox1.CreateGraphics();
+            imageTranseformMenuItem = image_Rotate_0_toolStripMenuItem;
+            pictureBox1.MouseWheel += pictureBox_Mouse_Wheel;
         }
 
     }

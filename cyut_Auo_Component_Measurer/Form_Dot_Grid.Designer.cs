@@ -123,6 +123,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form_Dot_Grid";
             this.Text = "Form_Dot_Grid";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Dot_Grid_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.numY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numX)).EndInit();
             this.ResumeLayout(false);

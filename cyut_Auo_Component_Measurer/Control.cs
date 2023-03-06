@@ -393,7 +393,7 @@ namespace cyut_Auo_Component_Measurer
                 if (errorMessage != ok)
                     return errorMessage;
 
-                LoadLocalSetting(ref imageStd, ref ObjectSetG, ref dotGridImage, ref x, ref y, folderPath);
+                 LoadLocalSetting(ref imageStd, ref ObjectSetG, ref dotGridImage, ref x, ref y, folderPath);
             }
 
             return OK;

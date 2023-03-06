@@ -38,12 +38,10 @@ namespace cyut_Auo_Component_Measurer
 
         private void btn_Cancel_Click(object sender, EventArgs e)
         {
-            Form1 f1 = (Form1)this.Owner;
-
-            f1.isDoCalibration = false;
-
-            this.Close();
         }
 
+        private void Form_Dot_Grid_FormClosed(object sender, FormClosedEventArgs e)
+        {
+        }
     }
 }
