@@ -341,7 +341,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = coded1Selection.GetElement((uint)index);
 
-                DrawNGElement(ref element);
+                DrawNGElement(ref element, new ERGBColor(255,0 ,0));
 
                 element.Dispose();
 
@@ -492,6 +492,10 @@ namespace cyut_Auo_Component_Measurer
         // 存檔
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
+            missingList.Clear();
+            sizeErrorList.Clear();
+            areaErrorList.Clear();
+
             if (isStreaming == true)
             {
                 btn_Use_Camera_Click(new object(), new EventArgs());
@@ -504,15 +508,13 @@ namespace cyut_Auo_Component_Measurer
 
             Inspect((float)num_Threshold_NG.Value);
 
-            //DrawAllNG();
 
+            Detect(ref codedImageStd, ref codedStdSelection, ref EBW8ImageStd);
 
             DrawNG();
-            //bool isOK = DrawNotInspect();
 
             // Save File
-            //if (NGIndex.Count == 0 && isOK)
-            if (NGIndex.Count == 0)
+            if (NGIndex.Count == 0 && missingList.Count == 0)
             {
                 c_control.SaveInspectResult(ref EBW8Image1, true);
                 OKView();
@@ -812,7 +814,7 @@ namespace cyut_Auo_Component_Measurer
             ECodedElement element = coded1Selection.GetElement((uint)elementIndex);
 
             DrawEBW8Image(ref EBW8Image1);
-            DrawNGElement(ref element);
+            DrawNGElement(ref element, new ERGBColor(255, 0, 0));
 
             if (!isGolden)
             {
@@ -1687,7 +1689,7 @@ namespace cyut_Auo_Component_Measurer
             codedSelection.AttachedImage = image;
 
             // don't care area 條件
-            codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 2000, ESingleThresholdMode.Less);
+            codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 20, ESingleThresholdMode.Less);
             codedSelection.RemoveUsingUnsignedIntegerFeature(EFeature.Area, 150000, ESingleThresholdMode.Greater);
 
             return OK;
@@ -1879,6 +1881,7 @@ namespace cyut_Auo_Component_Measurer
                     ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
 
                     NGIndex.Add(i);
+                    sizeErrorList.Add((uint)i);
 
                     continue;
                 }
@@ -1895,6 +1898,7 @@ namespace cyut_Auo_Component_Measurer
                     ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
 
                     NGIndex.Add(i);
+                    areaErrorList.Add((uint)i);
 
                     continue;
                 }
@@ -2171,16 +2175,16 @@ namespace cyut_Auo_Component_Measurer
 
         private void DrawNG()
         {
-            DrawNGMissing(missingList);
-            DrawNGAreaError(areaErrorList);
+            DrawEBW8Image(ref EBW8Image1);
+
+            DrawNGMissing();
             DrawNGSizeError(sizeErrorList);
+            DrawNGAreaError(areaErrorList);
         }
 
-        private void DrawNGMissing(List<uint> missingList)
+        private void DrawNGMissing()
         {
             missingList = new List<uint>();
-
-            
             for(int index = 0; index < isFindTheSameList.Count(); index++)
             {
                 if (isFindTheSameList[index] == false)
@@ -2217,11 +2221,11 @@ namespace cyut_Auo_Component_Measurer
             {
                 foreach (var index in areaErrorList)
                 {
-                    ECodedElement element = codedStdSelection.GetElement(index);
-                    ERGBColor color = new ERGBColor(255, 20, 147);
+                    ECodedElement element = coded1Selection.GetElement(index);
+                    ERGBColor color = new ERGBColor(255, 140, 0);
 
-                    codedImage1.Draw(graphics, color, element);
-                    
+                    DrawNGElement(ref element, color);
+
                     element.Dispose();
                 }
             }
@@ -2237,19 +2241,19 @@ namespace cyut_Auo_Component_Measurer
             {
                 foreach (var index in sizeErrorList)
                 {
-                    ECodedElement element = codedStdSelection.GetElement(index);
+                    ECodedElement element = coded1Selection.GetElement(index);
                     ERGBColor color = new ERGBColor(255, 0, 0);
 
-                    codedImage1.Draw(graphics, color, element);
+                    DrawNGElement(ref element, color);
 
                     element.Dispose();
+
                 }
             }
         }
 
 
-
-        private void DrawNGElement(ref ECodedElement element)
+        private void DrawNGElement(ref ECodedElement element, ERGBColor color)
         {
             //codedImage1.Draw(graphics, element, viewRatio);
 
@@ -2263,14 +2267,18 @@ namespace cyut_Auo_Component_Measurer
             ECodedElement elementView;
             float centerViewX;
             float centerViewY;
+            float widthThreshold;
+            float heightThreshold;
 
             while (j < codedViewSelection.ElementCount)
             {
                 elementView = codedViewSelection.GetElement(j);
                 centerViewX = elementView.BoundingBoxCenterX;
                 centerViewY = elementView.BoundingBoxCenterY;
+                widthThreshold = elementView.BoundingBoxWidth / 2;
+                heightThreshold = elementView.BoundingBoxHeight / 2;
 
-                if (Math.Abs(centerX * viewRatio - centerViewX) < 10 && Math.Abs(centerY * viewRatio - centerViewY) < 10)
+                if (Math.Abs(centerX * viewRatio - centerViewX) < widthThreshold && Math.Abs(centerY * viewRatio - centerViewY) < heightThreshold)
                 {
                     break;
                 }
@@ -2283,7 +2291,7 @@ namespace cyut_Auo_Component_Measurer
             if (j < codedViewSelection.ElementCount)
             {
                 elementView = codedViewSelection.GetElement(j);
-                codedImageView.Draw(graphics , elementView);
+                codedImageView.Draw(graphics, color, elementView);
                 elementView.Dispose();
             }
 
@@ -2445,21 +2453,6 @@ namespace cyut_Auo_Component_Measurer
 
         }
 
-        private void DrawAllNG()
-        {
-            DrawEBW8Image(ref EBW8Image1);
-
-            foreach (var index in NGIndex)
-            {
-                ECodedElement element = coded1Selection.GetElement((uint)index);
-
-
-                DrawNGElement(ref element);
-
-                element.Dispose();
-            }
-        }
-
         private void ImageRotate(object sender, EventArgs e)
         {
             // 把選項打勾
@@ -2602,27 +2595,6 @@ namespace cyut_Auo_Component_Measurer
             btn_Batch_Setting.Visible = false;
         }
 
-
-        private bool DrawNotInspect()
-        {
-            bool isOK = true;
-
-            for (int i = 0; i < ObjectSetInspect.Length; i++)
-            {
-                if (ObjectSetInspect[i] == null)
-                {
-                    ECodedElement elementStd = codedStdSelection.GetElement((uint)i);
-
-                    codedImageStd.Draw(graphics, elementStd, viewRatio);
-
-                    elementStd.Dispose();
-
-                    isOK = false;
-                }
-            }
-
-            return isOK;
-        }
 
         private void OKView()
         {
