@@ -50,19 +50,9 @@ namespace cyut_Auo_Component_Measurer
         ToolStripMenuItem imageTranseformMenuItem;
         int rotateDegree = 0;
 
-
-        float mmWidth;
-        float mmHeight;
-
         int panelIndex = 0;
         int panelNGIndex = 0;
         int panelStandardIndex = 0;
-
-        bool isOpenMeasure = false;
-        bool isOpenProduct = false;
-        bool isOpenBatchSearch = false;
-        bool isOpenBatchSetting = false;
-
 
         // --------------------------Batch--------------------------
         List<int> batchIndexes = new List<int>();
@@ -118,6 +108,7 @@ namespace cyut_Auo_Component_Measurer
         ObjectInfo[] ObjectSetInspect;
         bool[] isFindTheSameList;
         List<uint> missingList = new List<uint>();
+        List<uint> noStdNGList = new List<uint>();
         List<uint> areaErrorList = new List<uint>();
         List<uint> sizeErrorList = new List<uint>();
 
@@ -233,7 +224,7 @@ namespace cyut_Auo_Component_Measurer
                 }
             }
 
-            if(MessageBox.Show("焦距設定好了？", "問題", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            if (MessageBox.Show("焦距設定好了？", "問題", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
             }
@@ -341,7 +332,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 ECodedElement element = coded1Selection.GetElement((uint)index);
 
-                DrawNGElement(ref element, new ERGBColor(255,0 ,0));
+                DrawNGElement(ref element, new ERGBColor(255, 0, 0));
 
                 element.Dispose();
 
@@ -349,7 +340,7 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        
+
 
 
         // --------------------------Button--------------------------
@@ -410,7 +401,7 @@ namespace cyut_Auo_Component_Measurer
             //EmguCV_Camera();
             message = GetCapture();
 
-            if(message != OK)
+            if (message != OK)
             {
                 MessageBox.Show(message);
                 return;
@@ -420,7 +411,7 @@ namespace cyut_Auo_Component_Measurer
             {
                 message = btn_Adjust_Click(sender, e);
 
-                if(message != OK)
+                if (message != OK)
                 {
                     MessageBox.Show(message);
                     return;
@@ -1673,7 +1664,7 @@ namespace cyut_Auo_Component_Measurer
         // -------------------------------Measure-------------------------------
         // -------------------------------Detect-------------------------------
         private string Detect(ref ECodedImage2 codedImage, ref EObjectSelection codedSelection, ref EImageBW8 image)
-        {   
+        {
             // 如果 EBW8Image1
             if (image.IsVoid)
             {
@@ -1861,10 +1852,8 @@ namespace cyut_Auo_Component_Measurer
                 {
                     objectTest.CheckResult = 1;
 
-                    //ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
-
-                    ListBoxAddNG(listBox_NG, (ObjectInfo)ObjectSetU[i], "Missing Object");
-
+                    noStdNGList.Add((uint)i);
+                    ListBoxAddNG(listBox_NG, objectTest, "No Standard");
 
                     NGIndex.Add(i);
 
@@ -2148,40 +2137,46 @@ namespace cyut_Auo_Component_Measurer
 
         private void DrawElement(ref ECodedElement element)
         {
-            //codedImage1.Draw(graphics, new ERGBColor(0, 0, 255), element, viewRatio);
-
-            float centerX = element.BoundingBoxCenterX;
-            float centerY = element.BoundingBoxCenterY;
-
             string message = Detect(ref codedImageView, ref codedViewSelection, ref EBW8ImageView);
 
-            uint j = 0;
-
             ECodedElement elementView;
+            float centerX = element.BoundingBoxCenterX;
+            float centerY = element.BoundingBoxCenterY;
             float centerViewX;
             float centerViewY;
+            float widthThreshold;
+            float heightThreshold;
+            float deltaCenterX;
+            float deltaCenterY;
 
-            while (j < codedViewSelection.ElementCount)
+            bool isFound = false;
+
+            for (uint i = 0; i < codedViewSelection.ElementCount; i++)
             {
-                elementView = codedViewSelection.GetElement(j);
+                elementView = codedViewSelection.GetElement(i);
                 centerViewX = elementView.BoundingBoxCenterX;
                 centerViewY = elementView.BoundingBoxCenterY;
+                widthThreshold = elementView.BoundingBoxWidth / 2;
+                heightThreshold = elementView.BoundingBoxHeight / 2;
 
-                if (Math.Abs(centerX * viewRatio - centerViewX) < 10 && Math.Abs(centerY * viewRatio - centerViewY) < 10)
+                deltaCenterX = Math.Abs(centerX * viewRatio - centerViewX);
+                deltaCenterY = Math.Abs(centerY * viewRatio - centerViewY);
+
+                if (deltaCenterX < widthThreshold && deltaCenterY < heightThreshold)
                 {
+                    codedImageView.Draw(graphics, new ERGBColor(0, 0, 255), elementView);
+
+                    elementView.Dispose();
+                    isFound = true;
                     break;
                 }
-
-                j++;
 
                 elementView.Dispose();
             }
 
-            if (j < codedViewSelection.ElementCount)
+            if (isFound == false)
             {
-                elementView = codedViewSelection.GetElement(j);
-                codedImageView.Draw(graphics, new ERGBColor(0, 0, 255), elementView);
-                elementView.Dispose();
+                MessageBox.Show("無法顯示物件");
             }
 
             panelIndex = 0;
@@ -2193,15 +2188,21 @@ namespace cyut_Auo_Component_Measurer
         {
             DrawEBW8Image(ref EBW8Image1);
 
+            DrawNGNoStd();
             DrawNGMissing();
-            DrawNGSizeError(sizeErrorList);
-            DrawNGAreaError(areaErrorList);
+            DrawNGSizeError();
+            DrawNGAreaError();
+        }
+
+        private void DrawNGNoStd()
+        {
+
         }
 
         private void DrawNGMissing()
         {
             missingList = new List<uint>();
-            for(int index = 0; index < isFindTheSameList.Count(); index++)
+            for (int index = 0; index < isFindTheSameList.Count(); index++)
             {
                 if (isFindTheSameList[index] == false)
                 {
@@ -2223,11 +2224,11 @@ namespace cyut_Auo_Component_Measurer
                     codedImageStd.Draw(graphics, color, element, viewRatio);
 
                     element.Dispose();
-                 }
+                }
             }
         }
 
-        private void DrawNGAreaError(List<uint> areaErrorList)
+        private void DrawNGAreaError()
         {
             if (areaErrorList == null)
             {
@@ -2247,7 +2248,7 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
-        private void DrawNGSizeError(List<uint> sizeErrorList)
+        private void DrawNGSizeError()
         {
             if (sizeErrorList == null)
             {
@@ -2271,44 +2272,46 @@ namespace cyut_Auo_Component_Measurer
 
         private void DrawNGElement(ref ECodedElement element, ERGBColor color)
         {
-            //codedImage1.Draw(graphics, element, viewRatio);
-
-            float centerX = element.BoundingBoxCenterX;
-            float centerY = element.BoundingBoxCenterY;
-
             string message = Detect(ref codedImageView, ref codedViewSelection, ref EBW8ImageView);
 
-            uint j = 0;
-
             ECodedElement elementView;
+            float centerX = element.BoundingBoxCenterX;
+            float centerY = element.BoundingBoxCenterY;
             float centerViewX;
             float centerViewY;
             float widthThreshold;
             float heightThreshold;
+            float deltaCenterX;
+            float deltaCenterY;
 
-            while (j < codedViewSelection.ElementCount)
+            bool isFound = false;
+
+            for (uint i = 0; i < codedViewSelection.ElementCount; i++)
             {
-                elementView = codedViewSelection.GetElement(j);
+                elementView = codedViewSelection.GetElement(i);
                 centerViewX = elementView.BoundingBoxCenterX;
                 centerViewY = elementView.BoundingBoxCenterY;
                 widthThreshold = elementView.BoundingBoxWidth / 2;
                 heightThreshold = elementView.BoundingBoxHeight / 2;
 
-                if (Math.Abs(centerX * viewRatio - centerViewX) < widthThreshold && Math.Abs(centerY * viewRatio - centerViewY) < heightThreshold)
+                deltaCenterX = Math.Abs(centerX * viewRatio - centerViewX);
+                deltaCenterY = Math.Abs(centerY * viewRatio - centerViewY);
+
+                if (deltaCenterX < widthThreshold && deltaCenterY < heightThreshold)
                 {
+                    codedImageView.Draw(graphics, color, elementView);
+
+                    elementView.Dispose();
+                    isFound = true;
                     break;
                 }
-
-                j++;
 
                 elementView.Dispose();
             }
 
-            if (j < codedViewSelection.ElementCount)
+            if (isFound == false)
             {
-                elementView = codedViewSelection.GetElement(j);
-                codedImageView.Draw(graphics, color, elementView);
-                elementView.Dispose();
+                MessageBox.Show("無法顯示物件");
             }
 
             panelIndex = 0;
