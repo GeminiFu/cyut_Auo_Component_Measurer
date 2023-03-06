@@ -155,8 +155,6 @@ namespace cyut_Auo_Component_Measurer
             Calibration(ref EBW8ImageDotGrid);
         }
 
-
-
         private void Form_Close(object sender, FormClosedEventArgs e)
         {
             // 關閉攝影機
@@ -344,11 +342,13 @@ namespace cyut_Auo_Component_Measurer
 
 
         // --------------------------Button--------------------------
-        // 取檔案
-        // Draw Image
-        // 清空上一個 product 的資料
         private void btn_Load_Click(object sender, EventArgs e)
         {
+            // 讀取檔案
+            // 圖片旋轉
+            // 畫出圖片
+            // 重設產品資料
+            // 介面呈現變動
             string message;
 
             message = c_control.LoadEImageBW8(ref EBW8Image1);
@@ -367,48 +367,32 @@ namespace cyut_Auo_Component_Measurer
             pictureClickView();
         }
 
-        private void pictureClickView()
-        {
-            btn_Measure_Standard.Enabled = true;
-
-            if (ObjectSetG == null)
-            {
-                btn_Measure_Product.Enabled = false;
-            }
-            else
-            {
-                btn_Measure_Product.Enabled = true;
-            }
-
-            btn_Batch_Search.Visible = false;
-            btn_Batch_Setting.Visible = false;
-        }
-
-
-
         private void btn_Use_Camera_Click(object sender, EventArgs e)
         {
+            // 確認已校正
+            // 截圖
+            // 調整圖片位置
+            // 主動測量產品
             string message;
 
             if (EWorldShape1.CalibrationSucceeded() == false)
             {
-                MessageBox.Show("請先設定 Dot Grid。");
+                MessageBox.Show("請先設定點圖校正。");
 
                 dotGridToolStripMenuItem_Click(sender, e);
                 return;
             }
-
-            //EmguCV_Camera();
-            message = GetCapture();
-
-            if (message != OK)
+            else
             {
-                MessageBox.Show(message);
-                return;
-            }
+                //EmguCV_Camera();
+                message = GetCapture();
 
-            if (isStreaming == false && capture != null)
-            {
+                if (message != OK)
+                {
+                    MessageBox.Show(message);
+                    return;
+                }
+
                 message = btn_Adjust_Click(sender, e);
 
                 if (message != OK)
@@ -416,19 +400,23 @@ namespace cyut_Auo_Component_Measurer
                     MessageBox.Show(message);
                     return;
                 }
+
+
+                if (checkBox_Direct_Measure.Checked)
+                {
+                    btn_Measure_Product_Click(sender, e);
+                }
+
             }
 
-            if (checkBox_Direct_Measure.Checked)
-            {
-                btn_Measure_Product_Click(sender, e);
-            }
         }
 
-
         // 校正圖像
-        // Drwa Image
         private string btn_Adjust_Click(object sender, EventArgs e)
         {
+            // 位置校正
+            // 畫出 EBW8Image1
+            // 畫出 finder
             string message;
 
             message = Adjust_Fixed();//放大 或 縮小會需要多次矯正，比較準
@@ -438,11 +426,8 @@ namespace cyut_Auo_Component_Measurer
                 return message;
             }
 
-            // 畫出 EBW8Image1
-            EBW8ImageAdjust.CopyTo(EBW8Image1); //讓 EBW8IImage1 為正確的圖像
             DrawEBW8Image(ref EBW8Image1);
 
-            // 畫出 finder
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
             EPatternFinder1FoundPatterns[0].Draw(graphics, viewRatio);
 
@@ -458,18 +443,24 @@ namespace cyut_Auo_Component_Measurer
         // 存檔
         private void btn_Measure_Standard_Click(object sender, EventArgs e)
         {
+            // 偵測產品物件
+            // 建立 ObjectSetG
+            // 設定標準資料
+            // 畫出圖片
+            // 存檔
+            // 介面變動
             Detect(ref codedImage1, ref coded1Selection, ref EBW8Image1);
 
             BuildObjectSet(ObjectSetG, listBox_Measure);
 
             SetObjectG();
+            EBW8ImageStd.SetSize(EBW8Image1);
+            EasyImage.Copy(EBW8Image1, EBW8ImageStd);
 
             DrawEBW8Image(ref EBW8Image1);
 
             c_control.SaveHistorySetting(ref EBW8Image1, ObjectSetG, ref EBW8ImageDotGrid, calibrationX, calibrationY);
 
-            EBW8ImageStd.SetSize(EBW8Image1);
-            EasyImage.Copy(EBW8Image1, EBW8ImageStd);
 
             isGolden = true;
 
@@ -477,14 +468,15 @@ namespace cyut_Auo_Component_Measurer
         }
 
         // 偵測物件
-        // 建立 ObjectSetU
-        // 放進 listBox_Measure
-        // Inspect
-        // 畫出 NG 圖
-        // 放 NGObject 進 listBox_NG
-        // 存檔
         private void btn_Measure_Product_Click(object sender, EventArgs e)
         {
+            // 偵測產品物件
+            // 建立 ObjectSetG
+            // 設定標準資料
+            // 畫出圖片
+            // 存檔
+            // 介面變動
+
             missingList.Clear();
             sizeErrorList.Clear();
             areaErrorList.Clear();
@@ -1506,13 +1498,6 @@ namespace cyut_Auo_Component_Measurer
 
         private string Adjust_Fixed()
         {
-
-            // 如果沒有 EBWIImage1
-            if (EBW8Image1 == null || (EBW8Image1.Width == 0 && EBW8Image1.Height == 0))
-            {
-                return "請先載入圖片或相機截圖";
-            }
-
             // 位置校正 & 水平校正
             EPatternFinder1FoundPatterns = EPatternFinder1.Find(EBW8Image1); //找 ERoi1 的位置
 
@@ -1534,17 +1519,16 @@ namespace cyut_Auo_Component_Measurer
             finder1CenterY = EPatternFinder1FoundPatterns[0].Center.Y;
             adjustRatio = 1 / EPatternFinder1FoundPatterns[0].Scale;
 
-            EBW8ImageAdjust.SetSize(EBW8Image1);
             EBW8ImageTemp.SetSize(EBW8Image1);
 
             // 先 invert，再校正，再 invert 回來，把黑色的底圖變白色
             EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8Image1, EBW8ImageTemp);
             // 校正方式
             // 位置，比例，角度
-            EasyImage.ScaleRotate(EBW8ImageTemp, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8ImageAdjust, 0);
-            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8ImageAdjust, EBW8ImageTemp);
+            EasyImage.ScaleRotate(EBW8ImageTemp, finder1CenterX, finder1CenterY, ERoi1Center.X, ERoi1Center.Y, adjustRatio, adjustRatio, EPatternFinder1FoundPatterns[0].Angle, EBW8Image1, 0);
+            EasyImage.Oper(EArithmeticLogicOperation.Invert, EBW8Image1, EBW8ImageTemp);
 
-            EBW8ImageTemp.CopyTo(EBW8ImageAdjust);
+            EBW8ImageTemp.CopyTo(EBW8Image1);
 
             EBW8ImageTemp.Dispose();
 
@@ -1735,6 +1719,7 @@ namespace cyut_Auo_Component_Measurer
                 objectInfo.widthStd = objectInfo.width;
                 objectInfo.heightStd = objectInfo.height;
             }
+
         }
 
         internal int IsClickObject(ref ArrayList ObjectSet, float clickX, float clickY)
@@ -2553,6 +2538,16 @@ namespace cyut_Auo_Component_Measurer
 
         private string GetCapture()
         {
+            // 關閉攝影
+            // 建立 capture
+            // 確認相機運行擷取圖片
+            // bmpToEImage
+            // Unwarp
+            // 重設產品
+            // 圖片旋轉
+            // 畫出圖片
+            // 介面變動
+
             if (isStreaming)
             {
                 EmguCV_Camera();
@@ -2573,10 +2568,6 @@ namespace cyut_Auo_Component_Measurer
                     capture.Retrieve(m);
                     capture.Retrieve(m);
                     bmp = m.ToBitmap(); //不能使用 new Bitmap(m.Bitmap)
-
-
-                    BitmapToEImageBW8(bmp, ref EBW8Image1);
-
                 }
                 catch { }
             }
@@ -2586,10 +2577,10 @@ namespace cyut_Auo_Component_Measurer
                 return "無法連接相機。";
             }
 
-            // Unwarp
+            BitmapToEImageBW8(bmp, ref EBW8Image1);
+
             UnwarpEBW8Image1();
 
-            // Init
             ProductDataReset();
 
             ImageRotate(imageTranseformMenuItem, new EventArgs());
@@ -2630,6 +2621,24 @@ namespace cyut_Auo_Component_Measurer
             imageTranseformMenuItem = image_Rotate_0_toolStripMenuItem;
             pictureBox1.MouseWheel += pictureBox_Mouse_Wheel;
         }
+
+        private void pictureClickView()
+        {
+            btn_Measure_Standard.Enabled = true;
+
+            if (ObjectSetG == null)
+            {
+                btn_Measure_Product.Enabled = false;
+            }
+            else
+            {
+                btn_Measure_Product.Enabled = true;
+            }
+
+            btn_Batch_Search.Visible = false;
+            btn_Batch_Setting.Visible = false;
+        }
+
 
     }
 }
