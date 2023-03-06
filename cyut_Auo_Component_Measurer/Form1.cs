@@ -349,6 +349,8 @@ namespace cyut_Auo_Component_Measurer
             }
         }
 
+        
+
 
         // --------------------------Button--------------------------
         // 取檔案
@@ -1568,6 +1570,13 @@ namespace cyut_Auo_Component_Measurer
             listBox.Items.Add(objIndex + "(" + objCenterX + "," + objCenterY + ")");
         }
 
+        private void ListBoxAddNG(ListBox listBox, ObjectInfo obj, string errorString)
+        {
+            string objIndex = obj.ElementIndex.ToString("000");
+
+            listBox.Items.Add(objIndex + "(" + errorString + ")");
+        }
+
         private float CalcRatioWithPictureBox(PictureBox pb, float imageWidth, float imageHeight)
         {
             if (pb == null)
@@ -1852,7 +1861,10 @@ namespace cyut_Auo_Component_Measurer
                 {
                     objectTest.CheckResult = 1;
 
-                    ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+                    //ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+
+                    ListBoxAddNG(listBox_NG, (ObjectInfo)ObjectSetU[i], "Missing Object");
+
 
                     NGIndex.Add(i);
 
@@ -1878,7 +1890,9 @@ namespace cyut_Auo_Component_Measurer
                 {
                     objectTest.CheckResult = 1;
 
-                    ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+                    //ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+                    ListBoxAddNG(listBox_NG, (ObjectInfo)ObjectSetU[i], "Size Wrong");
+
 
                     NGIndex.Add(i);
                     sizeErrorList.Add((uint)i);
@@ -1895,7 +1909,9 @@ namespace cyut_Auo_Component_Measurer
                 {
                     objectTest.CheckResult = 1;
 
-                    ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+                    //ListBoxAddObj(listBox_NG, (ObjectInfo)ObjectSetU[i]);
+                    ListBoxAddNG(listBox_NG, (ObjectInfo)ObjectSetU[i], "Area Wrong");
+
 
                     NGIndex.Add(i);
                     areaErrorList.Add((uint)i);
